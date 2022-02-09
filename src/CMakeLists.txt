@@ -4,28 +4,19 @@
 ADD_DEFINITIONS(
     -DEND_DEVICE=1
     -DMCU_CORE_${TELINK_PLATFORM}=1
-#        -DOTA_INTERNAL_STORAGE
-#        -DTRACE_ZCL=TRUE
-#        -DTRACE_OTA_DEBUG=TRUE
-#        -DDEBUG_BDB
-#        -DDEBUG_CLD_ONOFF
-#        -DDEBUG_ZQUEUE
-
-#        -DBDB_SUPPORT_NWK_STEERING
+    -DMCU_STARTUP_${TELINK_PLATFORM}=1
+    -D__PROJECT_TL_CONTACT_SENSOR__=1
 )
-
-################################
-# Generated files (used by both ZigbeeLibrary and the app)
-#generate_zps_and_pdum_targets(${PROJECT_SOURCE_DIR}/src/HelloZigbee.zpscfg)
 
 ################################
 # Zigbee Library
 
 SET(ZIGBEE_SRC
-    ${SDK_PREFIX}/platform/tc32/div_mod.S
     ${SDK_PREFIX}/platform/boot/link_cfg.S
     ${SDK_PREFIX}/platform/boot/${TELINK_PLATFORM}/cstartup_${TELINK_PLATFORM}.S
     ${SDK_PREFIX}/platform/services/b85m/irq_handler.c
+    ${SDK_PREFIX}/platform/tc32/div_mod.S
+    ${SDK_PREFIX}/platform/chip_${TELINK_PLATFORM}/flash.c
 
     ${SDK_PREFIX}/zigbee/bdb/bdb.c
     ${SDK_PREFIX}/zigbee/aps/aps_group.c
@@ -174,21 +165,21 @@ SET(ZIGBEE_SRC
         # Generated (used by bdb_ns.c)
         #pdum_gen.h
 )
-ADD_LIBRARY(ZigBee STATIC ${ZIGBEE_SRC})
-TARGET_INCLUDE_DIRECTORIES(ZigBee PRIVATE
-        ${SDK_PREFIX}/Components/BDB/Include
-        ${SDK_PREFIX}/Components/BDB/Source/Common
-        ${SDK_PREFIX}/Components/BDB/Source/NwkSteering
-        ${SDK_PREFIX}/Components/PWRM/Include
-	${SDK_PREFIX}/Components/MicroSpecific/Include
-        ${SDK_PREFIX}/Components/ZCL/Clusters/General/Source
-        ${SDK_PREFIX}/Components/ZCL/Clusters/OTA/Include
-
-        ${SDK_PREFIX}/Components/ZCIF/Source
-
-        # Zigbee sources reference zcl_options.h
-        ${PROJECT_SOURCE_DIR}/src
-)
+#ADD_LIBRARY(ZigBee STATIC ${ZIGBEE_SRC})
+#TARGET_INCLUDE_DIRECTORIES(ZigBee PRIVATE
+#        ${SDK_PREFIX}/Components/BDB/Include
+#        ${SDK_PREFIX}/Components/BDB/Source/Common
+#        ${SDK_PREFIX}/Components/BDB/Source/NwkSteering
+#        ${SDK_PREFIX}/Components/PWRM/Include
+#	${SDK_PREFIX}/Components/MicroSpecific/Include
+#        ${SDK_PREFIX}/Components/ZCL/Clusters/General/Source
+#        ${SDK_PREFIX}/Components/ZCL/Clusters/OTA/Include
+#
+#        ${SDK_PREFIX}/Components/ZCIF/Source
+#
+#        # Zigbee sources reference zcl_options.h
+#        ${PROJECT_SOURCE_DIR}/src
+#)
 
 
 ################################
@@ -198,9 +189,11 @@ INCLUDE_DIRECTORIES(
     ${PROJECT_SOURCE_DIR}
 
     ${SDK_PREFIX}/zigbee/af
+    ${SDK_PREFIX}/zigbee/bdb/includes
     ${SDK_PREFIX}/zigbee/ota
     ${SDK_PREFIX}/zigbee/zcl
     ${SDK_PREFIX}/zigbee/common/includes
+    ${SDK_PREFIX}/zigbee/zbapi
     ${SDK_PREFIX}/proj
     ${SDK_PREFIX}/proj/common
     ${SDK_PREFIX}/platform
@@ -229,7 +222,9 @@ LINK_DIRECTORIES(
 #SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${zatc_SOURCE_DIR}/src/zatc.ld")
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${SDK_PREFIX}/platform/boot/${TELINK_PLATFORM}/boot_${TELINK_PLATFORM}.link")
 
-file( GLOB SOURCES *.c *.cpp *.h *.S )
+file( GLOB SOURCES1 *.c *.cpp *.h *.S common/*.c common/*.h bootloader/*.c bootloader/*.h )
+
+SET (SOURCES  ${SOURCES1} ${ZIGBEE_SRC})
 
 #SET(SOURCES
 #	irq_JN516x.S
@@ -242,21 +237,16 @@ ADD_EXECUTABLE(zatc ${SOURCES})
 TARGET_LINK_LIBRARIES(zatc
         -Wl,--start-group
 
-	ZigBee
+	#ZigBee
 
 	zb_ed
 	drivers_${TELINK_PLATFORM}
-
-#        Aes_${JENNIC_CHIP_FAMILY}
-#        AES_SW_${JENNIC_CHIP_FAMILY}
-#        Boot_${JENNIC_CHIP_FAMILY}
-#        DBG_${JENNIC_CHIP_FAMILY}
 
         -Wl,--end-group
 )
 
 PRINT_SIZE_OF_TARGETS(zatc)
-#ADD_HEX_BIN_TARGETS(zatc)
+ADD_BIN_TARGET(zatc)
 #ADD_DUMP_TARGET(zatc)
 #FLASH_FIRMWARE_TARGET(zatc)
 #ADD_OTA_BIN_TARGETS(zatc)
