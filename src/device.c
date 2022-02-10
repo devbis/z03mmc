@@ -36,6 +36,9 @@
 #include "zbhci.h"
 #endif
 
+#include "sensor.h"
+#include "lcd.h"
+
 
 /**********************************************************************
  * LOCAL CONSTANTS
@@ -253,6 +256,15 @@ void user_init(bool isRetention)
 	drv_pm_wakeupPinConfig(g_sensorPmCfg, sizeof(g_sensorPmCfg)/sizeof(drv_pm_pinCfg_t));
 #endif
 
+	random_generator_init();  //must
+	init_sensor();
+	init_lcd();
+	send_to_lcd(0x00,0x00,0x05,0xc2,0xe2,0x77);
+//	init_flash();
+//	show_atc_mac();
+//	battery_mv = get_battery_mv();
+//	battery_level = get_battery_level(get_battery_mv());
+
 	if(!isRetention){
 		/* Initialize Stack */
 		stack_init();
@@ -278,6 +290,10 @@ void user_init(bool isRetention)
 		/* Initialize BDB */
 		u8 repower = drv_pm_deepSleep_flag_get() ? 0 : 1;
 		bdb_init((af_simple_descriptor_t *)&sampleSensor_simpleDesc, &g_bdbCommissionSetting, &g_zbDemoBdbCb, repower);
+
+		// reset zigbee on cold start
+		g_sensorAppCtx.state = APP_FACTORY_NEW_DOING;
+		zb_factoryReset();
 	}else{
 		/* Re-config phy when system recovery from deep sleep with retention */
 		mac_phyReconfig();

@@ -103,7 +103,7 @@ zcl_basicAttr_t g_zcl_basicAttrs =
 	.hwVersion		= 0x00,
 	.manuName		= ZCL_BASIC_MFG_NAME,
 	.modelId		= ZCL_BASIC_MODEL_ID,
-	.powerSource	= POWER_SOURCE_MAINS_1_PHASE,
+	.powerSource	= POWER_SOURCE_BATTERY,
 	.deviceEnable	= TRUE,
 };
 
