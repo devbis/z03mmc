@@ -48,7 +48,7 @@ int main(void){
 		}
 #endif
 
-		gpio_toggle(LED_POWER);
+//		gpio_toggle(LED_POWER);
 		WaitMs(100);
 	}
 

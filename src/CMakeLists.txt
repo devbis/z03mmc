@@ -222,7 +222,7 @@ LINK_DIRECTORIES(
 #SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${zatc_SOURCE_DIR}/src/zatc.ld")
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${SDK_PREFIX}/platform/boot/${TELINK_PLATFORM}/boot_${TELINK_PLATFORM}.link")
 
-file( GLOB SOURCES1 *.c *.cpp *.h *.S common/*.c common/*.h bootloader/*.c bootloader/*.h )
+file( GLOB SOURCES1 *.c *.cpp *.h *.S common/*.c common/*.h )
 
 SET (SOURCES  ${SOURCES1} ${ZIGBEE_SRC})
 
