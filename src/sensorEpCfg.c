@@ -32,10 +32,10 @@
  * LOCAL CONSTANTS
  */
 #ifndef ZCL_BASIC_MFG_NAME
-#define ZCL_BASIC_MFG_NAME     {6,'T','E','L','I','N','K'}
+#define ZCL_BASIC_MFG_NAME     {6,'X','i','a','o','m','i'}
 #endif
 #ifndef ZCL_BASIC_MODEL_ID
-#define ZCL_BASIC_MODEL_ID	   {8,'T','L','S','R','8','2','x','x'}
+#define ZCL_BASIC_MODEL_ID	   {14,'l','u','m','i','.','s','e','n','s','o','r','_','h','t'}
 #endif
 
 
