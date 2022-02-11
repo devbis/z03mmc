@@ -210,6 +210,7 @@ INCLUDE_DIRECTORIES(
 
     # Zigbee sources reference zcl_options.h
     ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_SOURCE_DIR}/src/custom_zcl
 )
 
 LINK_DIRECTORIES(
@@ -222,7 +223,7 @@ LINK_DIRECTORIES(
 #SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${zatc_SOURCE_DIR}/src/zatc.ld")
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${SDK_PREFIX}/platform/boot/${TELINK_PLATFORM}/boot_${TELINK_PLATFORM}.link")
 
-file( GLOB SOURCES1 *.c *.cpp *.h *.S common/*.c common/*.h )
+file( GLOB SOURCES1 *.c *.cpp *.h *.S common/*.c common/*.h custom_zcl/*.c custom_zcl/*.h )
 
 SET (SOURCES  ${SOURCES1} ${ZIGBEE_SRC})
 
