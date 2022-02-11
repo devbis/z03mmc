@@ -34,6 +34,11 @@ extern "C" {
  */
 #include "version_cfg.h"
 
+#include "compiler.h"
+
+
+#define RAM _attribute_data_retention_ // short version, this is needed to keep the values in ram after sleep
+
 /**********************************************************************
  * Product Information
  */
@@ -141,10 +146,18 @@ extern "C" {
 /**********************************************************************
  * ZCL cluster support setting
  */
-#define ZCL_IAS_ZONE_SUPPORT						1
+//#define ZCL_IAS_ZONE_SUPPORT						1
 #define ZCL_POLL_CTRL_SUPPORT						1
 #define ZCL_OTA_SUPPORT								1
 
+#define ZCL_TEMPERATURE_MEASUREMENT_SUPPORT			1
+#define ZCL_HUMIDITY_MEASUREMENT_SUPPORT			1
+
+
+// for consistency
+#if ZCL_RELATIVE_HUMIDITY_SUPPORT
+#define ZCL_RELATIVE_HUMIDITY
+#endif
 
 /**********************************************************************
  * Stack configuration
