@@ -56,4 +56,6 @@ void led_off(u32 pin);
 
 void app_key_handler(void);
 
+void read_sensor_start(u16 delayTime);
+
 #endif	/* _APP_UI_H_ */

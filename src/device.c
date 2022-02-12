@@ -179,6 +179,8 @@ void user_app_init(void)
 #ifdef ZCL_OTA
     ota_init(OTA_TYPE_CLIENT, (af_simple_descriptor_t *)&sampleSensor_simpleDesc, &sampleSensor_otaInfo, &sampleSensor_otaCb);
 #endif
+
+    read_sensor_start(5000);
 }
 
 
@@ -217,6 +219,9 @@ void app_task(void)
 #endif
 
 		report_handler();
+
+		// read sensor data
+		update_lcd();
 	}
 }
 

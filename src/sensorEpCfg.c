@@ -27,6 +27,7 @@
 #include "tl_common.h"
 #include "zcl_include.h"
 #include "device.h"
+#include "zcl_relative_humidity.h"
 
 /**********************************************************************
  * LOCAL CONSTANTS
