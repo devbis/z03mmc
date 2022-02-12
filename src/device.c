@@ -36,6 +36,8 @@
 #include "zbhci.h"
 #endif
 
+#include "zcl_relative_humidity.h"
+
 #include "sensor.h"
 #include "lcd.h"
 
@@ -165,6 +167,7 @@ void user_app_init(void)
 #else
 	af_powerDescPowerModeUpdate(POWER_MODE_RECEIVER_COMES_WHEN_STIMULATED);
 #endif
+	zcl_reportingTabInit();
 
     /* Initialize ZCL layer */
 	/* Register Incoming ZCL Foundation command/response messages */
@@ -291,6 +294,27 @@ void user_init(bool isRetention)
 			g_bdbCommissionSetting.linkKey.tcLinkKey.keyType = g_sensorAppCtx.tcLinkKey.keyType;
 			g_bdbCommissionSetting.linkKey.tcLinkKey.key = g_sensorAppCtx.tcLinkKey.key;
 		}
+
+		/* Set default reporting configuration */
+		u8 reportableChange = 0x00;
+		bdb_defaultReportingCfg(
+			SAMPLE_SENSOR_ENDPOINT,
+			HA_PROFILE_ID,
+			ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT,
+			ZCL_TEMPERATURE_MEASUREMENT_ATTRID_MEASUREDVALUE,
+			0x0000,
+			0x003c,
+			(u8 *)&reportableChange
+		);
+		bdb_defaultReportingCfg(
+			SAMPLE_SENSOR_ENDPOINT,
+			HA_PROFILE_ID,
+			ZCL_CLUSTER_MS_RELATIVE_HUMIDITY,
+			ZCL_RELATIVE_HUMIDITY_ATTRID_MEASUREDVALUE,
+			0x0000,
+			0x003c,
+			(u8 *)&reportableChange
+		);
 
 		/* Initialize BDB */
 		u8 repower = drv_pm_deepSleep_flag_get() ? 0 : 1;

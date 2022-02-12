@@ -220,10 +220,10 @@ void app_key_handler(void){
 s32 zclSensorTimerCb(void *arg)
 {
 	u32 interval = g_sensorAppCtx.readSensorTime;
-	s16 temp = 0;
-	u16 humi = 0;
+	s16 temp = 100;
+	u16 humi = 200;
 
-	read_sensor(&temp,&humi);
+//	read_sensor(&temp,&humi);
 	g_zcl_temperatureAttrs.measuredValue = temp;
 	g_zcl_relHumidityAttrs.measuredValue = humi;
 
@@ -233,11 +233,11 @@ s32 zclSensorTimerCb(void *arg)
 void read_sensor_start(u16 delayTime)
 {
 	u32 interval = 0;
-	s16 temp = 0;
-	u16 humi = 0;
+	s16 temp = 100;
+	u16 humi = 200;
 
 	if(!g_sensorAppCtx.timerReadSensorEvt){
-		read_sensor(&temp,&humi);
+//		read_sensor(&temp,&humi);
 		g_zcl_temperatureAttrs.measuredValue = temp;
 		g_zcl_relHumidityAttrs.measuredValue = humi;
 

@@ -82,7 +82,10 @@ typedef struct{
  *  @brief Defined for temperature cluster attributes
  */
 typedef struct {
-	u16 measuredValue;
+	s16 measuredValue;
+	s16 minValue;
+	s16 maxValue;
+	u16 tolerance;
 }zcl_temperatureAttr_t;
 
 /**
@@ -90,6 +93,9 @@ typedef struct {
  */
 typedef struct {
 	u16 measuredValue;
+	u16 minValue;
+	u16 maxValue;
+	u16 tolerance;
 }zcl_relHumidityAttr_t;
 
 
