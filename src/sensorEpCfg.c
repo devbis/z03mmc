@@ -38,6 +38,9 @@
 #ifndef ZCL_BASIC_MODEL_ID
 #define ZCL_BASIC_MODEL_ID	   {14,'l','u','m','i','.','s','e','n','s','o','r','_','h','t'}
 #endif
+#ifndef ZCL_BASIC_SW_BUILD_ID
+#define ZCL_BASIC_SW_BUILD_ID     	{9,'3','0','0','0','-','0','0','0','1'}
+#endif
 
 
 /**********************************************************************
@@ -55,9 +58,13 @@ const u16 sampleSensor_inClusterList[] =
 {
 	ZCL_CLUSTER_GEN_BASIC,
 	ZCL_CLUSTER_GEN_IDENTIFY,
-#ifdef ZCL_IAS_ZONE
-	ZCL_CLUSTER_SS_IAS_ZONE,
-#endif
+
+	ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT,
+	ZCL_CLUSTER_MS_RELATIVE_HUMIDITY,
+
+//#ifdef ZCL_IAS_ZONE
+//	ZCL_CLUSTER_SS_IAS_ZONE,
+//#endif
 #ifdef ZCL_POLL_CTRL
 	ZCL_CLUSTER_GEN_POLL_CONTROL,
 #endif
@@ -85,7 +92,8 @@ const u16 sampleSensor_outClusterList[] =
 const af_simple_descriptor_t sampleSensor_simpleDesc =
 {
 	HA_PROFILE_ID,                      	/* Application profile identifier */
-	HA_DEV_IAS_ZONE,                	    /* Application device identifier */
+//	HA_DEV_IAS_ZONE,                	    /* Application device identifier */
+	HA_DEV_TEMPERATURE_SENSOR,              /* Application device identifier */
 	SAMPLE_SENSOR_ENDPOINT,         		/* Endpoint */
 	0,                                  	/* Application device version */
 	0,										/* Reserved */
@@ -104,6 +112,7 @@ zcl_basicAttr_t g_zcl_basicAttrs =
 	.hwVersion		= 0x00,
 	.manuName		= ZCL_BASIC_MFG_NAME,
 	.modelId		= ZCL_BASIC_MODEL_ID,
+	.swBuildId		= ZCL_BASIC_SW_BUILD_ID,
 	.powerSource	= POWER_SOURCE_BATTERY,
 	.deviceEnable	= TRUE,
 };
@@ -118,6 +127,7 @@ const zclAttrInfo_t basic_attrTbl[] =
 	{ ZCL_ATTRID_BASIC_MODEL_ID,     		ZCL_DATA_TYPE_CHAR_STR, ACCESS_CONTROL_READ,  						(u8*)g_zcl_basicAttrs.modelId},
 	{ ZCL_ATTRID_BASIC_POWER_SOURCE, 		ZCL_DATA_TYPE_ENUM8,    ACCESS_CONTROL_READ,  						(u8*)&g_zcl_basicAttrs.powerSource},
 	{ ZCL_ATTRID_BASIC_DEV_ENABLED,  		ZCL_DATA_TYPE_BOOLEAN,  ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_basicAttrs.deviceEnable},
+	{ ZCL_ATTRID_BASIC_SW_BUILD_ID,  		ZCL_DATA_TYPE_CHAR_STR, ACCESS_CONTROL_READ,  						(u8*)&g_zcl_basicAttrs.swBuildId},
 
 	{ ZCL_ATTRID_GLOBAL_CLUSTER_REVISION, 	ZCL_DATA_TYPE_UINT16,  	ACCESS_CONTROL_READ,  						(u8*)&zcl_attr_global_clusterRevision},
 };

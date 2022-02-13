@@ -225,7 +225,7 @@ void sampleSensor_otaProcessMsgHandler(u8 evt, u8 status)
 void sampleSensor_leaveCnfHandler(nlme_leave_cnf_t *pLeaveCnf)
 {
     if(pLeaveCnf->status == SUCCESS){
-    	//SYSTEM_RESET();
+    	SYSTEM_RESET();
     }
 }
 

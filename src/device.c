@@ -274,6 +274,10 @@ void user_init(bool isRetention)
 //	battery_level = get_battery_level(get_battery_mv());
 
 	if(!isRetention){
+		// reset zigbee on cold start
+		g_sensorAppCtx.state = APP_FACTORY_NEW_DOING;
+		zb_factoryReset();
+
 		/* Initialize Stack */
 		stack_init();
 
@@ -296,33 +300,32 @@ void user_init(bool isRetention)
 		}
 
 		/* Set default reporting configuration */
-		u8 reportableChange = 0x00;
-		bdb_defaultReportingCfg(
-			SAMPLE_SENSOR_ENDPOINT,
-			HA_PROFILE_ID,
-			ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT,
-			ZCL_TEMPERATURE_MEASUREMENT_ATTRID_MEASUREDVALUE,
-			0x0000,
-			0x003c,
-			(u8 *)&reportableChange
-		);
-		bdb_defaultReportingCfg(
-			SAMPLE_SENSOR_ENDPOINT,
-			HA_PROFILE_ID,
-			ZCL_CLUSTER_MS_RELATIVE_HUMIDITY,
-			ZCL_RELATIVE_HUMIDITY_ATTRID_MEASUREDVALUE,
-			0x0000,
-			0x003c,
-			(u8 *)&reportableChange
-		);
+//		s16 reportableTempChange = 0x00;
+//		bdb_defaultReportingCfg(
+//			SAMPLE_SENSOR_ENDPOINT,
+//			HA_PROFILE_ID,
+//			ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT,
+//			ZCL_TEMPERATURE_MEASUREMENT_ATTRID_MEASUREDVALUE,
+//			0x0000,
+//			0x003c,
+//			(u8 *)&reportableTempChange
+//		);
+//
+//		u16 reportableHumidChange = 0x00;
+//		bdb_defaultReportingCfg(
+//			SAMPLE_SENSOR_ENDPOINT,
+//			HA_PROFILE_ID,
+//			ZCL_CLUSTER_MS_RELATIVE_HUMIDITY,
+//			ZCL_RELATIVE_HUMIDITY_ATTRID_MEASUREDVALUE,
+//			0x0000,
+//			0x003c,
+//			(u8 *)&reportableHumidChange
+//		);
 
 		/* Initialize BDB */
 		u8 repower = drv_pm_deepSleep_flag_get() ? 0 : 1;
 		bdb_init((af_simple_descriptor_t *)&sampleSensor_simpleDesc, &g_bdbCommissionSetting, &g_zbDemoBdbCb, repower);
 
-		// reset zigbee on cold start
-		g_sensorAppCtx.state = APP_FACTORY_NEW_DOING;
-		zb_factoryReset();
 	}else{
 		/* Re-config phy when system recovery from deep sleep with retention */
 		mac_phyReconfig();
