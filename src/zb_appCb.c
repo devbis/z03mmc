@@ -21,7 +21,6 @@
  *          limitations under the License.
  *******************************************************************************************************/
 
-#if (__PROJECT_TL_CONTACT_SENSOR__)
 
 /**********************************************************************
  * INCLUDES
@@ -244,6 +243,3 @@ void sampleSensor_leaveIndHandler(nlme_leave_ind_t *pLeaveInd)
     //printf("sampleSensor_leaveIndHandler, rejoin = %d\n", pLeaveInd->rejoin);
     //printfArray(pLeaveInd->device_address, 8);
 }
-
-
-#endif  /* __PROJECT_TL_CONTACT_SENSOR__ */

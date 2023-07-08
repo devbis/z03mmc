@@ -21,7 +21,6 @@
  *          limitations under the License.
  *******************************************************************************************************/
 
-#if (__PROJECT_TL_CONTACT_SENSOR__)
 
 /**********************************************************************
  * INCLUDES
@@ -686,6 +685,3 @@ status_t sampleSensor_pollCtrlCb(zclIncomingAddrInfo_t *pAddrInfo, u8 cmdId, voi
 	return status;
 }
 #endif	/* ZCL_POLL_CTRL */
-
-
-#endif  /* __PROJECT_TL_CONTACT_SENSOR__ */

@@ -21,8 +21,6 @@
  *          limitations under the License.
  *******************************************************************************************************/
 
-#if (__PROJECT_TL_CONTACT_SENSOR__)
-
 /**********************************************************************
  * INCLUDES
  */
@@ -215,8 +213,3 @@ u8 SAMPLE_SENSOR_CB_CLUSTER_NUM = (sizeof(g_sampleSensorClusterList)/sizeof(g_sa
 /**********************************************************************
  * FUNCTIONS
  */
-
-
-
-
-#endif	/* __PROJECT_TL_CONTACT_SENSOR__ */

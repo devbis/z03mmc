@@ -21,8 +21,6 @@
  *          limitations under the License.
  *******************************************************************************************************/
 
-#if (__PROJECT_TL_CONTACT_SENSOR__)
-
 /**********************************************************************
  * INCLUDES
  */
@@ -215,5 +213,3 @@ void app_key_handler(void){
 		}
 	}
 }
-
-#endif  /* __PROJECT_TL_CONTACT_SENSOR__ */

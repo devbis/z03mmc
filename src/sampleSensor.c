@@ -21,7 +21,6 @@
  *          limitations under the License.
  *******************************************************************************************************/
 
-#if (__PROJECT_TL_CONTACT_SENSOR__)
 
 /**********************************************************************
  * INCLUDES
@@ -277,5 +276,3 @@ void user_init(bool isRetention)
 		mac_phyReconfig();
 	}
 }
-
-#endif  /* __PROJECT_TL_CONTACT_SENSOR__ */
