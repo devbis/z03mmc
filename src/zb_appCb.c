@@ -30,7 +30,7 @@
 #include "zcl_include.h"
 #include "bdb.h"
 #include "ota.h"
-#include "sampleSensor.h"
+#include "device.h"
 #include "app_ui.h"
 
 /**********************************************************************

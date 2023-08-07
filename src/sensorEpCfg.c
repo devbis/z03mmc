@@ -26,7 +26,7 @@
  */
 #include "tl_common.h"
 #include "zcl_include.h"
-#include "sampleSensor.h"
+#include "device.h"
 
 /**********************************************************************
  * LOCAL CONSTANTS
