@@ -43,11 +43,12 @@ extern "C" {
  * Product Information
  */
 /* Debug mode config */
-#if defined DEBUG_UART && (DEBUG_UART == 1)
-	#define	UART_PRINTF_MODE			1
-#else
-	#define	UART_PRINTF_MODE			0
-#endif
+
+// #if defined DEBUG_UART && (DEBUG_UART == 1)
+	#define	UART_PRINTF_MODE				1
+// #else
+//	 #define	UART_PRINTF_MODE				0
+// #endif
 #define USB_PRINTF_MODE         		0
 
 /* PM */

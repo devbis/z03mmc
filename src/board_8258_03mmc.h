@@ -62,6 +62,7 @@ extern "C" {
 
 // DEBUG
 #if UART_PRINTF_MODE
+	#define BAUDRATE				115200
 	#define	DEBUG_INFO_TX_PIN	    GPIO_SWS //print
 #endif
 

@@ -236,10 +236,14 @@ void read_sensor_start(u16 delayTime)
 	s16 temp = 100;
 	u16 humi = 200;
 
+	printf("read_sensor_start\n");
+
 	if(!g_sensorAppCtx.timerReadSensorEvt){
-//		read_sensor(&temp,&humi);
+		printf("before read sendorr\r\n");
+		read_sensor(&temp,&humi);
 		g_zcl_temperatureAttrs.measuredValue = temp;
 		g_zcl_relHumidityAttrs.measuredValue = humi;
+		printf("after read sendor: %d; %d\r\n", temp, humi);
 
 		interval = delayTime;
 		g_sensorAppCtx.readSensorTime = delayTime;
