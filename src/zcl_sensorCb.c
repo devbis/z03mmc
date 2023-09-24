@@ -69,7 +69,11 @@ void sensorDevice_zclProcessIncomingMsg(zclIncoming_t *pInHdlrMsg)
 	switch(pInHdlrMsg->hdr.cmd)
 	{
 #ifdef ZCL_READ
+		case ZCL_CMD_READ:
+			printf("ZCL_CMD_READ %d, %d\r\n", cluster, pInHdlrMsg->attrCmd);
+			break;
 		case ZCL_CMD_READ_RSP:
+			printf("sensorDevice_zclProcessIncomingMsg %d\r\n", pInHdlrMsg->hdr.cmd);
 			sensorDevice_zclReadRspCmd(cluster, pInHdlrMsg->attrCmd);
 			break;
 #endif
