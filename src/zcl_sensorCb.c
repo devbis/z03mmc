@@ -84,6 +84,7 @@ static ev_timer_event_t *identifyTimerEvt = NULL;
  */
 void sampleSensor_zclProcessIncomingMsg(zclIncoming_t *pInHdlrMsg)
 {
+	printf("sampleSensor_zclProcessIncomingMsg %d\n", pInHdlrMsg->hdr.cmd);
 	u16 cluster = pInHdlrMsg->msg->indInfo.cluster_id;
 	switch(pInHdlrMsg->hdr.cmd)
 	{
@@ -131,7 +132,7 @@ void sampleSensor_zclProcessIncomingMsg(zclIncoming_t *pInHdlrMsg)
  */
 static void sampleSensor_zclReadRspCmd(u16 clusterId, zclReadRspCmd_t *pReadRspCmd)
 {
-    //printf("sampleSensor_zclReadRspCmd\n");
+    printf("sampleSensor_zclReadRspCmd\n");
 
 }
 #endif	/* ZCL_READ */
@@ -148,7 +149,7 @@ static void sampleSensor_zclReadRspCmd(u16 clusterId, zclReadRspCmd_t *pReadRspC
  */
 static void sampleSensor_zclWriteRspCmd(u16 clusterId, zclWriteRspCmd_t *pWriteRspCmd)
 {
-    //printf("sampleSensor_zclWriteRspCmd\n");
+    printf("sampleSensor_zclWriteRspCmd\n");
 
 }
 
@@ -191,7 +192,7 @@ static void sampleSensor_zclWriteReqCmd(u16 clusterId, zclWriteCmd_t *pWriteReqC
  */
 static void sampleSensor_zclDfltRspCmd(u16 clusterId, zclDefaultRspCmd_t *pDftRspCmd)
 {
-    //printf("sampleSensor_zclDfltRspCmd\n");
+    printf("sampleSensor_zclDfltRspCmd\n");
 
 }
 
@@ -207,7 +208,7 @@ static void sampleSensor_zclDfltRspCmd(u16 clusterId, zclDefaultRspCmd_t *pDftRs
  */
 static void sampleSensor_zclCfgReportCmd(u16 clusterId, zclCfgReportCmd_t *pCfgReportCmd)
 {
-    //printf("sampleSensor_zclCfgReportCmd\n");
+    printf("sampleSensor_zclCfgReportCmd\n");
 
 }
 
@@ -222,7 +223,7 @@ static void sampleSensor_zclCfgReportCmd(u16 clusterId, zclCfgReportCmd_t *pCfgR
  */
 static void sampleSensor_zclCfgReportRspCmd(u16 clusterId, zclCfgReportRspCmd_t *pCfgReportRspCmd)
 {
-    //printf("sampleSensor_zclCfgReportRspCmd\n");
+    printf("sampleSensor_zclCfgReportRspCmd\n");
 
 }
 
@@ -237,7 +238,7 @@ static void sampleSensor_zclCfgReportRspCmd(u16 clusterId, zclCfgReportRspCmd_t 
  */
 static void sampleSensor_zclReportCmd(u16 clusterId, zclReportCmd_t *pReportCmd)
 {
-    //printf("sampleSensor_zclReportCmd\n");
+    printf("sampleSensor_zclReportCmd\n");
 
 }
 #endif	/* ZCL_REPORT */
@@ -256,6 +257,7 @@ static void sampleSensor_zclReportCmd(u16 clusterId, zclReportCmd_t *pReportCmd)
  */
 status_t sampleSensor_basicCb(zclIncomingAddrInfo_t *pAddrInfo, u8 cmdId, void *cmdPayload)
 {
+    printf("sampleSensor_basicCb\n");
 	if(cmdId == ZCL_CMD_BASIC_RESET_FAC_DEFAULT){
 		//Reset all the attributes of all its clusters to factory defaults
 		//zcl_nv_attr_reset();
@@ -268,6 +270,7 @@ status_t sampleSensor_basicCb(zclIncomingAddrInfo_t *pAddrInfo, u8 cmdId, void *
 #ifdef ZCL_IDENTIFY
 s32 sampleSensor_zclIdentifyTimerCb(void *arg)
 {
+    printf("sampleSensor_zclIdentifyTimerCb\n");
 	if(g_zcl_identifyAttrs.identifyTime <= 0){
 		identifyTimerEvt = NULL;
 		return -1;
@@ -278,6 +281,7 @@ s32 sampleSensor_zclIdentifyTimerCb(void *arg)
 
 void sampleSensor_zclIdentifyTimerStop(void)
 {
+    printf("sampleSensor_zclIdentifyTimerStop\n");
 	if(identifyTimerEvt){
 		TL_ZB_TIMER_CANCEL(&identifyTimerEvt);
 	}

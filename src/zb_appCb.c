@@ -240,6 +240,6 @@ void sampleSensor_leaveCnfHandler(nlme_leave_cnf_t *pLeaveCnf)
  */
 void sampleSensor_leaveIndHandler(nlme_leave_ind_t *pLeaveInd)
 {
-    //printf("sampleSensor_leaveIndHandler, rejoin = %d\n", pLeaveInd->rejoin);
+    printf("sampleSensor_leaveIndHandler, rejoin = %d\n", pLeaveInd->rejoin);
     //printfArray(pLeaveInd->device_address, 8);
 }

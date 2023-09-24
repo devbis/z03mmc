@@ -38,7 +38,11 @@ extern "C" {
  * Product Information
  */
 /* Debug mode config */
-#define	UART_PRINTF_MODE				0
+#if defined DEBUG_UART && (DEBUG_UART == 1)
+	#define	UART_PRINTF_MODE			1
+#else
+	#define	UART_PRINTF_MODE			0
+#endif
 #define USB_PRINTF_MODE         		0
 
 /* PM */
@@ -62,6 +66,7 @@ extern "C" {
 #define BOARD_8278_DONGLE				7
 #define BOARD_9518_EVK					8
 #define BOARD_9518_DONGLE				9
+#define BOARD_8258_03MMC				10
 
 /* Board define */
 #if defined(MCU_CORE_826x)
@@ -75,7 +80,7 @@ extern "C" {
 #if (CHIP_TYPE == TLSR_8258_1M)
 	#define FLASH_CAP_SIZE_1M			1
 #endif
-	#define BOARD						BOARD_8258_DONGLE//BOARD_8258_EVK
+	#define BOARD						BOARD_8258_03MMC//BOARD_8258_DONGLE//BOARD_8258_EVK
 	#define CLOCK_SYS_CLOCK_HZ  		48000000
 #elif defined(MCU_CORE_8278)
 	#define FLASH_CAP_SIZE_1M			1
@@ -96,6 +101,8 @@ extern "C" {
 	#include "board_826x_dongle.h"
 #elif (BOARD == BOARD_826x_DONGLE_PA)
 	#include "board_826x_dongle_pa.h"
+#elif (BOARD == BOARD_8258_03MMC)
+	#include "board_8258_03mmc.h"
 #elif (BOARD == BOARD_8258_DONGLE)
 	#include "board_8258_dongle.h"
 #elif (BOARD == BOARD_8258_EVK)

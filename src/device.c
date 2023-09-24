@@ -51,6 +51,7 @@
  * GLOBAL VARIABLES
  */
 app_ctx_t g_sensorAppCtx;
+extern volatile u16 T_evtExcept[4];
 
 
 #ifdef ZCL_OTA
@@ -153,6 +154,9 @@ void stack_init(void)
  */
 void user_app_init(void)
 {
+	printf("*******************************\r\n");
+	printf("      user_app_init\r\n");
+	printf("*******************************\r\n");
 #ifdef ZCL_POLL_CTRL
 	af_powerDescPowerModeUpdate(POWER_MODE_RECEIVER_COMES_PERIODICALLY);
 #else
@@ -215,9 +219,12 @@ void app_task(void)
 
 static void sampleSensorSysException(void)
 {
-	SYSTEM_RESET();
+	printf("EXCEPTION: sampleSensorSysException");
+	printf("T_evtExcept[0] = %d", T_evtExcept[0]);
+	printf("T_evtExcept[1] = %d", T_evtExcept[1]);
+	// SYSTEM_RESET();
 	//light_on();
-	//while(1);
+	while(1);
 }
 
 /*********************************************************************
