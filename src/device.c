@@ -35,6 +35,7 @@
 app_ctx_t g_sensorAppCtx;
 extern u8 lcd_version;
 extern u8 sensor_version;
+extern volatile u16 T_evtExcept[4];
 
 
 #ifdef ZCL_OTA
@@ -138,6 +139,10 @@ void stack_init(void)
  */
 void user_app_init(void)
 {
+	printf("*******************************\r\n");
+	printf("      user_app_init\r\n");
+	printf("*******************************\r\n");
+
 	// factoryRst_init();
 #if ZCL_POLL_CTRL_SUPPORT
 	af_powerDescPowerModeUpdate(POWER_MODE_RECEIVER_COMES_PERIODICALLY);
@@ -319,7 +324,11 @@ static void sensorDeviceSysException(void)
 #if 1
 	zb_resetDevice();
 #else
-	light_on();
+//	light_on();
+	printf("EXCEPTION: sampleSensorSysException");
+	printf("T_evtExcept[0] = %d", T_evtExcept[0]);
+	printf("T_evtExcept[1] = %d", T_evtExcept[1]);
+
 	while(1);
 #endif
 }

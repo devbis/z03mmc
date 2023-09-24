@@ -279,6 +279,6 @@ void sensorDevice_leaveCnfHandler(nlme_leave_cnf_t *pLeaveCnf)
  */
 void sensorDevice_leaveIndHandler(nlme_leave_ind_t *pLeaveInd)
 {
-    //printf("sensorDevice_leaveIndHandler, rejoin = %d\n", pLeaveInd->rejoin);
+    printf("sensorDevice_leaveIndHandler, rejoin = %d\n", pLeaveInd->rejoin);
     //printfArray(pLeaveInd->device_address, 8);
 }
