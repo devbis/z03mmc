@@ -136,9 +136,16 @@ extern "C" {
  */
 //#define ZCL_IAS_ZONE_SUPPORT						1
 #define ZCL_TEMPERATURE_MEASUREMENT_SUPPORT			1
+#define ZCL_RELATIVE_HUMIDITY_SUPPORT   			1
 #define ZCL_POLL_CTRL_SUPPORT						1
 #define ZCL_OTA_SUPPORT								1
 
+
+// for consistency
+#if ZCL_RELATIVE_HUMIDITY_SUPPORT
+#define ZCL_RELATIVE_HUMIDITY
+#define ZCL_RELATIVE_HUMIDITY_MEASUREMENT
+#endif
 
 /**********************************************************************
  * Stack configuration

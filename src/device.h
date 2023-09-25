@@ -85,6 +85,14 @@ typedef struct {
 }zcl_temperatureAttr_t;
 
 /**
+ *  @brief Defined for relative humidity cluster attributes
+ */
+typedef struct {
+	u16 measuredValue;
+}zcl_relHumidityAttr_t;
+
+
+/**
  *  @brief  Defined for poll control cluster attributes
  */
 typedef struct{
@@ -114,6 +122,7 @@ extern const af_simple_descriptor_t sensorDevice_simpleDesc;
 extern zcl_basicAttr_t g_zcl_basicAttrs;
 extern zcl_identifyAttr_t g_zcl_identifyAttrs;
 extern zcl_temperatureAttr_t g_zcl_temperatureAttrs;
+extern zcl_relHumidityAttr_t g_zcl_relHumidityAttrs;
 // extern zcl_iasZoneAttr_t g_zcl_iasZoneAttrs;
 extern zcl_pollCtrlAttr_t g_zcl_pollCtrlAttrs;
 

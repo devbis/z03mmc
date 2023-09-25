@@ -26,6 +26,7 @@
  */
 #include "tl_common.h"
 #include "zcl_include.h"
+#include "zcl_relative_humidity.h"
 #include "device.h"
 
 /**********************************************************************
@@ -58,6 +59,9 @@ const u16 sensorDevice_inClusterList[] =
 	ZCL_CLUSTER_GEN_BASIC,
 	ZCL_CLUSTER_GEN_IDENTIFY,
 
+#ifdef ZCL_RELATIVE_HUMIDITY_MEASUREMENT
+    ZCL_CLUSTER_MS_RELATIVE_HUMIDITY,
+#endif
 #ifdef ZCL_TEMPERATURE_MEASUREMENT
 	ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT,
 #endif
@@ -188,6 +192,24 @@ const zclAttrInfo_t temperature_measurement_attrTbl[] =
 #define	ZCL_TEMPERATURE_MEASUREMENT_ATTR_NUM		 sizeof(temperature_measurement_attrTbl) / sizeof(zclAttrInfo_t)
 #endif
 
+
+#ifdef ZCL_RELATIVE_HUMIDITY
+zcl_relHumidityAttr_t g_zcl_relHumidityAttrs =
+{
+	.measuredValue	= 0xFFFF,
+};
+
+const zclAttrInfo_t relative_humdity_attrTbl[] =
+{
+	{ ZCL_RELATIVE_HUMIDITY_ATTRID_MEASUREDVALUE,       ZCL_DATA_TYPE_INT16,    ACCESS_CONTROL_READ | ACCESS_CONTROL_REPORTABLE, (u8*)&g_zcl_relHumidityAttrs.measuredValue },
+
+	{ ZCL_ATTRID_GLOBAL_CLUSTER_REVISION, 	ZCL_DATA_TYPE_UINT16,  	ACCESS_CONTROL_READ,  						(u8*)&zcl_attr_global_clusterRevision},
+};
+
+#define	ZCL_RELATIVE_HUMIDITY_ATTR_NUM		 sizeof(relative_humdity_attrTbl) / sizeof(zclAttrInfo_t)
+#endif
+
+
 #ifdef ZCL_POLL_CTRL
 /* Poll Control */
 zcl_pollCtrlAttr_t g_zcl_pollCtrlAttrs =
@@ -229,6 +251,9 @@ const zcl_specClusterInfo_t g_sampleSensorClusterList[] =
 #endif
 #ifdef ZCL_TEMPERATURE_MEASUREMENT
 	{ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT,	MANUFACTURER_CODE_NONE, ZCL_TEMPERATURE_MEASUREMENT_ATTR_NUM, temperature_measurement_attrTbl, 	zcl_temperature_measurement_register, 	NULL},
+#endif
+#ifdef ZCL_RELATIVE_HUMIDITY
+	{ZCL_CLUSTER_MS_RELATIVE_HUMIDITY,	MANUFACTURER_CODE_NONE, ZCL_RELATIVE_HUMIDITY_ATTR_NUM, 		relative_humdity_attrTbl,	zcl_relative_humidity_register, 	NULL},
 #endif
 #ifdef ZCL_POLL_CTRL
 	{ZCL_CLUSTER_GEN_POLL_CONTROL,  MANUFACTURER_CODE_NONE, ZCL_POLLCTRL_ATTR_NUM, 	pollCtrl_attrTbl,   zcl_pollCtrl_register,	sensorDevice_pollCtrlCb},
