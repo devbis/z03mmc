@@ -85,7 +85,7 @@ const af_simple_descriptor_t sensorDevice_simpleDesc =
 {
 	HA_PROFILE_ID,                      	/* Application profile identifier */
 	HA_DEV_IAS_ZONE,                	    /* Application device identifier */
-	SAMPLE_SENSOR_ENDPOINT,         		/* Endpoint */
+	SENSOR_DEVICE_ENDPOINT,         		/* Endpoint */
 	0,                                  	/* Application device version */
 	0,										/* Reserved */
 	sensorDevice_IN_CLUSTER_NUM,           	/* Application input cluster count */
@@ -208,7 +208,7 @@ const zcl_specClusterInfo_t g_sampleSensorClusterList[] =
 #endif
 };
 
-u8 SAMPLE_SENSOR_CB_CLUSTER_NUM = (sizeof(g_sampleSensorClusterList)/sizeof(g_sampleSensorClusterList[0]));
+u8 SENSOR_DEVICE_CB_CLUSTER_NUM = (sizeof(g_sampleSensorClusterList)/sizeof(g_sampleSensorClusterList[0]));
 
 /**********************************************************************
  * FUNCTIONS

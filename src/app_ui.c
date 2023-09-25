@@ -153,7 +153,7 @@ void buttonShortPressed(u8 btNum){
 			memset((u8 *)&dstEpInfo, 0, sizeof(epInfo_t));
 
 			dstEpInfo.dstAddrMode = APS_SHORT_DSTADDR_WITHEP;
-			dstEpInfo.dstEp = SAMPLE_SENSOR_ENDPOINT;
+			dstEpInfo.dstEp = SENSOR_DEVICE_ENDPOINT;
 			dstEpInfo.dstAddr.shortAddr = 0x0000;
 			dstEpInfo.profileId = HA_PROFILE_ID;
 
@@ -164,7 +164,7 @@ void buttonShortPressed(u8 btNum){
 			statusChangeNotification.zoneId = ZCL_ZONE_ID_INVALID;
 			statusChangeNotification.delay = 0;
 
-			zcl_iasZone_statusChangeNotificationCmd(SAMPLE_SENSOR_ENDPOINT, &dstEpInfo, TRUE, &statusChangeNotification);
+			zcl_iasZone_statusChangeNotificationCmd(SENSOR_DEVICE_ENDPOINT, &dstEpInfo, TRUE, &statusChangeNotification);
 		}
 	}else if(btNum == VK_SW2){
 		if(zb_isDeviceJoinedNwk()){

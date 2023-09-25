@@ -28,7 +28,7 @@
 /**********************************************************************
  * CONSTANT
  */
-#define SAMPLE_SENSOR_ENDPOINT  0x01
+#define SENSOR_DEVICE_ENDPOINT  0x01
 
 /**********************************************************************
  * TYPEDEFS
@@ -109,7 +109,7 @@ extern bdb_appCb_t g_zbDemoBdbCb;
 
 extern bdb_commissionSetting_t g_bdbCommissionSetting;
 
-extern u8 SAMPLE_SENSOR_CB_CLUSTER_NUM;
+extern u8 SENSOR_DEVICE_CB_CLUSTER_NUM;
 extern const zcl_specClusterInfo_t g_sampleSensorClusterList[];
 extern const af_simple_descriptor_t sensorDevice_simpleDesc;
 
