@@ -1,27 +1,3 @@
-/********************************************************************************************************
- * @file    sampleSensor.c
- *
- * @brief   This is the source file for sampleSensor
- *
- * @author  Zigbee Group
- * @date    2021
- *
- * @par     Copyright (c) 2021, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *
- *          Licensed under the Apache License, Version 2.0 (the "License");
- *          you may not use this file except in compliance with the License.
- *          You may obtain a copy of the License at
- *
- *              http://www.apache.org/licenses/LICENSE-2.0
- *
- *          Unless required by applicable law or agreed to in writing, software
- *          distributed under the License is distributed on an "AS IS" BASIS,
- *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *          See the License for the specific language governing permissions and
- *          limitations under the License.
- *******************************************************************************************************/
-
-
 /**********************************************************************
  * INCLUDES
  */
@@ -35,6 +11,8 @@
 #if ZBHCI_EN
 #include "zbhci.h"
 #endif
+
+#include "zcl_relative_humidity.h"
 
 
 /**********************************************************************
@@ -158,6 +136,7 @@ void user_app_init(void)
 #else
 	af_powerDescPowerModeUpdate(POWER_MODE_RECEIVER_COMES_WHEN_STIMULATED);
 #endif
+	zcl_reportingTabInit();
 
     /* Initialize ZCL layer */
 	/* Register Incoming ZCL Foundation command/response messages */
@@ -267,6 +246,27 @@ void user_init(bool isRetention)
 			g_bdbCommissionSetting.linkKey.tcLinkKey.keyType = g_sensorAppCtx.tcLinkKey.keyType;
 			g_bdbCommissionSetting.linkKey.tcLinkKey.key = g_sensorAppCtx.tcLinkKey.key;
 		}
+
+		/* Set default reporting configuration */
+		u8 reportableChange = 0x00;
+		bdb_defaultReportingCfg(
+			SENSOR_DEVICE_ENDPOINT,
+			HA_PROFILE_ID,
+			ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT,
+			ZCL_TEMPERATURE_MEASUREMENT_ATTRID_MEASUREDVALUE,
+			0x0000,
+			0x003c,
+			(u8 *)&reportableChange
+		);
+		bdb_defaultReportingCfg(
+			SENSOR_DEVICE_ENDPOINT,
+			HA_PROFILE_ID,
+			ZCL_CLUSTER_MS_RELATIVE_HUMIDITY,
+			ZCL_RELATIVE_HUMIDITY_ATTRID_MEASUREDVALUE,
+			0x0000,
+			0x003c,
+			(u8 *)&reportableChange
+		);
 
 		/* Initialize BDB */
 		u8 repower = drv_pm_deepSleep_flag_get() ? 0 : 1;
