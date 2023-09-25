@@ -57,8 +57,9 @@ const u16 sensorDevice_inClusterList[] =
 {
 	ZCL_CLUSTER_GEN_BASIC,
 	ZCL_CLUSTER_GEN_IDENTIFY,
-#ifdef ZCL_IAS_ZONE
-	ZCL_CLUSTER_SS_IAS_ZONE,
+
+#ifdef ZCL_TEMPERATURE_MEASUREMENT
+	ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT,
 #endif
 #ifdef ZCL_POLL_CTRL
 	ZCL_CLUSTER_GEN_POLL_CONTROL,
@@ -169,6 +170,24 @@ const zclAttrInfo_t iasZone_attrTbl[] =
 #define	ZCL_IASZONE_ATTR_NUM		 sizeof(iasZone_attrTbl) / sizeof(zclAttrInfo_t)
 #endif
 
+
+
+#ifdef ZCL_TEMPERATURE_MEASUREMENT
+zcl_temperatureAttr_t g_zcl_temperatureAttrs =
+{
+	.measuredValue	= 0xFFFF,
+};
+
+const zclAttrInfo_t temperature_measurement_attrTbl[] =
+{
+	{ ZCL_TEMPERATURE_MEASUREMENT_ATTRID_MEASUREDVALUE,       ZCL_DATA_TYPE_INT16,    ACCESS_CONTROL_READ | ACCESS_CONTROL_REPORTABLE, (u8*)&g_zcl_temperatureAttrs.measuredValue },
+
+	{ ZCL_ATTRID_GLOBAL_CLUSTER_REVISION, 	ZCL_DATA_TYPE_UINT16,  	ACCESS_CONTROL_READ,  						(u8*)&zcl_attr_global_clusterRevision},
+};
+
+#define	ZCL_TEMPERATURE_MEASUREMENT_ATTR_NUM		 sizeof(temperature_measurement_attrTbl) / sizeof(zclAttrInfo_t)
+#endif
+
 #ifdef ZCL_POLL_CTRL
 /* Poll Control */
 zcl_pollCtrlAttr_t g_zcl_pollCtrlAttrs =
@@ -207,6 +226,9 @@ const zcl_specClusterInfo_t g_sampleSensorClusterList[] =
 	{ZCL_CLUSTER_GEN_IDENTIFY,		MANUFACTURER_CODE_NONE, ZCL_IDENTIFY_ATTR_NUM,	identify_attrTbl,	zcl_identify_register,	sensorDevice_identifyCb},
 #ifdef ZCL_IAS_ZONE
 	{ZCL_CLUSTER_SS_IAS_ZONE,		MANUFACTURER_CODE_NONE, ZCL_IASZONE_ATTR_NUM,	iasZone_attrTbl,	zcl_iasZone_register,	sensorDevice_iasZoneCb},
+#endif
+#ifdef ZCL_TEMPERATURE_MEASUREMENT
+	{ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT,	MANUFACTURER_CODE_NONE, ZCL_TEMPERATURE_MEASUREMENT_ATTR_NUM, temperature_measurement_attrTbl, 	zcl_temperature_measurement_register, 	NULL},
 #endif
 #ifdef ZCL_POLL_CTRL
 	{ZCL_CLUSTER_GEN_POLL_CONTROL,  MANUFACTURER_CODE_NONE, ZCL_POLLCTRL_ATTR_NUM, 	pollCtrl_attrTbl,   zcl_pollCtrl_register,	sensorDevice_pollCtrlCb},

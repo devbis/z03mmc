@@ -134,7 +134,8 @@ extern "C" {
 /**********************************************************************
  * ZCL cluster support setting
  */
-#define ZCL_IAS_ZONE_SUPPORT						1
+//#define ZCL_IAS_ZONE_SUPPORT						1
+#define ZCL_TEMPERATURE_MEASUREMENT_SUPPORT			1
 #define ZCL_POLL_CTRL_SUPPORT						1
 #define ZCL_OTA_SUPPORT								1
 

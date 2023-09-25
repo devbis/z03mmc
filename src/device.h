@@ -78,15 +78,11 @@ typedef struct{
 }zcl_identifyAttr_t;
 
 /**
- *  @brief Defined for ias zone cluster attributes
+ *  @brief Defined for temperature cluster attributes
  */
 typedef struct {
-	u8  zoneState;
-	u16 zoneType;
-	u16 zoneStatus;
-	extAddr_t  iasCieAddr;
-	u8  zoneId;
-}zcl_iasZoneAttr_t;
+	s16 measuredValue;
+}zcl_temperatureAttr_t;
 
 /**
  *  @brief  Defined for poll control cluster attributes
@@ -117,7 +113,8 @@ extern const af_simple_descriptor_t sensorDevice_simpleDesc;
 /* Attributes */
 extern zcl_basicAttr_t g_zcl_basicAttrs;
 extern zcl_identifyAttr_t g_zcl_identifyAttrs;
-extern zcl_iasZoneAttr_t g_zcl_iasZoneAttrs;
+extern zcl_temperatureAttr_t g_zcl_temperatureAttrs;
+// extern zcl_iasZoneAttr_t g_zcl_iasZoneAttrs;
 extern zcl_pollCtrlAttr_t g_zcl_pollCtrlAttrs;
 
 #define zcl_iasZoneAttrGet()	&g_zcl_iasZoneAttrs
