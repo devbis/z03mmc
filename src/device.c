@@ -54,10 +54,10 @@ app_ctx_t g_sensorAppCtx;
 
 
 #ifdef ZCL_OTA
-extern ota_callBack_t sampleSensor_otaCb;
+extern ota_callBack_t sensorDevice_otaCb;
 
 //running code firmware information
-ota_preamble_t sampleSensor_otaInfo = {
+ota_preamble_t sensorDevice_otaInfo = {
 	.fileVer 			= FILE_VERSION,
 	.imageType 			= IMAGE_TYPE,
 	.manufacturerCode 	= MANUFACTURER_CODE_TELINK,
@@ -70,8 +70,8 @@ const zdo_appIndCb_t appCbLst = {
 	bdb_zdoStartDevCnf,//start device cnf cb
 	NULL,//reset cnf cb
 	NULL,//device announce indication cb
-	sampleSensor_leaveIndHandler,//leave ind cb
-	sampleSensor_leaveCnfHandler,//leave cnf cb
+	sensorDevice_leaveIndHandler,//leave ind cb
+	sensorDevice_leaveCnfHandler,//leave cnf cb
 	NULL,//nwk update ind cb
 	NULL,//permit join ind cb
 	NULL,//nlme sync cnf cb
@@ -161,16 +161,16 @@ void user_app_init(void)
 
     /* Initialize ZCL layer */
 	/* Register Incoming ZCL Foundation command/response messages */
-	zcl_init(sampleSensor_zclProcessIncomingMsg);
+	zcl_init(sensorDevice_zclProcessIncomingMsg);
 
 	/* Register endPoint */
-	af_endpointRegister(SAMPLE_SENSOR_ENDPOINT, (af_simple_descriptor_t *)&sampleSensor_simpleDesc, zcl_rx_handler, NULL);
+	af_endpointRegister(SAMPLE_SENSOR_ENDPOINT, (af_simple_descriptor_t *)&sensorDevice_simpleDesc, zcl_rx_handler, NULL);
 
 	/* Register ZCL specific cluster information */
 	zcl_register(SAMPLE_SENSOR_ENDPOINT, SAMPLE_SENSOR_CB_CLUSTER_NUM, (zcl_specClusterInfo_t *)g_sampleSensorClusterList);
 
 #ifdef ZCL_OTA
-    ota_init(OTA_TYPE_CLIENT, (af_simple_descriptor_t *)&sampleSensor_simpleDesc, &sampleSensor_otaInfo, &sampleSensor_otaCb);
+    ota_init(OTA_TYPE_CLIENT, (af_simple_descriptor_t *)&sensorDevice_simpleDesc, &sensorDevice_otaInfo, &sensorDevice_otaCb);
 #endif
 }
 
@@ -270,7 +270,7 @@ void user_init(bool isRetention)
 
 		/* Initialize BDB */
 		u8 repower = drv_pm_deepSleep_flag_get() ? 0 : 1;
-		bdb_init((af_simple_descriptor_t *)&sampleSensor_simpleDesc, &g_bdbCommissionSetting, &g_zbDemoBdbCb, repower);
+		bdb_init((af_simple_descriptor_t *)&sensorDevice_simpleDesc, &g_bdbCommissionSetting, &g_zbDemoBdbCb, repower);
 	}else{
 		/* Re-config phy when system recovery from deep sleep with retention */
 		mac_phyReconfig();

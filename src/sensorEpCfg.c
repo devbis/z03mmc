@@ -50,7 +50,7 @@
 /**
  *  @brief Definition for Incoming cluster / Sever Cluster
  */
-const u16 sampleSensor_inClusterList[] =
+const u16 sensorDevice_inClusterList[] =
 {
 	ZCL_CLUSTER_GEN_BASIC,
 	ZCL_CLUSTER_GEN_IDENTIFY,
@@ -65,7 +65,7 @@ const u16 sampleSensor_inClusterList[] =
 /**
  *  @brief Definition for Outgoing cluster / Client Cluster
  */
-const u16 sampleSensor_outClusterList[] =
+const u16 sensorDevice_outClusterList[] =
 {
 #ifdef ZCL_OTA
     ZCL_CLUSTER_OTA,
@@ -75,23 +75,23 @@ const u16 sampleSensor_outClusterList[] =
 /**
  *  @brief Definition for Server cluster number and Client cluster number
  */
-#define SAMPLESENSOR_IN_CLUSTER_NUM		(sizeof(sampleSensor_inClusterList)/sizeof(sampleSensor_inClusterList[0]))
-#define SAMPLESENSOR_OUT_CLUSTER_NUM	(sizeof(sampleSensor_outClusterList)/sizeof(sampleSensor_outClusterList[0]))
+#define sensorDevice_IN_CLUSTER_NUM		(sizeof(sensorDevice_inClusterList)/sizeof(sensorDevice_inClusterList[0]))
+#define sensorDevice_OUT_CLUSTER_NUM	(sizeof(sensorDevice_outClusterList)/sizeof(sensorDevice_outClusterList[0]))
 
 /**
  *  @brief Definition for simple description for HA profile
  */
-const af_simple_descriptor_t sampleSensor_simpleDesc =
+const af_simple_descriptor_t sensorDevice_simpleDesc =
 {
 	HA_PROFILE_ID,                      	/* Application profile identifier */
 	HA_DEV_IAS_ZONE,                	    /* Application device identifier */
 	SAMPLE_SENSOR_ENDPOINT,         		/* Endpoint */
 	0,                                  	/* Application device version */
 	0,										/* Reserved */
-	SAMPLESENSOR_IN_CLUSTER_NUM,           	/* Application input cluster count */
-	SAMPLESENSOR_OUT_CLUSTER_NUM,          	/* Application output cluster count */
-	(u16 *)sampleSensor_inClusterList,    	/* Application input cluster list */
-	(u16 *)sampleSensor_outClusterList,   	/* Application output cluster list */
+	sensorDevice_IN_CLUSTER_NUM,           	/* Application input cluster count */
+	sensorDevice_OUT_CLUSTER_NUM,          	/* Application output cluster count */
+	(u16 *)sensorDevice_inClusterList,    	/* Application input cluster list */
+	(u16 *)sensorDevice_outClusterList,   	/* Application output cluster list */
 };
 
 /* Basic */
@@ -198,13 +198,13 @@ const zclAttrInfo_t pollCtrl_attrTbl[] =
  */
 const zcl_specClusterInfo_t g_sampleSensorClusterList[] =
 {
-	{ZCL_CLUSTER_GEN_BASIC,			MANUFACTURER_CODE_NONE, ZCL_BASIC_ATTR_NUM, 	basic_attrTbl,  	zcl_basic_register,		sampleSensor_basicCb},
-	{ZCL_CLUSTER_GEN_IDENTIFY,		MANUFACTURER_CODE_NONE, ZCL_IDENTIFY_ATTR_NUM,	identify_attrTbl,	zcl_identify_register,	sampleSensor_identifyCb},
+	{ZCL_CLUSTER_GEN_BASIC,			MANUFACTURER_CODE_NONE, ZCL_BASIC_ATTR_NUM, 	basic_attrTbl,  	zcl_basic_register,		sensorDevice_basicCb},
+	{ZCL_CLUSTER_GEN_IDENTIFY,		MANUFACTURER_CODE_NONE, ZCL_IDENTIFY_ATTR_NUM,	identify_attrTbl,	zcl_identify_register,	sensorDevice_identifyCb},
 #ifdef ZCL_IAS_ZONE
-	{ZCL_CLUSTER_SS_IAS_ZONE,		MANUFACTURER_CODE_NONE, ZCL_IASZONE_ATTR_NUM,	iasZone_attrTbl,	zcl_iasZone_register,	sampleSensor_iasZoneCb},
+	{ZCL_CLUSTER_SS_IAS_ZONE,		MANUFACTURER_CODE_NONE, ZCL_IASZONE_ATTR_NUM,	iasZone_attrTbl,	zcl_iasZone_register,	sensorDevice_iasZoneCb},
 #endif
 #ifdef ZCL_POLL_CTRL
-	{ZCL_CLUSTER_GEN_POLL_CONTROL,  MANUFACTURER_CODE_NONE, ZCL_POLLCTRL_ATTR_NUM, 	pollCtrl_attrTbl,   zcl_pollCtrl_register,	sampleSensor_pollCtrlCb},
+	{ZCL_CLUSTER_GEN_POLL_CONTROL,  MANUFACTURER_CODE_NONE, ZCL_POLLCTRL_ATTR_NUM, 	pollCtrl_attrTbl,   zcl_pollCtrl_register,	sensorDevice_pollCtrlCb},
 #endif
 };
 
