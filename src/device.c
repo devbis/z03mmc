@@ -15,6 +15,7 @@
 #include "zcl_relative_humidity.h"
 #include "app_i2c.h"
 #include "shtv3_sensor.h"
+#include "battery.h"
 
 
 /**********************************************************************
@@ -31,6 +32,7 @@
  * GLOBAL VARIABLES
  */
 app_ctx_t g_sensorAppCtx;
+extern battery_data_t battery_data;
 
 
 #ifdef ZCL_OTA
@@ -168,6 +170,11 @@ void read_sensor_and_save() {
     // printf("Temp: %d.%d, humid: %d\r\n", temp/10, temp % 10, humi);
     g_zcl_temperatureAttrs.measuredValue = temp * 10;
     g_zcl_relHumidityAttrs.measuredValue = humi * 100;
+
+    check_battery();
+    // printf("battery %d mv, %d %%\r\n", battery_data.battery_mv, battery_data.battery_level);
+    g_zcl_powerAttrs.batteryVoltage = battery_data.battery_mv;
+    g_zcl_powerAttrs.batteryPercentage = battery_data.battery_level * 2;
 }
 
 s32 zclSensorTimerCb(void *arg)
@@ -189,8 +196,6 @@ void read_sensor_start(u16 delayTime)
 		g_sensorAppCtx.timerReadSensorEvt = TL_ZB_TIMER_SCHEDULE(zclSensorTimerCb, NULL, interval);
 	}
 }
-
-
 
 void led_init(void)
 {

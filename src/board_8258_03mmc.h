@@ -12,6 +12,13 @@
 extern "C" {
 #endif
 
+// BATTERY
+#define GPIO_VBAT	GPIO_PB0 // missing pin on case TLSR8253F512ET32
+#define PB0_FUNC			AS_GPIO
+#define PB0_INPUT_ENABLE	1
+#define PB0_DATA_OUT		1
+#define PB0_OUTPUT_ENABLE	1
+
 // BUTTON
 #define BUTTON1               		GPIO_PA5  // reset test point
 #define PA5_FUNC			  		AS_GPIO
