@@ -65,14 +65,14 @@ static s32 factoryRst_timerCb(void *arg){
 	return -1;
 }
 
-void factroyRst_handler(void){
+void factoryRst_handler(void){
 	if(factoryRst_exist){
 		factoryRst_exist = FALSE;
 		zb_factoryReset();
 	}
 }
 
-void factroyRst_init(void){
+void factoryRst_init(void){
 	factoryRst_powerCntRestore();
 	factoryRst_powerCnt++;
 	factoryRst_powerCntSave();

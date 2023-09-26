@@ -131,6 +131,8 @@ void stack_init(void)
  */
 void user_app_init(void)
 {
+	// factoryRst_init();
+
 #ifdef ZCL_POLL_CTRL
 	af_powerDescPowerModeUpdate(POWER_MODE_RECEIVER_COMES_PERIODICALLY);
 #else
@@ -187,7 +189,7 @@ void app_task(void)
 			drv_pm_lowPowerEnter();
 		}
 #endif
-
+        // factoryRst_handler();
 		report_handler();
 	}
 }

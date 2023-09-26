@@ -24,7 +24,7 @@
 #ifndef FACTORY_RESET_H
 #define FACTORY_RESET_H
 
-void factroyRst_init(void);
-void factroyRst_handler(void);
+void factoryRst_init(void);
+void factoryRst_handler(void);
 
 #endif	/* FACTORY_RESET_H */
