@@ -407,6 +407,29 @@ status_t sensorDevice_identifyCb(zclIncomingAddrInfo_t *pAddrInfo, u8 cmdId, voi
 }
 #endif	/* ZCL_IDENTIFY */
 
+
+/*********************************************************************
+ * @fn      sensorDevice_powerCfgCb
+ *
+ * @brief   Handler for ZCL Power Configuration command.
+ *
+ * @param   pAddrInfo
+ * @param   cmdId
+ * @param   cmdPayload
+ *
+ * @return  status_t
+ */
+status_t sensorDevice_powerCfgCb(zclIncomingAddrInfo_t *pAddrInfo, u8 cmdId, void *cmdPayload)
+{
+//	if(cmdId == ZCL_CMD_BASIC_RESET_FAC_DEFAULT){
+		//Reset all the attributes of all its clusters to factory defaults
+		//zcl_nv_attr_reset();
+//	}
+
+	return ZCL_STA_SUCCESS;
+}
+
+
 #ifdef ZCL_IAS_ZONE
 /*********************************************************************
  * @fn      sensorDevice_zclIasZoneEnrollRspCmdHandler

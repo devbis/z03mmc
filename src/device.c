@@ -249,6 +249,24 @@ void user_init(bool isRetention)
 
 		/* Set default reporting configuration */
 		u8 reportableChange = 0x00;
+        bdb_defaultReportingCfg(
+			SENSOR_DEVICE_ENDPOINT,
+			HA_PROFILE_ID,
+			ZCL_CLUSTER_GEN_POWER_CFG,
+			ZCL_ATTRID_BATTERY_VOLTAGE,
+			0x0000,
+			3600,
+			(u8 *)&reportableChange
+		);
+        bdb_defaultReportingCfg(
+			SENSOR_DEVICE_ENDPOINT,
+			HA_PROFILE_ID,
+			ZCL_CLUSTER_GEN_POWER_CFG,
+			ZCL_ATTRID_BATTERY_PERCENTAGE_REMAINING,
+			0x0000,
+			3600,
+			(u8 *)&reportableChange
+		);
 		bdb_defaultReportingCfg(
 			SENSOR_DEVICE_ENDPOINT,
 			HA_PROFILE_ID,

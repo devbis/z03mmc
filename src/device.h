@@ -78,6 +78,18 @@ typedef struct{
 }zcl_identifyAttr_t;
 
 /**
+ *  @brief Defined for power configuration cluster attributes
+ */
+typedef struct{
+#ifdef POWER_MAINS
+	u16 mainsVoltage;
+	u8  mainsFrequency;
+#endif
+	u8  batteryVoltage;      //0x20
+	u8  batteryPercentage;   //0x21
+}zcl_powerAttr_t;
+
+/**
  *  @brief Defined for temperature cluster attributes
  */
 typedef struct {
@@ -143,6 +155,7 @@ void sensorDevice_zclProcessIncomingMsg(zclIncoming_t *pInHdlrMsg);
 status_t sensorDevice_basicCb(zclIncomingAddrInfo_t *pAddrInfo, u8 cmdId, void *cmdPayload);
 status_t sensorDevice_identifyCb(zclIncomingAddrInfo_t *pAddrInfo, u8 cmdId, void *cmdPayload);
 status_t sensorDevice_iasZoneCb(zclIncomingAddrInfo_t *pAddrInfo, u8 cmdId, void *cmdPayload);
+status_t sensorDevice_powerCfgCb(zclIncomingAddrInfo_t *pAddrInfo, u8 cmdId, void *cmdPayload);
 #ifdef ZCL_POLL_CTRL
 status_t sensorDevice_pollCtrlCb(zclIncomingAddrInfo_t *pAddrInfo, u8 cmdId, void *cmdPayload);
 void sensorDevice_zclCheckInStart(void);
