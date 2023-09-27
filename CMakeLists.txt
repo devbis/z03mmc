@@ -2,16 +2,13 @@
 # Debug symbols will be still present in the ELF file
 SET(CMAKE_BUILD_TYPE Release)
 
-# Prepare the toolchain for JN5169 microcontroller
-#SET(JENNIC_CHIP JN5169)
+# Prepare the toolchain for Telink 8251/8258 microcontroller
 include(cmake/TelinkSDK.cmake)
 
 # Main project settings
-PROJECT(zatc C)
+PROJECT(z03mmc C)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.8)
 ENABLE_LANGUAGE(ASM)
-
-#DUMP_COMPILER_SETTINGS()
 
 ADD_SUBDIRECTORY(src)

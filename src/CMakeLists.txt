@@ -137,53 +137,11 @@ SET(ZIGBEE_SRC
     ${SDK_PREFIX}/proj/os/ev_poll.c
     ${SDK_PREFIX}/proj/os/ev_queue.c
     ${SDK_PREFIX}/proj/os/ev_timer.c
-
-
-#        ${SDK_PREFIX}/Components/ZigbeeCommon/Source/appZdpExtraction.c
-#        ${SDK_PREFIX}/Components/ZigbeeCommon/Source/appZpsBeaconHandler.c
-#        ${SDK_PREFIX}/Components/ZigbeeCommon/Source/ZTimer.c
-# 	 ${SDK_PREFIX}/Components/ZigbeeCommon/Source/ZQueue.c
-#	 ${SDK_PREFIX}/Components/ZigbeeCommon/Source/portasm_${JENNIC_CHIP_FAMILY}.S
-#        ${SDK_PREFIX}/Components/ZigbeeCommon/Source/port_${JENNIC_CHIP_FAMILY}.c
-
-#        ${SDK_PREFIX}/Components/ZCIF/Source/dlist.c
-#        ${SDK_PREFIX}/Components/ZCIF/Source/zcl.c
-#        ${SDK_PREFIX}/Components/ZCIF/Source/zcl_attribute.c
-#        ${SDK_PREFIX}/Components/ZCIF/Source/zcl_buffer.c
-#        ${SDK_PREFIX}/Components/ZCIF/Source/zcl_command.c
-#        ${SDK_PREFIX}/Components/ZCIF/Source/zcl_common.c
-#        ${SDK_PREFIX}/Components/ZCIF/Source/zcl_CustomCommandReceive.c
-#        ${SDK_PREFIX}/Components/ZCIF/Source/zcl_CustomCommandSend.c
-#        ${SDK_PREFIX}/Components/ZCIF/Source/zcl_defaultResponse.c
-#        ${SDK_PREFIX}/Components/ZCIF/Source/zcl_event.c
-#        ${SDK_PREFIX}/Components/ZCIF/Source/zcl_heap.c
-#        ${SDK_PREFIX}/Components/ZCIF/Source/zcl_library_options.c
-#        ${SDK_PREFIX}/Components/ZCIF/Source/zcl_PDUbufferReadWrite.c
-#        ${SDK_PREFIX}/Components/ZCIF/Source/zcl_PDUbufferReadWriteString.c
-#        ${SDK_PREFIX}/Components/ZCIF/Source/zcl_readAttributesRequestHandle.c
-
-        # Generated (used by bdb_ns.c)
-        #pdum_gen.h
 )
-#ADD_LIBRARY(ZigBee STATIC ${ZIGBEE_SRC})
-#TARGET_INCLUDE_DIRECTORIES(ZigBee PRIVATE
-#        ${SDK_PREFIX}/Components/BDB/Include
-#        ${SDK_PREFIX}/Components/BDB/Source/Common
-#        ${SDK_PREFIX}/Components/BDB/Source/NwkSteering
-#        ${SDK_PREFIX}/Components/PWRM/Include
-#	${SDK_PREFIX}/Components/MicroSpecific/Include
-#        ${SDK_PREFIX}/Components/ZCL/Clusters/General/Source
-#        ${SDK_PREFIX}/Components/ZCL/Clusters/OTA/Include
-#
-#        ${SDK_PREFIX}/Components/ZCIF/Source
-#
-#        # Zigbee sources reference zcl_options.h
-#        ${PROJECT_SOURCE_DIR}/src
-#)
 
 
 ################################
-# Hello Zigbee
+# Telink Zigbee device
 
 INCLUDE_DIRECTORIES(
     ${PROJECT_SOURCE_DIR}
@@ -198,16 +156,6 @@ INCLUDE_DIRECTORIES(
     ${SDK_PREFIX}/proj/common
     ${SDK_PREFIX}/platform
 
-
-#    ${SDK_PREFIX}/zigbee/af//Components/Aes/Include
-#    ${SDK_PREFIX}/Components/AES_SW/Include
-#    ${SDK_PREFIX}/Components/AppApi/Include
-#
-#    ${SDK_PREFIX}/Components/BDB/Include
-#
-#    ${SDK_PREFIX}/Components/Common/Include
-#    ${SDK_PREFIX}/Components/DBG/Include
-
     # Zigbee sources reference zcl_options.h
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/src/custom_zcl
@@ -216,26 +164,16 @@ INCLUDE_DIRECTORIES(
 LINK_DIRECTORIES(
 	${SDK_PREFIX}/zigbee/lib/tc32
 	${SDK_PREFIX}/platform/lib
-#	${SDK_PREFIX}/Chip/${JENNIC_CHIP}/Build
-#	${SDK_PREFIX}/Platform/DK4/Library
 )
 
-#SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${zatc_SOURCE_DIR}/src/zatc.ld")
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${SDK_PREFIX}/platform/boot/${TELINK_PLATFORM}/boot_${TELINK_PLATFORM}.link")
 
 file( GLOB SOURCES1 *.c *.cpp *.h *.S common/*.c common/*.h custom_zcl/*.c custom_zcl/*.h )
 
 SET (SOURCES  ${SOURCES1} ${ZIGBEE_SRC})
 
-#SET(SOURCES
-#	irq_JN516x.S
-#        pdum_apdu.S
-#        Queue.h
-#        Timer.h
-#)
-
-ADD_EXECUTABLE(zatc ${SOURCES})
-TARGET_LINK_LIBRARIES(zatc
+ADD_EXECUTABLE(z03mmc ${SOURCES})
+TARGET_LINK_LIBRARIES(z03mmc
         -Wl,--start-group
 
 	#ZigBee
@@ -246,8 +184,4 @@ TARGET_LINK_LIBRARIES(zatc
         -Wl,--end-group
 )
 
-#PRINT_SIZE_OF_TARGETS(zatc)
-ADD_BIN_TARGET(zatc)
-#ADD_DUMP_TARGET(zatc)
-#FLASH_FIRMWARE_TARGET(zatc)
-#ADD_OTA_BIN_TARGETS(zatc)
+ADD_BIN_TARGET(z03mmc)

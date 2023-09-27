@@ -1,6 +1,6 @@
 # Check mandatory parameters
 if(NOT SDK_PREFIX)
-    message(FATAL_ERROR "No SDK_PREFIX specified (it must point to the root of JN-SW-4170 SDK)")
+    message(FATAL_ERROR "No SDK_PREFIX specified (it must point to the root of Telink Zigbee SDK)")
 endif()
 
 if(NOT TOOLCHAIN_PREFIX)
@@ -21,11 +21,8 @@ ENDIF()
 set(TELINK_PLATFORM "8258")
 
 SET(CMAKE_C_FLAGS "-ffunction-sections -fdata-sections -Wall -fpack-struct -fshort-enums -finline-small-functions -std=gnu99 -fshort-wchar -fms-extensions -nostdlib" CACHE INTERNAL "c compiler flags")
-#SET(CMAKE_C_FLAGS "-ffunction-sections -fdata-sections -Wall -fpack-struct -fshort-enums -finline-small-functions -std=gnu99 -fshort-wchar -fms-extensions" CACHE INTERNAL "c compiler flags")
-#SET(CMAKE_CXX_FLAGS "-fomit-frame-pointer -fshort-enums -Wall -Wpacked -Wcast-align -fdata-sections -ffunction-sections -fno-rtti -fno-exceptions -fno-use-cxa-atexit -fno-threadsafe-statics" CACHE INTERNAL "cxx compiler flags")
 SET(CMAKE_ASM_FLAGS "-fomit-frame-pointer -fshort-enums -Wall -Wpacked -Wcast-align -fdata-sections -ffunction-sections -fno-use-cxa-atexit -fno-threadsafe-statics" CACHE INTERNAL "asm compiler flags")
 
-#SET(CMAKE_EXE_LINKER_FLAGS "-Wl,--gc-sections -Wl,-uss_apsmeSwitchKeyReq -Wl,-u_AppWarmStart -mredzone-size=4 -mbranch-cost=3 -fomit-frame-pointer -Os -fshort-enums -nostartfiles -fno-rtti -fno-exceptions -fno-use-cxa-atexit -fno-threadsafe-statics -Wl,--gc-sections -Wl,--defsym=__stack_size=5000 -Wl,--defsym,__minimum_heap_size=2000 " CACHE INTERNAL "executable linker flags")
 SET(CMAKE_EXE_LINKER_FLAGS "-Wl,--gc-sections -Wl,-uss_apsmeSwitchKeyReq -Os -fshort-enums -nostartfiles -fno-rtti -fno-exceptions -fno-use-cxa-atexit -fno-threadsafe-statics -Wl,--gc-sections " CACHE INTERNAL "executable linker flags")
 
 
