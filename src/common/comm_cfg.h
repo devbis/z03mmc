@@ -80,3 +80,5 @@
 #define IMAGE_TYPE_SWITCH					(0x02 | (IMAGE_TYPE_BOOT_FLAG << 7))
 #define IMAGE_TYPE_CONTACT_SENSOR			(0x03 | (IMAGE_TYPE_BOOT_FLAG << 7))
 
+// leave image type the same as for contact sensor to allow updating it with sample firmware if needed
+#define IMAGE_TYPE_TEMP_HUMIDITY			(0x03 | (IMAGE_TYPE_BOOT_FLAG << 7))
