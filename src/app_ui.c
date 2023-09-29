@@ -198,7 +198,7 @@ void keyScan_keyReleasedCB(u8 keyCode){
 void app_key_handler(void){
 	static u8 valid_keyCode = 0xff;
 	if(g_sensorAppCtx.state == APP_FACTORY_NEW_SET_CHECK){
-		if(clock_time_exceed(g_sensorAppCtx.keyPressedTime, 5*1000*1000)){
+		if(clock_time_exceed(g_sensorAppCtx.keyPressedTime, 3*1000*1000)){
 			buttonKeepPressed(VK_SW1);
 		}
 	}
