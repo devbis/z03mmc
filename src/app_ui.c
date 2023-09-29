@@ -30,6 +30,9 @@
 #include "device.h"
 #include "app_ui.h"
 
+#include "shtv3_sensor.h"
+#include "device.h"
+
 /**********************************************************************
  * LOCAL CONSTANTS
  */
@@ -45,12 +48,12 @@
  */
 void led_on(u32 pin)
 {
-	drv_gpio_write(pin, LED_ON);
+//	drv_gpio_write(pin, LED_ON);
 }
 
 void led_off(u32 pin)
 {
-	drv_gpio_write(pin, LED_OFF);
+//	drv_gpio_write(pin, LED_OFF);
 }
 
 void light_on(void)

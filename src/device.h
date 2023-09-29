@@ -41,10 +41,12 @@ typedef struct{
 
 typedef struct{
 	ev_timer_event_t *timerLedEvt;
+	ev_timer_event_t *timerReadSensorEvt;
 	u32 keyPressedTime;
 
 	u16 ledOnTime;
 	u16 ledOffTime;
+	u16 readSensorTime;
 	u8 	oriSta;		//original state before blink
 	u8 	sta;		//current state in blink
 	u8 	times;		//blink times
@@ -139,6 +141,7 @@ extern const af_simple_descriptor_t sensorDevice_simpleDesc;
 /* Attributes */
 extern zcl_basicAttr_t g_zcl_basicAttrs;
 extern zcl_identifyAttr_t g_zcl_identifyAttrs;
+extern zcl_powerAttr_t g_zcl_powerAttrs;
 extern zcl_temperatureAttr_t g_zcl_temperatureAttrs;
 extern zcl_relHumidityAttr_t g_zcl_relHumidityAttrs;
 // extern zcl_iasZoneAttr_t g_zcl_iasZoneAttrs;

@@ -13,6 +13,8 @@
 #endif
 
 #include "zcl_relative_humidity.h"
+#include "app_i2c.h"
+#include "shtv3_sensor.h"
 
 
 /**********************************************************************
@@ -153,6 +155,39 @@ void user_app_init(void)
 #ifdef ZCL_OTA
     ota_init(OTA_TYPE_CLIENT, (af_simple_descriptor_t *)&sensorDevice_simpleDesc, &sensorDevice_otaInfo, &sensorDevice_otaCb);
 #endif
+
+    // read sensor every 10 seconds
+    read_sensor_start(10000);
+}
+
+void read_sensor_and_save() {
+	s16 temp = 0;
+	u16 humi = 0;
+
+	read_sensor(&temp,&humi);
+    // printf("Temp: %d.%d, humid: %d\r\n", temp/10, temp % 10, humi);
+    g_zcl_temperatureAttrs.measuredValue = temp * 10;
+    g_zcl_relHumidityAttrs.measuredValue = humi * 100;
+}
+
+s32 zclSensorTimerCb(void *arg)
+{
+	u32 interval = g_sensorAppCtx.readSensorTime;
+	read_sensor_and_save();
+	return interval;
+}
+
+void read_sensor_start(u16 delayTime)
+{
+	u32 interval = 0;
+
+	if(!g_sensorAppCtx.timerReadSensorEvt){
+		read_sensor_and_save();
+		interval = delayTime;
+		g_sensorAppCtx.readSensorTime = delayTime;
+
+		g_sensorAppCtx.timerReadSensorEvt = TL_ZB_TIMER_SCHEDULE(zclSensorTimerCb, NULL, interval);
+	}
 }
 
 
@@ -226,6 +261,10 @@ void user_init(bool isRetention)
 #if PM_ENABLE
 	drv_pm_wakeupPinConfig(g_sensorPmCfg, sizeof(g_sensorPmCfg)/sizeof(drv_pm_pinCfg_t));
 #endif
+
+	random_generator_init();  //must
+	init_i2c();
+	init_sensor();
 
 	if(!isRetention){
 		/* Initialize Stack */
