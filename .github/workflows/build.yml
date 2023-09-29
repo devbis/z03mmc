@@ -1,0 +1,46 @@
+name: Build z03mmc firmware
+
+on:
+  push:
+#    branches: [ "master" ]
+  pull_request:
+#    branches: [ "master" ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+  TOOLCHAIN_DIR: ${{github.workspace}}/tc32
+  SDK_DIR: ${{github.workspace}}/tl_zigbee_sdk
+  ARTIFACT_DIR: ${{github.workspace}}/build/src/
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Get toolchain
+      run: git clone https://github.com/devbis/tc32.git -b linux --depth 1 ${{ env.TOOLCHAIN_DIR }}
+
+    - name: Get SDK
+      run: git clone https://github.com/devbis/tl_zigbee_sdk.git --depth 1 ${{ env.SDK_DIR }}
+
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSDK_PREFIX=${{env.SDK_DIR}} -DTOOLCHAIN_PREFIX=${{env.TOOLCHAIN_DIR}}
+
+    - name: Build
+      id: make
+      run: |
+        cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target=z03mmc.bin
+        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3
+      if: steps.make.outputs.status == 'success' && !cancelled()
+      with:
+        # Artifact name
+        name: firmware
+        # A file, directory or wildcard pattern that describes what to upload
+        path: ${{ env.ARTIFACT_DIR }}/*.bin
+
