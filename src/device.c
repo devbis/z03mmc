@@ -16,6 +16,7 @@
 #include "app_i2c.h"
 #include "shtv3_sensor.h"
 #include "battery.h"
+#include "lcd.h"
 
 
 /**********************************************************************
@@ -158,6 +159,8 @@ void user_app_init(void)
     ota_init(OTA_TYPE_CLIENT, (af_simple_descriptor_t *)&sensorDevice_simpleDesc, &sensorDevice_otaInfo, &sensorDevice_otaCb);
 #endif
 
+	show_zigbe();
+
     // read sensor every 10 seconds
     read_sensor_start(10000);
 }
@@ -175,6 +178,12 @@ void read_sensor_and_save() {
     // printf("battery %d mv, %d %%\r\n", battery_data.battery_mv, battery_data.battery_level);
     g_zcl_powerAttrs.batteryVoltage = battery_data.battery_mv;
     g_zcl_powerAttrs.batteryPercentage = battery_data.battery_level * 2;
+
+    // update lcd
+    show_temp_symbol(1);
+    show_big_number(g_zcl_temperatureAttrs.measuredValue / 10, 1);
+    show_small_number(g_zcl_relHumidityAttrs.measuredValue / 100, 1);
+    update_lcd();
 }
 
 s32 zclSensorTimerCb(void *arg)
@@ -253,7 +262,7 @@ static void sampleSensorSysException(void)
 void user_init(bool isRetention)
 {
 	/* Initialize LEDs*/
-	led_init();
+//	led_init();
 
 #if PA_ENABLE
 	rf_paInit(PA_TX, PA_RX);
@@ -270,6 +279,7 @@ void user_init(bool isRetention)
 	random_generator_init();  //must
 	init_i2c();
 	init_sensor();
+    init_lcd(!isRetention);
 
 	if(!isRetention){
 		/* Initialize Stack */

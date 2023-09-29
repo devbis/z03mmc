@@ -31,6 +31,7 @@
 #include "app_ui.h"
 
 #include "shtv3_sensor.h"
+#include "lcd.h"
 #include "device.h"
 
 /**********************************************************************
@@ -144,6 +145,7 @@ void buttonKeepPressed(u8 btNum){
 	if(btNum == VK_SW1){
 		g_sensorAppCtx.state = APP_FACTORY_NEW_DOING;
 		zb_factoryReset();
+		show_ble_symbol(TRUE);
 	}else if(btNum == VK_SW2){
 
 	}
