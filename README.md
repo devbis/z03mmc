@@ -90,6 +90,7 @@ z03mmc is based on the original work of @pvvx, and @atc1441, who developed the i
 1. Flash the firmware
 2. Enable pairing mode on Zigbee coordinator
 3. In case it is not joining, close the RESET and GND contacts on the board for 3 seconds to reset Zigbee settings. Replug the battery may require.
+4. It introduces itself as Heiman STHM-I1H model to match the model in zigbee2mqtt and other controller software tools
 
 ## License
 
