@@ -56,8 +56,29 @@ it compatible with Zigbee networks.
 
     Firmware binary is located at `build/src/z03mmc.bin`
 
-## Flashing firmware
+## Flashing firmware with USB to UART
 
+### Prerequisites: 
+1. TTL-USB adaptor
+2. 1k-1.8k Ohm resistor
+3. python3 with pyserial module installed
+
+
+To flash a new firmware via an standard USB to UART adapter, simply connect the Thermometer as seen in the picture [Mi_SWS_Connection.jpg](./assets/Mi_SWS_Connection.jpg) to the USB to UART converter and run the TLSR825xComFlasher.py tool.
+
+Example: `python3 TLSR825xComFlasher.py -p COM3 wf 0 z03mmc.bin`
+
+Example: `python3 TLSR825xComFlasher.py -p /dev/ttyUSB0 wf 0 z03mmc.bin`
+
+In case if the SWS pin is used by the firmware, try this sequence:
+1. Power off the sensor
+2. `python3 TLSR825xComFlasher.py -p <YOUR_COM_PORT> -t5000 wf 0 z03mmc.bin`
+3. Now you have 5 seconds to power on the sensor
+4. In case the chip has not started being flashed, run `python3 TLSR825xComFlasher.py -p <YOUR_COM_PORT> wf 0 z03mmc.bin` without the timeout again.
+
+If the flashing fails try to increase timeouts in the script.
+
+The UART flasher software uses the tool from https://github.com/pvvx/ATC_MiThermometer. Thanks to pvvx for the awesome work on this!
 
 ## Related Work
 z03mmc is based on the original work of @pvvx, and @atc1441, who developed the initial firmware versions for bluetooth-capable device.
