@@ -1,11 +1,21 @@
 ################################
 # Common settings
 
+SET(TARGET z03mmc)
+
+IF(NOT MIMIC_HEIMAN)
+    SET(MIMIC_HEIMAN 0)
+ELSE()
+    SET(TARGET ${TARGET}_heiman)
+ENDIF()
+
+
+
 ADD_DEFINITIONS(
     -DEND_DEVICE=1
     -DMCU_CORE_${TELINK_PLATFORM}=1
     -DMCU_STARTUP_${TELINK_PLATFORM}=1
-    -D__PROJECT_TL_CONTACT_SENSOR__=1
+    -DMIMIC_HEIMAN=${MIMIC_HEIMAN}
 )
 
 ################################
@@ -172,8 +182,8 @@ file( GLOB SOURCES1 *.c *.cpp *.h *.S common/*.c common/*.h custom_zcl/*.c custo
 
 SET (SOURCES  ${SOURCES1} ${ZIGBEE_SRC})
 
-ADD_EXECUTABLE(z03mmc ${SOURCES})
-TARGET_LINK_LIBRARIES(z03mmc
+ADD_EXECUTABLE(${TARGET} ${SOURCES})
+TARGET_LINK_LIBRARIES(${TARGET}
         -Wl,--start-group
 
 	#ZigBee
@@ -184,4 +194,4 @@ TARGET_LINK_LIBRARIES(z03mmc
         -Wl,--end-group
 )
 
-ADD_BIN_TARGET(z03mmc)
+ADD_BIN_TARGET(${TARGET})
