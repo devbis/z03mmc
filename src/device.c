@@ -206,7 +206,7 @@ void read_sensor_start(u16 delayTime)
 	}
 }
 
-void led_init(void)
+void ind_init(void)
 {
 	light_init();
 }
@@ -261,9 +261,6 @@ static void sampleSensorSysException(void)
  */
 void user_init(bool isRetention)
 {
-	/* Initialize LEDs*/
-//	led_init();
-
 #if PA_ENABLE
 	rf_paInit(PA_TX, PA_RX);
 #endif
@@ -280,6 +277,8 @@ void user_init(bool isRetention)
 	init_i2c();
 	init_sensor();
     init_lcd(!isRetention);
+    // initialize indicator (ble symbol)
+    ind_init();
 
 	if(!isRetention){
 		/* Initialize Stack */

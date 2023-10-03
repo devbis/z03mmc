@@ -27,8 +27,6 @@
 /**********************************************************************
  * CONSTANT
  */
-#define LED_ON						1
-#define LED_OFF						0
 
 
 /**********************************************************************
@@ -50,9 +48,6 @@ void light_blink_stop(void);
 void light_init(void);
 void light_on(void);
 void light_off(void);
-
-void led_on(u32 pin);
-void led_off(u32 pin);
 
 void app_key_handler(void);
 

@@ -47,30 +47,23 @@
 /**********************************************************************
  * LOCAL FUNCTIONS
  */
-void led_on(u32 pin)
-{
-//	drv_gpio_write(pin, LED_ON);
-}
-
-void led_off(u32 pin)
-{
-//	drv_gpio_write(pin, LED_OFF);
-}
 
 void light_on(void)
 {
-	led_on(LED1);
+    show_ble_symbol(true);
+    update_lcd();
 }
 
 void light_off(void)
 {
-	led_off(LED1);
+    show_ble_symbol(false);
+    update_lcd();
 }
 
 void light_init(void)
 {
-	led_off(LED1);
-
+    show_ble_symbol(false);
+    update_lcd();
 }
 
 s32 zclLightTimerCb(void *arg)
@@ -145,7 +138,8 @@ void buttonKeepPressed(u8 btNum){
 	if(btNum == VK_SW1){
 		g_sensorAppCtx.state = APP_FACTORY_NEW_DOING;
 		zb_factoryReset();
-		show_ble_symbol(TRUE);
+		show_ble_symbol(true);
+		update_lcd();
 	}else if(btNum == VK_SW2){
 
 	}

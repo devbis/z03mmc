@@ -34,7 +34,7 @@ extern "C" {
 
 // LED
 // #define LED1     					GPIO_PD3
-#define LED1     					GPIO_PD3
+// #define LED1     					GPIO_PD3
 // #define PD3_FUNC					AS_GPIO
 // #define PD3_OUTPUT_ENABLE			1
 // #define PD3_INPUT_ENABLE			0
