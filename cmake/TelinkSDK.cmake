@@ -26,7 +26,7 @@ SET(CMAKE_ASM_FLAGS "-fomit-frame-pointer -fshort-enums -Wall -Wpacked -Wcast-al
 SET(CMAKE_EXE_LINKER_FLAGS "-Wl,--gc-sections -Wl,-uss_apsmeSwitchKeyReq -Os -fshort-enums -nostartfiles -fno-rtti -fno-exceptions -fno-use-cxa-atexit -fno-threadsafe-statics -Wl,--gc-sections " CACHE INTERNAL "executable linker flags")
 
 
-FUNCTION(ADD_BIN_TARGET TARGET)
+FUNCTION(ADD_BIN_TARGET TARGET TOOLS_PATH)
     IF(EXECUTABLE_OUTPUT_PATH)
       SET(FILENAME "${EXECUTABLE_OUTPUT_PATH}/${TARGET}")
     ELSE()
@@ -35,6 +35,19 @@ FUNCTION(ADD_BIN_TARGET TARGET)
     ADD_CUSTOM_TARGET("${TARGET}.bin"
         DEPENDS ${TARGET}
         COMMAND ${CMAKE_OBJCOPY} -Obinary ${FILENAME} ${FILENAME}.bin
+        COMMAND python3 ${TOOLS_PATH}/tl_check_fw.py ${FILENAME}.bin
+    )
+ENDFUNCTION()
+
+FUNCTION(ADD_OTA_TARGET TARGET TOOLS_PATH)
+    IF(EXECUTABLE_OUTPUT_PATH)
+      SET(FILENAME "${EXECUTABLE_OUTPUT_PATH}/${TARGET}")
+    ELSE()
+      SET(FILENAME "${TARGET}")
+    ENDIF()
+    ADD_CUSTOM_TARGET("${TARGET}.ota"
+        DEPENDS ${TARGET}.bin
+        COMMAND python3 ${TOOLS_PATH}/make_ota.py ${FILENAME}.bin -o ${FILENAME}.ota
     )
 ENDFUNCTION()
 
