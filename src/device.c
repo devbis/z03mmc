@@ -250,6 +250,13 @@ static void sampleSensorSysException(void)
 	//while(1);
 }
 
+char int_to_hex(u8 num){
+	char digits[] = "0123456789ABCDEF";
+	if (num > 15) return digits[0];
+	return digits[num];
+}
+
+
 /*********************************************************************
  * @fn      user_init
  *
@@ -281,6 +288,16 @@ void user_init(bool isRetention)
     ind_init();
 
 	if(!isRetention){
+	    /* Populate swBuildId version */
+		g_zcl_basicAttrs.swBuildId[1] = int_to_hex(STACK_RELEASE>>4);
+		g_zcl_basicAttrs.swBuildId[2] = int_to_hex(STACK_RELEASE & 0xf);
+		g_zcl_basicAttrs.swBuildId[3] = int_to_hex(STACK_BUILD>>4);
+		g_zcl_basicAttrs.swBuildId[4] = int_to_hex(STACK_BUILD & 0xf);
+		g_zcl_basicAttrs.swBuildId[6] = int_to_hex(APP_RELEASE>>4);
+		g_zcl_basicAttrs.swBuildId[7] = int_to_hex(APP_RELEASE & 0xf);
+		g_zcl_basicAttrs.swBuildId[8] = int_to_hex(APP_BUILD>>4);
+		g_zcl_basicAttrs.swBuildId[9] = int_to_hex(APP_BUILD & 0xf);
+
 		/* Initialize Stack */
 		stack_init();
 
