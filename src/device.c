@@ -176,7 +176,7 @@ void read_sensor_and_save() {
 
     check_battery();
     // printf("battery %d mv, %d %%\r\n", battery_data.battery_mv, battery_data.battery_level);
-    g_zcl_powerAttrs.batteryVoltage = battery_data.battery_mv;
+    g_zcl_powerAttrs.batteryVoltage = battery_data.battery_mv / 100;
     g_zcl_powerAttrs.batteryPercentage = battery_data.battery_level * 2;
 
     // update lcd
