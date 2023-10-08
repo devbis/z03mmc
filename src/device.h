@@ -21,9 +21,10 @@
  *          limitations under the License.
  *******************************************************************************************************/
 
-#ifndef _SAMPLE_CONTACT_SENSOR_H_
-#define _SAMPLE_CONTACT_SENSOR_H_
+#ifndef _DEVICE_H_
+#define _DEVICE_H_
 
+#include "zcl_include.h"
 
 /**********************************************************************
  * CONSTANT
@@ -169,4 +170,4 @@ void sensorDevice_leaveIndHandler(nlme_leave_ind_t *pLeaveInd);
 void sensorDevice_otaProcessMsgHandler(u8 evt, u8 status);
 
 
-#endif /* _SAMPLE_CONTACT_SENSOR_H_ */
+#endif /* _DEVICE_H_ */

@@ -5,6 +5,7 @@
 
 #include "app_i2c.h"
 #include "lcd.h"
+#include "device.h"
 
 #define pm_wait_ms(t) cpu_stall_wakeup_by_timer0(t*CLOCK_16M_SYS_TIMER_CLK_1MS);
 
@@ -46,11 +47,14 @@ void init_lcd(bool clear){
 	if(test_i2c_device(0x3C)){// B1.4
 		lcd_version = 0;
 		i2c_address_lcd = 0x78;
+		g_zcl_basicAttrs.hwVersion = 14;
 	}else if(test_i2c_device(0x3E)){// B1.9
 		lcd_version = 2;
 		i2c_address_lcd = 0x7C;
+		g_zcl_basicAttrs.hwVersion = 19;
 	}else{// B1.6 uses UART and is not testable this way
 		lcd_version = 1;
+		g_zcl_basicAttrs.hwVersion = 16;
 	}
 
 	if(lcd_version == 0){// B1.4 Hardware
