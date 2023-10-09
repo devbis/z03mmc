@@ -469,6 +469,15 @@ status_t sensorDevice_powerCfgCb(zclIncomingAddrInfo_t *pAddrInfo, u8 cmdId, voi
 	return ZCL_STA_SUCCESS;
 }
 
+status_t sensorDevice_temperatureCb(zclIncomingAddrInfo_t *pAddrInfo, u8 cmdId, void *cmdPayload)
+{
+	return ZCL_STA_SUCCESS;
+}
+
+status_t sensorDevice_humidityCb(zclIncomingAddrInfo_t *pAddrInfo, u8 cmdId, void *cmdPayload)
+{
+	return ZCL_STA_SUCCESS;
+}
 
 #ifdef ZCL_IAS_ZONE
 /*********************************************************************
