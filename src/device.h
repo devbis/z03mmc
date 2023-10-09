@@ -103,6 +103,11 @@ typedef struct{
 	u16	fastPollTimeoutMax;
 }zcl_pollCtrlAttr_t;
 
+typedef struct _comfort_t {
+	s16 t[2];
+	u16 h[2];
+} scomfort_t;
+
 /**********************************************************************
  * GLOBAL VARIABLES
  */
@@ -127,6 +132,8 @@ extern zcl_pollCtrlAttr_t g_zcl_pollCtrlAttrs;
 
 #define zcl_iasZoneAttrGet()	&g_zcl_iasZoneAttrs
 #define zcl_pollCtrlAttrGet()	&g_zcl_pollCtrlAttrs
+
+extern scomfort_t cmf;
 
 /**********************************************************************
  * FUNCTIONS

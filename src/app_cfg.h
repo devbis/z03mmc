@@ -168,6 +168,12 @@ typedef enum{
 	EV_POLL_MAX,
 }ev_poll_e;
 
+/**********************************************************************
+ * Sensor configuration
+ */
+
+#define SHOW_SMILEY
+
 /* Disable C linkage for C++ Compilers: */
 #if defined(__cplusplus)
 }

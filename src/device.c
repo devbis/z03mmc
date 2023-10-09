@@ -104,6 +104,12 @@ drv_pm_pinCfg_t g_sensorPmCfg[] = {
  * LOCAL VARIABLES
  */
 
+//const scomfort_t def_cmf = {
+_attribute_data_retention_ scomfort_t cmf = {
+    .t = {2100,2600}, // x0.01 C
+    .h = {3000,6000}  // x0.01 %
+};
+
 
 /**********************************************************************
  * FUNCTIONS
@@ -165,6 +171,14 @@ void user_app_init(void)
     read_sensor_start(10000);
 }
 
+_attribute_ram_code_
+u8 is_comfort(s16 t, u16 h) {
+	u8 ret = 0;
+	if (t >= cmf.t[0] && t <= cmf.t[1] && h >= cmf.h[0] && h <= cmf.h[1])
+		ret = 1;
+	return ret;
+}
+
 void read_sensor_and_save() {
 	s16 temp = 0;
 	u16 humi = 0;
@@ -183,6 +197,11 @@ void read_sensor_and_save() {
     show_temp_symbol(1);
     show_big_number(g_zcl_temperatureAttrs.measuredValue / 10, 1);
     show_small_number(g_zcl_relHumidityAttrs.measuredValue / 100, 1);
+#if defined(SHOW_SMILEY)
+    show_smiley(
+        is_comfort(g_zcl_temperatureAttrs.measuredValue, g_zcl_relHumidityAttrs.measuredValue) ? 1 : 2
+    );
+#endif
     update_lcd();
 }
 
