@@ -153,7 +153,7 @@ void user_app_init(void)
 	af_endpointRegister(SENSOR_DEVICE_ENDPOINT, (af_simple_descriptor_t *)&sensorDevice_simpleDesc, zcl_rx_handler, NULL);
 
 	/* Register ZCL specific cluster information */
-	zcl_register(SENSOR_DEVICE_ENDPOINT, SENSOR_DEVICE_CB_CLUSTER_NUM, (zcl_specClusterInfo_t *)g_sampleSensorClusterList);
+	zcl_register(SENSOR_DEVICE_ENDPOINT, SENSOR_DEVICE_CB_CLUSTER_NUM, (zcl_specClusterInfo_t *)g_sensorDeviceClusterList);
 
 #ifdef ZCL_OTA
     ota_init(OTA_TYPE_CLIENT, (af_simple_descriptor_t *)&sensorDevice_simpleDesc, &sensorDevice_otaInfo, &sensorDevice_otaCb);
@@ -243,7 +243,7 @@ void app_task(void)
 	}
 }
 
-static void sampleSensorSysException(void)
+static void sensorDeviceSysException(void)
 {
 	SYSTEM_RESET();
 	//light_on();
@@ -305,7 +305,7 @@ void user_init(bool isRetention)
 		user_app_init();
 
 		/* Register except handler for test */
-		sys_exceptHandlerRegister(sampleSensorSysException);
+		sys_exceptHandlerRegister(sensorDeviceSysException);
 
 		/* User's Task */
 #if ZBHCI_EN

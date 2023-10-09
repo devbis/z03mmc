@@ -1,26 +1,3 @@
-/********************************************************************************************************
- * @file    sampleSensorEpCfg.c
- *
- * @brief   This is the source file for sampleSensorEpCfg
- *
- * @author  Zigbee Group
- * @date    2021
- *
- * @par     Copyright (c) 2021, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *
- *          Licensed under the Apache License, Version 2.0 (the "License");
- *          you may not use this file except in compliance with the License.
- *          You may obtain a copy of the License at
- *
- *              http://www.apache.org/licenses/LICENSE-2.0
- *
- *          Unless required by applicable law or agreed to in writing, software
- *          distributed under the License is distributed on an "AS IS" BASIS,
- *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *          See the License for the specific language governing permissions and
- *          limitations under the License.
- *******************************************************************************************************/
-
 /**********************************************************************
  * INCLUDES
  */
@@ -287,7 +264,7 @@ const zclAttrInfo_t pollCtrl_attrTbl[] =
 /**
  *  @brief Definition for simple contact sensor ZCL specific cluster
  */
-const zcl_specClusterInfo_t g_sampleSensorClusterList[] =
+const zcl_specClusterInfo_t g_sensorDeviceClusterList[] =
 {
 	{ZCL_CLUSTER_GEN_BASIC,			MANUFACTURER_CODE_NONE, ZCL_BASIC_ATTR_NUM, 	basic_attrTbl,  	zcl_basic_register,		sensorDevice_basicCb},
 	{ZCL_CLUSTER_GEN_IDENTIFY,		MANUFACTURER_CODE_NONE, ZCL_IDENTIFY_ATTR_NUM,	identify_attrTbl,	zcl_identify_register,	sensorDevice_identifyCb},
@@ -306,7 +283,7 @@ const zcl_specClusterInfo_t g_sampleSensorClusterList[] =
 #endif
 };
 
-u8 SENSOR_DEVICE_CB_CLUSTER_NUM = (sizeof(g_sampleSensorClusterList)/sizeof(g_sampleSensorClusterList[0]));
+u8 SENSOR_DEVICE_CB_CLUSTER_NUM = (sizeof(g_sensorDeviceClusterList)/sizeof(g_sensorDeviceClusterList[0]));
 
 /**********************************************************************
  * FUNCTIONS
