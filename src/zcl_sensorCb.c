@@ -79,9 +79,11 @@ void sensorDevice_zclProcessIncomingMsg(zclIncoming_t *pInHdlrMsg)
 #endif
 #ifdef ZCL_WRITE
 		case ZCL_CMD_WRITE_RSP:
+			printf("ZCL_CMD_WRITE_RSP %d, %d\r\n", cluster, pInHdlrMsg->attrCmd);
 			sensorDevice_zclWriteRspCmd(cluster, pInHdlrMsg->attrCmd);
 			break;
 		case ZCL_CMD_WRITE:
+			printf("ZCL_CMD_WRITE_RSP %d, %d\r\n", cluster, pInHdlrMsg->attrCmd);
 			sensorDevice_zclWriteReqCmd(cluster, pInHdlrMsg->attrCmd);
 			break;
 #endif
@@ -293,7 +295,7 @@ static void sensorDevice_zclReportCmd(u16 clusterId, zclReportCmd_t *pReportCmd)
  */
 status_t sensorDevice_basicCb(zclIncomingAddrInfo_t *pAddrInfo, u8 cmdId, void *cmdPayload)
 {
-    printf("sampleSensor_basicCb\n");
+    printf("sampleSensor_basicCb\r\n");
 	if(cmdId == ZCL_CMD_BASIC_RESET_FAC_DEFAULT){
 		//Reset all the attributes of all its clusters to factory defaults
 		//zcl_nv_attr_reset();
@@ -306,7 +308,7 @@ status_t sensorDevice_basicCb(zclIncomingAddrInfo_t *pAddrInfo, u8 cmdId, void *
 #ifdef ZCL_IDENTIFY
 s32 sensorDevice_zclIdentifyTimerCb(void *arg)
 {
-    printf("sampleSensor_zclIdentifyTimerCb\n");
+    printf("sensorDevice_zclIdentifyTimerCb\r\n");
 	if(g_zcl_identifyAttrs.identifyTime <= 0){
 		identifyTimerEvt = NULL;
 		return -1;
@@ -317,7 +319,7 @@ s32 sensorDevice_zclIdentifyTimerCb(void *arg)
 
 void sensorDevice_zclIdentifyTimerStop(void)
 {
-    printf("sampleSensor_zclIdentifyTimerStop\n");
+    printf("sensorDevice_zclIdentifyTimerStop\r\n");
 	if(identifyTimerEvt){
 		TL_ZB_TIMER_CANCEL(&identifyTimerEvt);
 	}
@@ -343,6 +345,7 @@ void sensorDevice_zclIdentifyCmdHandler(u8 endpoint, u16 srcAddr, u16 identifyTi
 		light_blink_stop();
 	}else{
 		if(!identifyTimerEvt){
+            printf("Identify time %d\r\n", identifyTime);
 			light_blink_start(identifyTime, 500, 500);
 			identifyTimerEvt = TL_ZB_TIMER_SCHEDULE(sensorDevice_zclIdentifyTimerCb, NULL, 1000);
 		}
@@ -400,6 +403,7 @@ static void sensorDevice_zcltriggerCmdHandler(zcl_triggerEffect_t *pTriggerEffec
  */
 static void sensorDevice_zclIdentifyQueryRspCmdHandler(u8 endpoint, u16 srcAddr, zcl_identifyRspCmd_t *identifyRsp)
 {
+    printf("sensorDevice_zclIdentifyQueryRspCmdHandler %d %d\r\n", endpoint, srcAddr);
 #if FIND_AND_BIND_SUPPORT
 	if(identifyRsp->timeout){
 		findBindDst_t dstInfo;
@@ -424,13 +428,20 @@ static void sensorDevice_zclIdentifyQueryRspCmdHandler(u8 endpoint, u16 srcAddr,
  */
 status_t sensorDevice_identifyCb(zclIncomingAddrInfo_t *pAddrInfo, u8 cmdId, void *cmdPayload)
 {
+    printf("sensorDevice_identifyCb 0x%d\r\n", cmdId);
 	if(pAddrInfo->dstEp == SENSOR_DEVICE_ENDPOINT){
 		if(pAddrInfo->dirCluster == ZCL_FRAME_CLIENT_SERVER_DIR){
 			switch(cmdId){
 				case ZCL_CMD_IDENTIFY:
+                    printf("ZCL_CMD_IDENTIFY 0x%d\r\n",  ((zcl_identifyCmd_t *)cmdPayload)->identifyTime);
+					sensorDevice_zclIdentifyCmdHandler(pAddrInfo->dstEp, pAddrInfo->srcAddr, ((zcl_identifyCmd_t *)cmdPayload)->identifyTime);
+					break;
+				case ZCL_CMD_IDENTIFY_QUERY:
+                    printf("ZCL_CMD_IDENTIFY_QUERY 0x%d\r\n",  ((zcl_identifyCmd_t *)cmdPayload)->identifyTime);
 					sensorDevice_zclIdentifyCmdHandler(pAddrInfo->dstEp, pAddrInfo->srcAddr, ((zcl_identifyCmd_t *)cmdPayload)->identifyTime);
 					break;
 				case ZCL_CMD_TRIGGER_EFFECT:
+                    printf("ZCL_CMD_TRIGGER_EFFECT\r\n");
 					sensorDevice_zcltriggerCmdHandler((zcl_triggerEffect_t *)cmdPayload);
 					break;
 				default:
@@ -438,6 +449,7 @@ status_t sensorDevice_identifyCb(zclIncomingAddrInfo_t *pAddrInfo, u8 cmdId, voi
 			}
 		}else{
 			if(cmdId == ZCL_CMD_IDENTIFY_QUERY_RSP){
+                printf("ZCL_CMD_IDENTIFY_QUERY_RSP\r\n");
 				sensorDevice_zclIdentifyQueryRspCmdHandler(pAddrInfo->dstEp, pAddrInfo->srcAddr, (zcl_identifyRspCmd_t *)cmdPayload);
 			}
 		}
