@@ -43,7 +43,7 @@ it compatible with Zigbee networks.
 
     ```sh
     git clone https://github.com/devbis/z03mmc.git
-    git clone https://github.com/devbis/tl_zigbee_sdk.git
+    git clone https://github.com/devbis/tl_zigbee_sdk.git -b 3.6.8.5 --depth 1
    
     cd z03mmc
     ```

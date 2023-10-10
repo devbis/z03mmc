@@ -27,6 +27,8 @@ SET(ZIGBEE_SRC
     ${SDK_PREFIX}/platform/services/b85m/irq_handler.c
     ${SDK_PREFIX}/platform/tc32/div_mod.S
     ${SDK_PREFIX}/platform/chip_${TELINK_PLATFORM}/flash.c
+    ${SDK_PREFIX}/platform/chip_${TELINK_PLATFORM}/adc.c
+    ${SDK_PREFIX}/platform/chip_${TELINK_PLATFORM}/flash/flash_mid13325e.c
 
     ${SDK_PREFIX}/zigbee/bdb/bdb.c
     ${SDK_PREFIX}/zigbee/aps/aps_group.c
@@ -111,7 +113,6 @@ SET(ZIGBEE_SRC
     ${SDK_PREFIX}/zigbee/gp/gp_proxyTab.c
     ${SDK_PREFIX}/zigbee/ss/ss_nv.c
     ${SDK_PREFIX}/zigbee/ota/ota.c
-    ${SDK_PREFIX}/zigbee/ota/otaCRC.c
     ${SDK_PREFIX}/zigbee/ota/otaEpCfg.c
 
 
@@ -129,8 +130,10 @@ SET(ZIGBEE_SRC
     ${SDK_PREFIX}/proj/common/mempool.c
     ${SDK_PREFIX}/proj/common/string.c
     ${SDK_PREFIX}/proj/common/tlPrintf.c
+    ${SDK_PREFIX}/proj/common/utility.c
     ${SDK_PREFIX}/proj/drivers/drv_adc.c
     ${SDK_PREFIX}/proj/drivers/drv_flash.c
+    ${SDK_PREFIX}/proj/drivers/drv_calibration.c
     ${SDK_PREFIX}/proj/drivers/drv_gpio.c
     ${SDK_PREFIX}/proj/drivers/drv_hw.c
     ${SDK_PREFIX}/proj/drivers/drv_i2c.c
