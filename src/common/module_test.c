@@ -7,6 +7,7 @@
  * @date    2021
  *
  * @par     Copyright (c) 2021, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *			All rights reserved.
  *
  *          Licensed under the Apache License, Version 2.0 (the "License");
  *          you may not use this file except in compliance with the License.
@@ -19,6 +20,7 @@
  *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *          See the License for the specific language governing permissions and
  *          limitations under the License.
+ *
  *******************************************************************************************************/
 
 #include "zb_common.h"
@@ -31,7 +33,7 @@
 #define TEST_826x		0
 #define TEST_8258		1
 #define TEST_8278		2
-#define TEST_9518		3
+#define TEST_B91		3
 
 #define TEST_MODULE		TEST_8258
 
@@ -44,7 +46,7 @@
 #elif (TEST_MODULE == TEST_8278)
 	#define UART_TX_PIN		GPIO_PD7
 	#define UART_RX_PIN		GPIO_PA0
-#elif (TEST_MODULE == TEST_9518)
+#elif (TEST_MODULE == TEST_B91)
 	#define UART_TX_PIN		GPIO_PB2
 	#define UART_RX_PIN		GPIO_PB3
 #else
@@ -88,7 +90,7 @@ void module_test_uartRcvHandler(void){
 		drv_uart_tx_start(rxData->dataPayload, T_uartPktRecvLen);
 	}
 
-#if (TEST_MODULE == TEST_826x) || (TEST_MODULE == TEST_8258) || (TEST_MODULE == TEST_8278) || (TEST_MODULE == TEST_9518)
+#if (TEST_MODULE == TEST_826x) || (TEST_MODULE == TEST_8258) || (TEST_MODULE == TEST_8278) || (TEST_MODULE == TEST_B91)
 	if(T_uartPktRecvSeqNo == 0xBB){
 		drv_adc_enable(1);
 	}else{
@@ -111,7 +113,7 @@ void moduleTest_forUart(void){
 #elif (TEST_MODULE == TEST_8278)
 	//drv_adc_mode_pin_set(DRV_ADC_BASE_MODE, GPIO_PB3);
 	drv_adc_mode_pin_set(DRV_ADC_VBAT_MODE, GPIO_PB3);
-#elif (TEST_MODULE == TEST_9518)
+#elif (TEST_MODULE == TEST_B91)
 	drv_adc_mode_pin_set(DRV_ADC_BASE_MODE, ADC_GPIO_PB0);
 #endif
 
@@ -164,49 +166,114 @@ void moduleTest_forUart(void){
 #define MODULE_TEST_NV		0
 
 #if MODULE_TEST_NV
-volatile u8 T_nwkFrmCntError = 0;
-volatile u8 T_nwkFrmCntReadErr = 0;
-volatile u32 T_frameCnt = 0;
-volatile u32 T_readFrm = 0;
-volatile u8 T_bufCheck[256] = {0};
+
+#define TEST_826x		0
+#define TEST_8258		1
+#define TEST_8278		2
+#define TEST_B91		3
+
+#define TEST_MODULE		TEST_8258//TEST_B91
+
+#if (TEST_MODULE == TEST_826x)
+	#define TEST_GPIO		GPIO_PB6
+#elif (TEST_MODULE == TEST_8258)
+	#define TEST_GPIO		GPIO_PA3
+#elif (TEST_MODULE == TEST_8278)
+	#define TEST_GPIO		GPIO_PA3
+#elif (TEST_MODULE == TEST_B91)
+	#define TEST_GPIO		GPIO_PB7
+#else
+	#error	"undefined TEST_MODULE"
+#endif
+
+enum{
+	TEST_ITEM0 = 0x30,
+	TEST_ITEM1,
+	TEST_ITEM2,
+};
+
+typedef struct{
+	u32 cnt;
+	u8 data[16];
+}nv_test_buf_t;
+
+nv_test_buf_t nv_test_buf =
+{
+	.cnt = 0,
+	.data = {0x00,0x11,0x22,0x33,0x44,0x55,0x66,0x77,0x88,0x99,0xaa,0xbb,0xcc,0xdd,0xee,0xff},
+};
+
+u8 nv_test_buf_0[32] = {
+	0x00,0x11,0x22,0x33,0x44,0x55,0x66,0x77,0x88,0x99,0xaa,0xbb,0xcc,0xdd,0xee,0xff,
+	0x01,0x12,0x23,0x34,0x45,0x56,0x67,0x78,0x89,0x9a,0xab,0xbc,0xcd,0xde,0xef,0xf0,
+};
+u8 nv_test_buf_1[200];
+u8 test_chk_buf[256];
+
+static void nv_dataStoreSet(void){
+	u16 flag = 0x5a5a;
+	flash_write(CFG_FACTORY_RST_CNT + 4, 2, (u8 *)&flag);
+}
+
+static bool nv_dataStoreCheck(void){
+	u16 flag = 0xffff;
+	flash_read(CFG_FACTORY_RST_CNT + 4, 2, (u8 *)&flag);
+	if(flag != 0xffff){
+		return TRUE;
+	}else{
+		return FALSE;
+	}
+}
+
 void moduleTest_NV(void){
-	u8 *pData = (u8*)&g_zbInfo;
+	drv_gpio_func_set(TEST_GPIO);
+	drv_gpio_output_en(TEST_GPIO, 1); 		//enable output
+	drv_gpio_input_en(TEST_GPIO, 0);		//disable input
+	drv_gpio_write(TEST_GPIO, 1);           //LED On
 
-	while(0){
-		T_readFrm = 0;
-		nv_nwkFrameCountSaveToFlash(T_frameCnt);
-		T_nwkFrmCntReadErr = nv_nwkFrameCountFromFlash((u32*)&T_readFrm);
-
-		if(T_readFrm != T_frameCnt){
-			T_nwkFrmCntError = 1;
+	nv_sts_t ret = nv_flashReadNew(1, NV_MODULE_APP, TEST_ITEM0, sizeof(nv_test_buf_0), test_chk_buf);
+	if(ret != NV_SUCC){
+		if(nv_dataStoreCheck()){
 			while(1);
 		}
-		T_frameCnt += 1;
+		if(nv_flashWriteNew(1, NV_MODULE_APP, TEST_ITEM0, sizeof(nv_test_buf_0), nv_test_buf_0) != NV_SUCC){
+			while(1);
+		}
+		nv_dataStoreSet();
+	}else{
+		if(memcmp(nv_test_buf_0, test_chk_buf, sizeof(nv_test_buf_0))){
+			while(1);
+		}
 	}
 
 	while(1){
-		pData = (u8*)&g_zbInfo;
-		for(s32 i = 0; i < sizeof(zb_info_t); i++){
-			pData[i] = (i + T_frameCnt);
+		nv_test_buf.cnt++;
+		if(nv_flashWriteNew(1, NV_MODULE_APP, TEST_ITEM1, sizeof(nv_test_buf_t), (u8 *)&nv_test_buf) != NV_SUCC){
+			while(1);
 		}
 
-		nv_flashWriteNew(1, NV_MODULE_ZB_INFO, NV_ITEM_ZB_INFO, sizeof(zb_info_t), (u8*)&g_zbInfo);
-		nv_flashReadNew(1, NV_MODULE_ZB_INFO, NV_ITEM_ZB_INFO, sizeof(zb_info_t), (u8*)&T_bufCheck);
-		for(s32 i = 0; i < sizeof(zb_info_t); i++){
-			if(pData[i] != T_bufCheck[i]){
-				while(1);
-			}
+		if(nv_flashReadNew(1, NV_MODULE_APP, TEST_ITEM1, sizeof(nv_test_buf_t), test_chk_buf) != NV_SUCC){
+			while(1);
 		}
 
-		nv_flashWriteNew(1, NV_MODULE_ZB_INFO, 2, sizeof(nwk_nib_t), (u8*)&g_zbInfo.nwkNib);
-		nv_flashReadNew(1, NV_MODULE_ZB_INFO, 2, sizeof(nwk_nib_t), (u8*)&T_bufCheck);
-		pData = (u8*)&g_zbInfo.nwkNib;
-		for(s32 i = 0; i < sizeof(nwk_nib_t); i++){
-			if(pData[i] != T_bufCheck[i]){
-				while(1);
-			}
+		if(memcmp((u8 *)&nv_test_buf, test_chk_buf, sizeof(nv_test_buf_t))){
+			while(1);
 		}
-		T_frameCnt += 1;
+
+		drv_generateRandomData(nv_test_buf_1, sizeof(nv_test_buf_1));
+		if(nv_flashWriteNew(1, NV_MODULE_APP, TEST_ITEM2, sizeof(nv_test_buf_1), nv_test_buf_1) != NV_SUCC){
+			while(1);
+		}
+
+		if(nv_flashReadNew(1, NV_MODULE_APP, TEST_ITEM2, sizeof(nv_test_buf_1), test_chk_buf) != NV_SUCC){
+			while(1);
+		}
+
+		if(memcmp(nv_test_buf_1, test_chk_buf, sizeof(nv_test_buf_1))){
+			while(1);
+		}
+
+		gpio_toggle(TEST_GPIO);
 	}
 }
 #endif
@@ -278,7 +345,7 @@ void moduleTest_PM(void){
 	}
 }
 #else
-	#error please compile the project of "sampleSwith"
+	#error please compile the project of "sampleSwitch"
 #endif
 #endif
 
@@ -286,13 +353,19 @@ void moduleTest_PM(void){
 
 #if MODULE_TEST_RF
 
-#define TX 1
+#define TX 	1
+#define SRX	0
 
 unsigned char  rx_packet[128]  __attribute__ ((aligned (4)));
 
 unsigned char  tx_packet[48] __attribute__ ((aligned (4))) = {0x09, 0x00, 0x00, 0x00, 0x0a, 0x03, 0x08, 0xd0, 0xff, 0xff, 0xff, 0xff, 0x07};//{0x14,0x00,0x00,0x00,0x15, 0x00, 0x11,0x22,0x33,0x44,0x55,0x66,0x77,0x88,0x99,0xaa,0xbb,0xcc,0xdd,0xee,0xff, 0xee, 0xdd, 0xcc, 0xbb};
 
 void moduleTest_RF(void){
+	drv_gpio_func_set(GPIO_PB7);
+	drv_gpio_output_en(GPIO_PB7, 1); 		//enable output
+	drv_gpio_input_en(GPIO_PB7, 0);			//disable input
+	drv_gpio_write(GPIO_PB7, 1);            //LED On
+
 	ZB_RADIO_TX_POWER_SET(0);
 	ZB_RADIO_TRX_CFG(144);
 
@@ -309,9 +382,16 @@ void moduleTest_RF(void){
 	{
 		WaitMs(100);
 		ZB_RADIO_TX_START(tx_packet);
+		gpio_toggle(GPIO_PB7);              	//LED On
 	}
 #else
+
+#if SRX
+	ZB_RADIO_TRX_SWITCH(RF_MODE_AUTO, 50);
+	ZB_RADIO_SRX_START(clock_time());
+#else
 	ZB_RADIO_TRX_SWITCH(RF_MODE_RX, 50);
+#endif
 	while(1);
 #endif
 }
@@ -323,10 +403,11 @@ u8 T_DBG_installCode[18] = {0x83,0xfe,0xd3,0x40,0x7a,0x93,0x97,0x23,0xa5,0xc6,0x
 u16 T_DBG_insCodeCRC;
 /*
  * expected: "66B6900981E1EE3CA4206B6B861C02BB"
+ * crc: c3 b5
  */
 u8 T_DBG_hashOut[16] = {0};
 
-void moudleTest_hash(void){
+void moduleTest_hash(void){
 	T_DBG_insCodeCRC = tl_bdbInstallCodeCRC16(T_DBG_installCode, 16);
 	T_DBG_installCode[16] = (u8)(T_DBG_insCodeCRC & 0xff);
 	T_DBG_installCode[17] = (u8)(T_DBG_insCodeCRC >> 8);
@@ -384,6 +465,8 @@ void moduleTest_adc(void){
 	drv_adc_mode_pin_set(DRV_ADC_VBAT_MODE, NOINPUT);
 #elif defined(MCU_CORE_8258) || defined(MCU_CORE_8278)
 	drv_adc_mode_pin_set(DRV_ADC_BASE_MODE, GPIO_PB3);
+#elif (TEST_MODULE == TEST_B91)
+	drv_adc_mode_pin_set(DRV_ADC_BASE_MODE, ADC_GPIO_PB0);
 #endif
 
 	drv_adc_enable(1);
@@ -403,7 +486,7 @@ void moduleTest_adc(void){
 #define TEST_826x		0
 #define TEST_8258		1
 #define TEST_8278		2
-#define TEST_9518		3
+#define TEST_B91		3
 
 #define TEST_MODULE		TEST_8258
 
@@ -416,7 +499,7 @@ void moduleTest_adc(void){
 #elif (TEST_MODULE == TEST_8278)
 	#define TEST_GPIO_0		GPIO_PA3
 	#define TEST_GPIO_1		GPIO_PA2
-#elif (TEST_MODULE == TEST_9518)
+#elif (TEST_MODULE == TEST_B91)
 	#define TEST_GPIO_0		GPIO_PB7
 	#define TEST_GPIO_1		GPIO_PB6
 #else
@@ -480,7 +563,7 @@ void moduleTest_timer(void){
 
 #if (__PROJECT_TL_DIMMABLE_LIGHT__)
 void moduleTest_pwm(void){
-	PWM_W_CHANNEL_SET();
+	PWM_R_CHANNEL_SET();
 	drv_pwm_init();
 
 	u8 duty = 5;
@@ -488,12 +571,12 @@ void moduleTest_pwm(void){
 	u32 max_tick = PWM_CLOCK_SOURCE / 1000;
 	u32 cmp_tick = (duty * max_tick) / fullDuty;
 
-	drv_pwm_cfg(PWM_W_CHANNEL, (u16)cmp_tick, (u16)max_tick);
-	drv_pwm_start(PWM_W_CHANNEL);
+	drv_pwm_cfg(PWM_R_CHANNEL, (u16)cmp_tick, (u16)max_tick);
+	drv_pwm_start(PWM_R_CHANNEL);
 
 	while(1){
 		if(cmp_tick <= max_tick){
-			drv_pwm_cfg(PWM_W_CHANNEL, (u16)cmp_tick, (u16)max_tick);
+			drv_pwm_cfg(PWM_R_CHANNEL, (u16)cmp_tick, (u16)max_tick);
 			cmp_tick += 2400;
 			WaitMs(500);
 		}else{
@@ -525,7 +608,7 @@ void moduleTest_pwm(void){
  *  	 |	B7   B6   D7   D2 |
  *  -----------------------------------
  *  	 |	MOSI MISO SCL  CS |
- *  9518 |	C7   C6   C5   C4 |
+ *  B91  |	C7   C6   C5   C4 |
  *  	 |	B7   B6   B5   C0 |
  *  -----------------------------------
  */
@@ -560,7 +643,7 @@ void moduleTest_pwm(void){
 /* SPI Clock */
 #define SPI_CLOCK					400000//400K
 
-/* SPI slave address */
+/* SPI slave address, for kite or vulture as slave*/
 #define SPI_SLAVE_ADDR				0x48000//0x8800
 #define SPI_SLAVE_ADDR_LEN			3//2
 
@@ -728,7 +811,7 @@ void moduleTest_i2c(void){
 #define TEST_826x		0
 #define TEST_8258		1
 #define TEST_8278		2
-#define TEST_9518		3
+#define TEST_B91		3
 
 #define TEST_MODULE		TEST_8258
 
@@ -750,12 +833,12 @@ void moduleTest_i2c(void){
 	#define TEST_SW1		GPIO_PD6
 	#define TEST_SW2		GPIO_PD5
 	#define TEST_GPIO		GPIO_PB2
-#elif (TEST_MODULE == TEST_9518)
-	#define TEST_LED1		GPIO_PB7
-	#define TEST_LED2		GPIO_PB6
-	#define TEST_SW1		GPIO_PC4
-	#define TEST_SW2		GPIO_PC5
-	#define TEST_GPIO		GPIO_PA0
+#elif (TEST_MODULE == TEST_B91)	//board_9128_dongle
+	#define TEST_LED1		GPIO_PB1
+	#define TEST_LED2		GPIO_PB4
+	#define TEST_SW1		GPIO_PB3
+	#define TEST_SW2		GPIO_PB2
+	#define TEST_GPIO		GPIO_PC1
 #else
 	#error	"undefined TEST_MODULE"
 #endif
@@ -778,11 +861,20 @@ void moduleTest_gpioIrqCb3(void){
 	T_DBG_gpioIrqCb3++;
 	gpio_toggle(TEST_LED1);
 
-	if(gpio_read(TEST_GPIO)){
+	if(drv_gpio_read(TEST_GPIO)){
+#if (TEST_MODULE == TEST_B91)
+		drv_gpio_up_down_resistor(TEST_GPIO, GPIO_PIN_PULLUP_10K);
+#else
 		drv_gpio_up_down_resistor(TEST_GPIO, PM_PIN_PULLUP_10K);
+#endif
 		drv_gpio_irq_config(GPIO_IRQ_MODE, TEST_GPIO, FALLING_EDGE, moduleTest_gpioIrqCb3);
 	}else{
+#if (TEST_MODULE == TEST_B91)
+		drv_gpio_up_down_resistor(TEST_GPIO, GPIO_PIN_PULLDOWN_100K);
+#else
 		drv_gpio_up_down_resistor(TEST_GPIO, PM_PIN_PULLDOWN_100K);
+#endif
+
 		drv_gpio_irq_config(GPIO_IRQ_MODE, TEST_GPIO, RISING_EDGE, moduleTest_gpioIrqCb3);
 	}
 }
@@ -806,28 +898,40 @@ void moduleTest_gpioIrq(void)		//comment out user_init
 	drv_gpio_output_en(TEST_SW1, 0); 			//enable output
 	drv_gpio_input_en(TEST_SW1, 1);				//disable input
 	drv_gpio_up_down_resistor(TEST_SW1, PM_PIN_PULLUP_10K);
-	drv_gpio_irq_config(GPIO_IRQ_MODE, TEST_SW1, FALLING_EDGE, moduleTest_gpioIrqCb1);
-	drv_gpio_irq_en(TEST_SW1);
+	drv_gpio_irq_config(GPIO_IRQ_RISC0_MODE, TEST_SW1, FALLING_EDGE, moduleTest_gpioIrqCb1);
+	drv_gpio_irq_risc0_en(TEST_SW1);
 #endif
 
 #if 0
 	drv_gpio_func_set(TEST_SW2);
 	drv_gpio_output_en(TEST_SW2, 0); 			//enable output
 	drv_gpio_input_en(TEST_SW2, 1);				//disable input
+#if (TEST_MODULE == TEST_B91)
+	drv_gpio_up_down_resistor(TEST_SW2, GPIO_PIN_PULLUP_10K);
+#else
 	drv_gpio_up_down_resistor(TEST_SW2, PM_PIN_PULLUP_10K);
-	drv_gpio_irq_config(GPIO_IRQ_RISC0_MODE, TEST_SW2, FALLING_EDGE, moduleTest_gpioIrqCb2);
-	drv_gpio_irq_risc0_en(TEST_SW2);
+#endif
+	drv_gpio_irq_config(GPIO_IRQ_RISC1_MODE, TEST_SW2, FALLING_EDGE, moduleTest_gpioIrqCb2);
+	drv_gpio_irq_risc1_en(TEST_SW2);
 #endif
 
 	drv_gpio_func_set(TEST_GPIO);
 	drv_gpio_output_en(TEST_GPIO, 0); 			//enable output
 	drv_gpio_input_en(TEST_GPIO, 1);			//disable input
-	if(gpio_read(TEST_GPIO)){				//test edge trigger irq
+	if(drv_gpio_read(TEST_GPIO)){				//test edge trigger irq
+#if (TEST_MODULE == TEST_B91)
+		drv_gpio_up_down_resistor(TEST_GPIO, GPIO_PIN_PULLUP_10K);
+#else
 		drv_gpio_up_down_resistor(TEST_GPIO, PM_PIN_PULLUP_10K);
+#endif
 		drv_gpio_irq_config(GPIO_IRQ_MODE, TEST_GPIO, FALLING_EDGE, moduleTest_gpioIrqCb3);
 		drv_gpio_write(TEST_LED1, 1);
 	}else{
+#if (TEST_MODULE == TEST_B91)
+		drv_gpio_up_down_resistor(TEST_GPIO, GPIO_PIN_PULLDOWN_100K);
+#else
 		drv_gpio_up_down_resistor(TEST_GPIO, PM_PIN_PULLDOWN_100K);
+#endif
 		drv_gpio_irq_config(GPIO_IRQ_MODE, TEST_GPIO, RISING_EDGE, moduleTest_gpioIrqCb3);
 		drv_gpio_write(TEST_LED1, 0);
 	}
@@ -846,7 +950,7 @@ void moduleTest_gpioIrq(void)		//comment out user_init
 
 void moduleTest_start(void){
 #if MODULE_TEST_MMOHASH
-	moudleTest_hash();
+	moduleTest_hash();
 #endif
 
 #if MODULE_TEST_CCM

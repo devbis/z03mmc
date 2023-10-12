@@ -7,6 +7,7 @@
  * @date    2021
  *
  * @par     Copyright (c) 2021, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *			All rights reserved.
  *
  *          Licensed under the Apache License, Version 2.0 (the "License");
  *          you may not use this file except in compliance with the License.
@@ -19,6 +20,7 @@
  *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *          See the License for the specific language governing permissions and
  *          limitations under the License.
+ *
  *******************************************************************************************************/
 
 
@@ -69,6 +71,7 @@ ota_callBack_t sensorDevice_otaCb =
 };
 #endif
 
+ev_timer_event_t *steerTimerEvt = NULL;
 
 /**********************************************************************
  * FUNCTIONS
@@ -76,6 +79,7 @@ ota_callBack_t sensorDevice_otaCb =
 s32 sensorDevice_bdbNetworkSteerStart(void *arg){
 	bdb_networkSteerStart();
 
+	steerTimerEvt = NULL;
 	return -1;
 }
 
@@ -115,10 +119,16 @@ void zbdemo_bdbInitCb(u8 status, u8 joinedNetwork){
 			do{
 				jitter = zb_random() % 0x0fff;
 			}while(jitter == 0);
-			TL_ZB_TIMER_SCHEDULE(sensorDevice_bdbNetworkSteerStart, NULL, jitter);
+
+			if(steerTimerEvt){
+				TL_ZB_TIMER_CANCEL(&steerTimerEvt);
+			}
+			steerTimerEvt = TL_ZB_TIMER_SCHEDULE(sensorDevice_bdbNetworkSteerStart, NULL, jitter);
 		}
 	}else{
-
+		if(joinedNetwork){
+			zb_rejoinReqWithBackOff(zb_apsChannelMaskGet(), g_bdbAttrs.scanDuration);
+		}
 	}
 }
 
@@ -134,53 +144,60 @@ void zbdemo_bdbInitCb(u8 status, u8 joinedNetwork){
  * @return  None
  */
 void zbdemo_bdbCommissioningCb(u8 status, void *arg){
-	if(status == BDB_COMMISSION_STA_SUCCESS){
-		zb_setPollRate(POLL_RATE);
+	switch(status){
+		case BDB_COMMISSION_STA_SUCCESS:
+			light_blink_start(2, 200, 200);
+
+			zb_setPollRate(POLL_RATE);
+
+			if(steerTimerEvt){
+				TL_ZB_TIMER_CANCEL(&steerTimerEvt);
+			}
 
 #ifdef ZCL_POLL_CTRL
-		sensorDevice_zclCheckInStart();
+		    sensorDevice_zclCheckInStart();
 #endif
-
-		light_blink_start(2, 200, 200);
-
 #ifdef ZCL_OTA
-        ota_queryStart(OTA_PERIODIC_QUERY_INTERVAL);
+			ota_queryStart(OTA_PERIODIC_QUERY_INTERVAL);
 #endif
-	}else if(status == BDB_COMMISSION_STA_IN_PROGRESS){
+			break;
+		case BDB_COMMISSION_STA_IN_PROGRESS:
+			break;
+		case BDB_COMMISSION_STA_NOT_AA_CAPABLE:
+			break;
+		case BDB_COMMISSION_STA_NO_NETWORK:
+		case BDB_COMMISSION_STA_TCLK_EX_FAILURE:
+		case BDB_COMMISSION_STA_TARGET_FAILURE:
+			{
+				u16 jitter = 0;
+				do{
+					jitter = zb_random() % 0x0fff;
+				}while(jitter == 0);
 
-	}else if(status == BDB_COMMISSION_STA_NOT_AA_CAPABLE){
-
-	}else if(status == BDB_COMMISSION_STA_NO_NETWORK){
-		u16 jitter = 0;
-		do{
-			jitter = zb_random() % 0x0fff;
-		}while(jitter == 0);
-		TL_ZB_TIMER_SCHEDULE(sensorDevice_bdbNetworkSteerStart, NULL, jitter);
-	}else if(status == BDB_COMMISSION_STA_TARGET_FAILURE){
-
-	}else if(status == BDB_COMMISSION_STA_FORMATION_FAILURE){
-
-	}else if(status == BDB_COMMISSION_STA_NO_IDENTIFY_QUERY_RESPONSE){
-
-	}else if(status == BDB_COMMISSION_STA_BINDING_TABLE_FULL){
-
-	}else if(status == BDB_COMMISSION_STA_NO_SCAN_RESPONSE){
-
-	}else if(status == BDB_COMMISSION_STA_NOT_PERMITTED){
-
-	}else if(status == BDB_COMMISSION_STA_TCLK_EX_FAILURE){
-
-	}else if(status == BDB_COMMISSION_STA_PARENT_LOST){
-		/*
-		 * Becoming an orphan node now.
-		 * Attempt to join network by invoking rejoin request,
-		 * internal will start an rejoin backoff timer
-		 * based on 'config_rejoin_backoff_time' once rejoin failed.
-		 */
-		//zb_rejoin_mode_set(REJOIN_INSECURITY);
-		zb_rejoinReq(NLME_REJOIN_METHOD_REJOIN, zb_apsChannelMaskGet());
-	}else if(status == BDB_COMMISSION_STA_REJOIN_FAILURE){
-
+				if(steerTimerEvt){
+					TL_ZB_TIMER_CANCEL(&steerTimerEvt);
+				}
+				steerTimerEvt = TL_ZB_TIMER_SCHEDULE(sensorDevice_bdbNetworkSteerStart, NULL, jitter);
+			}
+			break;
+		case BDB_COMMISSION_STA_FORMATION_FAILURE:
+			break;
+		case BDB_COMMISSION_STA_NO_IDENTIFY_QUERY_RESPONSE:
+			break;
+		case BDB_COMMISSION_STA_BINDING_TABLE_FULL:
+			break;
+		case BDB_COMMISSION_STA_NO_SCAN_RESPONSE:
+			break;
+		case BDB_COMMISSION_STA_NOT_PERMITTED:
+			break;
+		case BDB_COMMISSION_STA_PARENT_LOST:
+			//zb_rejoinSecModeSet(REJOIN_INSECURITY);
+			zb_rejoinReq(zb_apsChannelMaskGet(), g_bdbAttrs.scanDuration);
+			break;
+		case BDB_COMMISSION_STA_REJOIN_FAILURE:
+			break;
+		default:
+			break;
 	}
 }
 
@@ -209,6 +226,8 @@ void sensorDevice_otaProcessMsgHandler(u8 evt, u8 status)
 		}else{
 			ota_queryStart(OTA_PERIODIC_QUERY_INTERVAL);
 		}
+	}else if(evt == OTA_EVT_IMAGE_DONE){
+		zb_setPollRate(POLL_RATE);
 	}
 }
 #endif

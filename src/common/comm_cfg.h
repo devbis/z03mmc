@@ -7,6 +7,7 @@
  * @date    2021
  *
  * @par     Copyright (c) 2021, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *			All rights reserved.
  *
  *          Licensed under the Apache License, Version 2.0 (the "License");
  *          you may not use this file except in compliance with the License.
@@ -19,6 +20,7 @@
  *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *          See the License for the specific language governing permissions and
  *          limitations under the License.
+ *
  *******************************************************************************************************/
 
 #pragma once
@@ -66,7 +68,7 @@
 #define TLSR_8258_512K						0x02
 #define TLSR_8258_1M						0x03
 #define TLSR_8278							0x04
-#define TLSR_9518							0x05
+#define TLSR_B91							0x05
 
 /* Image types */
 #if (BOOT_LOADER_MODE)

@@ -33,6 +33,7 @@
 #define ZCL_BASIC_SW_BUILD_ID     	{9,'0','0','0','0','-','0','0','0','0'}
 #endif
 
+
 /**********************************************************************
  * TYPEDEFS
  */
@@ -54,6 +55,9 @@ const u16 sensorDevice_inClusterList[] =
 #endif
 #ifdef ZCL_TEMPERATURE_MEASUREMENT
 	ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT,
+#endif
+#ifdef ZCL_IAS_ZONE
+	ZCL_CLUSTER_SS_IAS_ZONE,
 #endif
 #ifdef ZCL_POLL_CTRL
 	ZCL_CLUSTER_GEN_POLL_CONTROL,

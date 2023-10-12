@@ -60,8 +60,8 @@ extern "C" {
 #define BOARD_8258_DONGLE				5
 #define BOARD_8278_EVK					6
 #define BOARD_8278_DONGLE				7
-#define BOARD_9518_EVK					8
-#define BOARD_9518_DONGLE				9
+#define BOARD_B91_EVK					8
+#define BOARD_B91_DONGLE				9
 #define BOARD_8258_03MMC				10
 
 /* Board define */
@@ -84,7 +84,7 @@ extern "C" {
 	#define CLOCK_SYS_CLOCK_HZ  		48000000
 #elif defined(MCU_CORE_B91)
 	#define FLASH_CAP_SIZE_1M			1
-	#define BOARD						BOARD_9518_DONGLE//BOARD_9518_EVK
+	#define BOARD						BOARD_B91_DONGLE//BOARD_B91_EVK
 	#define CLOCK_SYS_CLOCK_HZ  		48000000
 #else
 	#error "MCU is undefined!"
@@ -109,10 +109,10 @@ extern "C" {
 	#include "board_8278_evk.h"
 #elif (BOARD == BOARD_8278_DONGLE)
 	#include "board_8278_dongle.h"
-#elif (BOARD == BOARD_9518_EVK)
-	#include "board_9518_evk.h"
-#elif (BOARD == BOARD_9518_DONGLE)
-	#include "board_9518_dongle.h"
+#elif (BOARD == BOARD_B91_EVK)
+	#include "board_b91_evk.h"
+#elif (BOARD == BOARD_B91_DONGLE)
+	#include "board_b91_dongle.h"
 #endif
 
 

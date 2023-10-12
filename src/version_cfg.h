@@ -7,6 +7,7 @@
  * @date    2021
  *
  * @par     Copyright (c) 2021, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *			All rights reserved.
  *
  *          Licensed under the Apache License, Version 2.0 (the "License");
  *          you may not use this file except in compliance with the License.
@@ -19,6 +20,7 @@
  *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *          See the License for the specific language governing permissions and
  *          limitations under the License.
+ *
  *******************************************************************************************************/
 
 #pragma once
@@ -36,7 +38,7 @@
 #elif defined(MCU_CORE_8278)
 		#define CHIP_TYPE					TLSR_8278
 #elif defined(MCU_CORE_B91)
-		#define CHIP_TYPE					TLSR_9518
+		#define CHIP_TYPE					TLSR_B91
 #endif
 
 #define APP_RELEASE							0x10//app release 1.0
