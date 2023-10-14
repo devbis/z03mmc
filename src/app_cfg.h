@@ -117,17 +117,21 @@ extern "C" {
 
 
 /* Voltage detect module */
-/* If you want to define the VOLTAGE_DETECT_ENABLE to 1,
- * and the model of the development board is B91 evk or dongle,
- * be sure to connect GPIO_PB0 to VCC.
+/* If VOLTAGE_DETECT_ENABLE is set,
+ * 1) if MCU_CORE_826x is defined, the DRV_ADC_VBAT_MODE mode is used by default,
+ * and there is no need to configure the detection IO port;
+ * 2) if MCU_CORE_8258 or MCU_CORE_8278 is defined, the DRV_ADC_VBAT_MODE mode is used by default,
+ * we need to configure the detection IO port, and the IO must be in a floating state.
+ * 3) if MCU_CORE_B91 is defined, the DRV_ADC_BASE_MODE mode is used by default,
+ * we need to configure the detection IO port, and the IO must be connected to the target under test,
+ * such as VCC.
  */
-#define VOLTAGE_DETECT_ENABLE						0
-
+#define VOLTAGE_DETECT_ENABLE						1
 
 #if defined(MCU_CORE_826x)
 	#define VOLTAGE_DETECT_ADC_PIN					0
 #elif defined(MCU_CORE_8258) || defined(MCU_CORE_8278)
-	#define VOLTAGE_DETECT_ADC_PIN					GPIO_PB5
+	#define VOLTAGE_DETECT_ADC_PIN					GPIO_PC5
 #elif defined(MCU_CORE_B91)
 	#define VOLTAGE_DETECT_ADC_PIN					ADC_GPIO_PB0
 #endif
@@ -171,7 +175,6 @@ extern "C" {
  */
 typedef enum{
 	EV_POLL_ED_DETECT,
-	EV_POLL_PM,
 	EV_POLL_HCI,
     EV_POLL_IDLE,
 	EV_POLL_MAX,

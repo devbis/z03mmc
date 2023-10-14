@@ -1,7 +1,6 @@
-#include "compiler.h"
+#include "tl_common.h"
 #include "types.h"
 #include "app_cfg.h"
-#include "chip_8258/i2c.h"
 
 _attribute_data_retention_ bool i2c_sending;
 
@@ -19,11 +18,11 @@ void send_i2c(u8 device_id, const u8 *buffer, int dataLen){
 }
 
 u8 test_i2c_device(u8 address){
-	reg_i2c_id = address<<1;
+	reg_i2c_id = address << 1;
 	reg_i2c_ctrl = FLD_I2C_CMD_START | FLD_I2C_CMD_ID;
 	while(reg_i2c_status & FLD_I2C_CMD_BUSY);
 	reg_i2c_ctrl = FLD_I2C_CMD_STOP;
 	while(reg_i2c_status & FLD_I2C_CMD_BUSY	);
 
-return (reg_i2c_status & FLD_I2C_NAK)?0:1;
+    return (reg_i2c_status & FLD_I2C_NAK) ? 0 : 1;
 }

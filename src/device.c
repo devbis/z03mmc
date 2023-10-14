@@ -15,7 +15,6 @@
 #include "zcl_relative_humidity.h"
 #include "app_i2c.h"
 #include "shtv3_sensor.h"
-#include "battery.h"
 #include "lcd.h"
 
 
@@ -33,7 +32,6 @@
  * GLOBAL VARIABLES
  */
 app_ctx_t g_sensorAppCtx;
-extern battery_data_t battery_data;
 
 
 #ifdef ZCL_OTA
@@ -181,16 +179,24 @@ u8 is_comfort(s16 t, u16 h) {
 void read_sensor_and_save() {
 	s16 temp = 0;
 	u16 humi = 0;
+    u16 voltage, percentage;
+	u8 converted_voltage, percentage2;
 
 	read_sensor(&temp,&humi);
     // printf("Temp: %d.%d, humid: %d\r\n", temp/10, temp % 10, humi);
     g_zcl_temperatureAttrs.measuredValue = temp * 10;
     g_zcl_relHumidityAttrs.measuredValue = humi * 100;
 
-    check_battery();
-    // printf("battery %d mv, %d %%\r\n", battery_data.battery_mv, battery_data.battery_level);
-    g_zcl_powerAttrs.batteryVoltage = battery_data.battery_mv / 100;
-    g_zcl_powerAttrs.batteryPercentage = battery_data.battery_level * 2;
+    voltage = drv_get_adc_data();
+    converted_voltage = (u8)(voltage / 100);
+	percentage = ((voltage - BATTERY_SAFETY_THRESHOLD) / 4);
+	if (percentage > 0xc8) percentage = 0xc8;
+	percentage2 = (u8)percentage;
+
+	// printf("converted voltage %d diff %d", converted_voltage, (voltage - BATTERY_SAFETY_THRESHOLD));
+	//printf(" , percentage2 %d\r\n", percentage2);
+    g_zcl_powerAttrs.batteryVoltage = converted_voltage;
+    g_zcl_powerAttrs.batteryPercentage = percentage2;
 
     // update lcd
     show_temp_symbol(1);
@@ -301,7 +307,6 @@ void user_init(bool isRetention)
 	drv_pm_wakeupPinConfig(g_sensorPmCfg, sizeof(g_sensorPmCfg)/sizeof(drv_pm_pinCfg_t));
 #endif
 
-	random_generator_init();  //must
 	init_i2c();
 	init_sensor();
     init_lcd(!isRetention);

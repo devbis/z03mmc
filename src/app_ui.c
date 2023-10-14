@@ -7,6 +7,7 @@
  * @date    2021
  *
  * @par     Copyright (c) 2021, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
+ *			All rights reserved.
  *
  *          Licensed under the Apache License, Version 2.0 (the "License");
  *          you may not use this file except in compliance with the License.
@@ -19,6 +20,7 @@
  *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *          See the License for the specific language governing permissions and
  *          limitations under the License.
+ *
  *******************************************************************************************************/
 
 /**********************************************************************
@@ -32,7 +34,6 @@
 
 #include "shtv3_sensor.h"
 #include "lcd.h"
-#include "device.h"
 
 /**********************************************************************
  * LOCAL CONSTANTS
@@ -147,20 +148,20 @@ void buttonKeepPressed(u8 btNum){
 void buttonShortPressed(u8 btNum){
 	if(btNum == VK_SW1){
 		if(zb_isDeviceJoinedNwk()){
-			epInfo_t dstEpInfo;
-			memset((u8 *)&dstEpInfo, 0, sizeof(epInfo_t));
+//			epInfo_t dstEpInfo;
+//			memset((u8 *)&dstEpInfo, 0, sizeof(epInfo_t));
+//
+//			dstEpInfo.dstAddrMode = APS_SHORT_DSTADDR_WITHEP;
+//			dstEpInfo.dstEp = SENSOR_DEVICE_ENDPOINT;
+//			dstEpInfo.dstAddr.shortAddr = 0x0000;
+//			dstEpInfo.profileId = HA_PROFILE_ID;
 
-			dstEpInfo.dstAddrMode = APS_SHORT_DSTADDR_WITHEP;
-			dstEpInfo.dstEp = SENSOR_DEVICE_ENDPOINT;
-			dstEpInfo.dstAddr.shortAddr = 0x0000;
-			dstEpInfo.profileId = HA_PROFILE_ID;
-
-			zoneStatusChangeNoti_t statusChangeNotification;
-
-			statusChangeNotification.zoneStatus = ZONE_STATUS_TEST;
-			statusChangeNotification.extStatus = 0;
-			statusChangeNotification.zoneId = ZCL_ZONE_ID_INVALID;
-			statusChangeNotification.delay = 0;
+//			zoneStatusChangeNoti_t statusChangeNotification;
+//
+//			statusChangeNotification.zoneStatus = ZONE_STATUS_TEST;
+//			statusChangeNotification.extStatus = 0;
+//			statusChangeNotification.zoneId = ZCL_ZONE_ID_INVALID;
+//			statusChangeNotification.delay = 0;
 
 			// zcl_iasZone_statusChangeNotificationCmd(SENSOR_DEVICE_ENDPOINT, &dstEpInfo, TRUE, &statusChangeNotification);
 		}
