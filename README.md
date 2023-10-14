@@ -51,10 +51,11 @@ it compatible with Zigbee networks.
 3. Configure and build:
     ```sh
     cmake -DSDK_PREFIX=$(pwd)/../tl_zigbee_sdk -DTOOLCHAIN_PREFIX=$(pwd)/../tc32 -B build .
-    cmake --build build --target z03mmc.bin
+    cmake --build build --target z03mmc.zigbee
     ```
 
     Firmware binary is located at `build/src/z03mmc.bin`
+    The binary with OTA header is at the same folder, ending with `z03mmc.zigbee`
 
 ## Flashing firmware with USB to UART
 

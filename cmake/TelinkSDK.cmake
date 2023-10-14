@@ -45,9 +45,9 @@ FUNCTION(ADD_OTA_TARGET TARGET TOOLS_PATH)
     ELSE()
       SET(FILENAME "${TARGET}")
     ENDIF()
-    ADD_CUSTOM_TARGET("${TARGET}.ota"
+    ADD_CUSTOM_TARGET("${TARGET}.zigbee"
         DEPENDS ${TARGET}.bin
-        COMMAND python3 ${TOOLS_PATH}/make_ota.py ${FILENAME}.bin -o ${FILENAME}.ota
+        COMMAND python3 ${TOOLS_PATH}/make_ota.py ${FILENAME}.bin
     )
 ENDFUNCTION()
 
