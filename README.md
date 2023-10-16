@@ -11,8 +11,10 @@ this firmware. This repository hosts the code and related resources to flash the
 it compatible with Zigbee networks.
 
 ## Features
-
-- Firmware to convert Xiaomi LYWSD03MC device to a Zigbee compatible device with Heiman STHM-I1H model to allow zigbee2mqtt, HOMEd, and other zigbee controller use it as a known device and bind required clusters automatically.
+- Full-featured firmware to convert Xiaomi LYWSD03MC device with default ZCL battery, temperature and relative humidity clusters
+- Display support for known revisions
+- OTA support in firmware and binaries in ZCL format for update 
+- Flashable over-the-air from custom ATC firmware https://pvvx.github.io/ATC_MiThermometer/TelinkMiFlasher.html
 - Flashable over SWS-UART interface using one of:
 
   - https://pvvx.github.io/ATC_MiThermometer/USBCOMFlashTx.html
@@ -57,6 +59,11 @@ it compatible with Zigbee networks.
     Firmware binary is located at `build/src/z03mmc.bin`
     The binary with OTA header is at the same folder, ending with `z03mmc.zigbee`
 
+
+## Flashing from a custom bluetooth firmware
+1. Write transitional custom bluetooth firmware [ATC_ota_400000](./assets/ATC_ota_40000.bin) using an awesome tool from ATC_MiThermometer https://pvvx.github.io/ATC_MiThermometer/TelinkMiFlasher.html
+2. Flash z03mmc.bin firmware over transitional firmware to convert it to zigbee. Use https://devbis.github.io/telink-zigbee/ page if previous flasher stops because fo the firmware size.
+
 ## Flashing firmware with USB to UART
 
 ### Prerequisites: 
@@ -90,8 +97,8 @@ z03mmc is based on the original work of @pvvx, and @atc1441, who developed the i
 
 1. Flash the firmware
 2. Enable pairing mode on Zigbee coordinator
-3. In case it is not joining, close the RESET and GND contacts on the board for 3 seconds to reset Zigbee settings. Replug the battery may require.
-4. It introduces itself as Heiman STHM-I1H model to match the model in zigbee2mqtt and other controller software tools
+3. In case it is not joining, close the RESET and GND contacts on the board for 3 seconds to reset Zigbee settings. Replug the battery may require
+4. For zigbee2mqtt you need to add custom converter if you use version 1.33.1 or earlier
 
 ## License
 
