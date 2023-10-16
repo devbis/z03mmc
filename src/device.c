@@ -283,6 +283,42 @@ char int_to_hex(u8 num){
 	return digits[num];
 }
 
+void populate_sw_build() {
+	g_zcl_basicAttrs.swBuildId[1] = int_to_hex(STACK_RELEASE>>4);
+	g_zcl_basicAttrs.swBuildId[2] = int_to_hex(STACK_RELEASE & 0xf);
+	g_zcl_basicAttrs.swBuildId[3] = int_to_hex(STACK_BUILD>>4);
+	g_zcl_basicAttrs.swBuildId[4] = int_to_hex(STACK_BUILD & 0xf);
+	g_zcl_basicAttrs.swBuildId[6] = int_to_hex(APP_RELEASE>>4);
+	g_zcl_basicAttrs.swBuildId[7] = int_to_hex(APP_RELEASE & 0xf);
+	g_zcl_basicAttrs.swBuildId[8] = int_to_hex(APP_BUILD>>4);
+	g_zcl_basicAttrs.swBuildId[9] = int_to_hex(APP_BUILD & 0xf);
+}
+
+void populate_date_code() {
+	u8 month;
+	if (__DATE__[0] == 'J' && __DATE__[1] == 'a' && __DATE__[2] == 'n') month = 1;
+	else if (__DATE__[0] == 'F') month = 2;
+	else if (__DATE__[0] == 'M' && __DATE__[1] == 'a' && __DATE__[2] == 'r') month = 3;
+	else if (__DATE__[0] == 'A' && __DATE__[1] == 'p') month = 4;
+	else if (__DATE__[0] == 'M' && __DATE__[1] == 'a' && __DATE__[2] == 'y') month = 5;
+	else if (__DATE__[0] == 'J' && __DATE__[1] == 'u' && __DATE__[2] == 'n') month = 6;
+	else if (__DATE__[0] == 'J' && __DATE__[1] == 'u' && __DATE__[2] == 'l') month = 7;
+	else if (__DATE__[0] == 'A' && __DATE__[1] == 'u') month = 8;
+	else if (__DATE__[0] == 'S') month = 9;
+	else if (__DATE__[0] == 'O') month = 10;
+	else if (__DATE__[0] == 'N') month = 11;
+	else if (__DATE__[0] == 'D') month = 12;
+
+	g_zcl_basicAttrs.dateCode[1] = __DATE__[7];
+	g_zcl_basicAttrs.dateCode[2] = __DATE__[8];
+	g_zcl_basicAttrs.dateCode[3] = __DATE__[9];
+	g_zcl_basicAttrs.dateCode[4] = __DATE__[10];
+	g_zcl_basicAttrs.dateCode[5] = '0' + month / 10;
+	g_zcl_basicAttrs.dateCode[6] = '0' + month % 10;
+	g_zcl_basicAttrs.dateCode[7] = __DATE__[4] >= '0' ? (__DATE__[4]) : '0';
+	g_zcl_basicAttrs.dateCode[8] = __DATE__[5];
+}
+
 
 /*********************************************************************
  * @fn      user_init
@@ -314,15 +350,9 @@ void user_init(bool isRetention)
     ind_init();
 
 	if(!isRetention){
-	    /* Populate swBuildId version */
-		g_zcl_basicAttrs.swBuildId[1] = int_to_hex(STACK_RELEASE>>4);
-		g_zcl_basicAttrs.swBuildId[2] = int_to_hex(STACK_RELEASE & 0xf);
-		g_zcl_basicAttrs.swBuildId[3] = int_to_hex(STACK_BUILD>>4);
-		g_zcl_basicAttrs.swBuildId[4] = int_to_hex(STACK_BUILD & 0xf);
-		g_zcl_basicAttrs.swBuildId[6] = int_to_hex(APP_RELEASE>>4);
-		g_zcl_basicAttrs.swBuildId[7] = int_to_hex(APP_RELEASE & 0xf);
-		g_zcl_basicAttrs.swBuildId[8] = int_to_hex(APP_BUILD>>4);
-		g_zcl_basicAttrs.swBuildId[9] = int_to_hex(APP_BUILD & 0xf);
+	    /* Populate properties with compiled-in values */
+		populate_sw_build();
+		populate_date_code();
 
 		/* Initialize Stack */
 		stack_init();

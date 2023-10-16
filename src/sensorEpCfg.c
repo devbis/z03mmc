@@ -33,6 +33,10 @@
 #define ZCL_BASIC_SW_BUILD_ID     	{9,'0','0','0','0','-','0','0','0','0'}
 #endif
 
+#ifndef ZCL_BASIC_DATE_CODE
+#define ZCL_BASIC_DATE_CODE     	{8,'0','0','0','0','0','0','0','0'}
+#endif
+
 
 /**********************************************************************
  * TYPEDEFS
@@ -108,6 +112,9 @@ zcl_basicAttr_t g_zcl_basicAttrs =
 #ifdef ZCL_BASIC_SW_BUILD_ID
 	.swBuildId		= ZCL_BASIC_SW_BUILD_ID,
 #endif
+#ifdef ZCL_BASIC_DATE_CODE
+	.dateCode 		= ZCL_BASIC_DATE_CODE,
+#endif
 	.powerSource	= POWER_SOURCE_BATTERY,
 	.deviceEnable	= TRUE,
 };
@@ -123,6 +130,7 @@ const zclAttrInfo_t basic_attrTbl[] =
 	{ ZCL_ATTRID_BASIC_POWER_SOURCE, 		ZCL_DATA_TYPE_ENUM8,    ACCESS_CONTROL_READ,  						(u8*)&g_zcl_basicAttrs.powerSource},
 	{ ZCL_ATTRID_BASIC_DEV_ENABLED,  		ZCL_DATA_TYPE_BOOLEAN,  ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_basicAttrs.deviceEnable},
 	{ ZCL_ATTRID_BASIC_SW_BUILD_ID,  		ZCL_DATA_TYPE_CHAR_STR, ACCESS_CONTROL_READ,  						(u8*)&g_zcl_basicAttrs.swBuildId},
+	{ ZCL_ATTRID_BASIC_DATE_CODE,           ZCL_DATA_TYPE_CHAR_STR, ACCESS_CONTROL_READ,                        (u8*)g_zcl_basicAttrs.dateCode},
 
 	{ ZCL_ATTRID_GLOBAL_CLUSTER_REVISION, 	ZCL_DATA_TYPE_UINT16,  	ACCESS_CONTROL_READ,  						(u8*)&zcl_attr_global_clusterRevision},
 };
