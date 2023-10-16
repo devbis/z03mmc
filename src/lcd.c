@@ -9,6 +9,8 @@
 
 #define pm_wait_ms(t) cpu_stall_wakeup_by_timer0(t*CLOCK_16M_SYS_TIMER_CLK_1MS);
 
+#define LCD_UART_BAUD 38400
+
 /*
  *  LYWSD03MMC LCD buffer:  byte.bit
 
@@ -53,6 +55,7 @@ void init_lcd(bool clear){
 		i2c_address_lcd = 0x7C;
 		g_zcl_basicAttrs.hwVersion = 19;
 	}else{// B1.6 uses UART and is not testable this way
+    	// UART 38400 BAUD
 		lcd_version = 1;
 		g_zcl_basicAttrs.hwVersion = 16;
 	}
@@ -93,9 +96,9 @@ void init_lcd_deepsleep(){
 	if(lcd_version != 1)
 		return;
 
-	uart_gpio_set(UART_TX_PD7, UART_RX_PB0);
+	drv_uart_pin_set(UART_TX_PD7, UART_RX_PB0);
 	uart_reset();
-	uart_init(61,  9, PARITY_NONE, STOP_BIT_ONE);
+	uart_init_baudrate(LCD_UART_BAUD, UART_CLOCK_SOURCE, PARITY_NONE, STOP_BIT_ONE);
 	uart_dma_enable(0, 0);
 	dma_chn_irq_enable(0, 0);
 	uart_irq_enable(0,0);
@@ -121,28 +124,27 @@ u8 reverse(u8 revByte) {
 }
 
 void send_to_lcd_long(u8 byte1, u8 byte2, u8 byte3, u8 byte4, u8 byte5, u8 byte6){
-
-if(lcd_version == 0){// B1.4 Hardware
-    u8 lcd_set_segments[] =    {0x80,0x40,0xC0,byte1,0xC0,byte2,0xC0,byte3,0xC0,byte4,0xC0,byte5,0xC0,byte6,0xC0,0x00,0xC0,0x00};
-	send_i2c(i2c_address_lcd,lcd_set_segments, sizeof(lcd_set_segments));
-}else if(lcd_version == 1){// B1.6 Hardware
-	uart_send_lcd(byte1,byte2,byte3,byte4,byte5,byte6);
-}else if(lcd_version == 2){// B1.9 Hardware
-    u8 lcd_set_segments[] =    {0x04,reverse(byte1),reverse(byte2),0x00,0x00,reverse(byte3),reverse(byte4),0x00,0x00,reverse(byte5),reverse(byte6)};
-	send_i2c(i2c_address_lcd,lcd_set_segments, sizeof(lcd_set_segments));
-}
+    if(lcd_version == 0){// B1.4 Hardware
+        u8 lcd_set_segments[] =    {0x80,0x40,0xC0,byte1,0xC0,byte2,0xC0,byte3,0xC0,byte4,0xC0,byte5,0xC0,byte6,0xC0,0x00,0xC0,0x00};
+        send_i2c(i2c_address_lcd,lcd_set_segments, sizeof(lcd_set_segments));
+    }else if(lcd_version == 1){// B1.6 Hardware
+        uart_send_lcd(byte1,byte2,byte3,byte4,byte5,byte6);
+    }else if(lcd_version == 2){// B1.9 Hardware
+        u8 lcd_set_segments[] =    {0x04,reverse(byte1),reverse(byte2),0x00,0x00,reverse(byte3),reverse(byte4),0x00,0x00,reverse(byte5),reverse(byte6)};
+        send_i2c(i2c_address_lcd,lcd_set_segments, sizeof(lcd_set_segments));
+    }
 }
 
 void send_to_lcd(u8 byte1, u8 byte2, u8 byte3, u8 byte4, u8 byte5, u8 byte6){
-if(lcd_version == 0){// B1.4 Hardware
-    u8 lcd_set_segments[] =    {0x80,0x40,0xC0,byte1,0xC0,byte2,0xC0,byte3,0xC0,byte4,0xC0,byte5,0xC0,byte6};
-	send_i2c(i2c_address_lcd,lcd_set_segments, sizeof(lcd_set_segments));
-}else if(lcd_version == 1){// B1.6 Hardware
-	uart_send_lcd(byte1,byte2,byte3,byte4,byte5,byte6);
-}else if(lcd_version == 2){// B1.9 Hardware
-    u8 lcd_set_segments[] =    {0x04,reverse(byte1),reverse(byte2),0x00,0x00,reverse(byte3),reverse(byte4),0x00,0x00,reverse(byte5),reverse(byte6)};
-	send_i2c(i2c_address_lcd,lcd_set_segments, sizeof(lcd_set_segments));
-}
+    if(lcd_version == 0){// B1.4 Hardware
+        u8 lcd_set_segments[] =    {0x80,0x40,0xC0,byte1,0xC0,byte2,0xC0,byte3,0xC0,byte4,0xC0,byte5,0xC0,byte6};
+        send_i2c(i2c_address_lcd,lcd_set_segments, sizeof(lcd_set_segments));
+    }else if(lcd_version == 1){// B1.6 Hardware
+        uart_send_lcd(byte1,byte2,byte3,byte4,byte5,byte6);
+    }else if(lcd_version == 2){// B1.9 Hardware
+        u8 lcd_set_segments[] =    {0x04,reverse(byte1),reverse(byte2),0x00,0x00,reverse(byte3),reverse(byte4),0x00,0x00,reverse(byte5),reverse(byte6)};
+        send_i2c(i2c_address_lcd,lcd_set_segments, sizeof(lcd_set_segments));
+    }
 }
 
 void update_lcd(){
