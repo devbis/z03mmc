@@ -20,11 +20,17 @@ ENDIF()
 
 set(TELINK_PLATFORM "8258")
 
-SET(CMAKE_C_FLAGS "-ffunction-sections -fdata-sections -Wall -fpack-struct -fshort-enums -finline-small-functions -std=gnu99 -fshort-wchar -fms-extensions -nostdlib" CACHE INTERNAL "c compiler flags")
+SET(CMAKE_C_FLAGS "-O2 -ffunction-sections -fdata-sections -Wall -fpack-struct -fshort-enums -finline-small-functions -std=gnu99 -fshort-wchar -fms-extensions -nostdlib" CACHE INTERNAL "c compiler flags")
 SET(CMAKE_ASM_FLAGS "-fomit-frame-pointer -fshort-enums -Wall -Wpacked -Wcast-align -fdata-sections -ffunction-sections -fno-use-cxa-atexit -fno-threadsafe-statics" CACHE INTERNAL "asm compiler flags")
 
 SET(CMAKE_EXE_LINKER_FLAGS "-Wl,--gc-sections -Wl,-uss_apsmeSwitchKeyReq -Os -fshort-enums -nostartfiles -fno-rtti -fno-exceptions -fno-use-cxa-atexit -fno-threadsafe-statics -Wl,--gc-sections " CACHE INTERNAL "executable linker flags")
 
+MACRO(REMOVE_C_FLAG flag)
+    string(REPLACE "${flag}" "" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
+ENDMACRO()
+
+# reduce size by 15% using -O2 instead of -O3
+REMOVE_C_FLAG("-O3")
 
 FUNCTION(ADD_BIN_TARGET TARGET TOOLS_PATH)
     IF(EXECUTABLE_OUTPUT_PATH)

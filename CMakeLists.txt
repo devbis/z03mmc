@@ -6,9 +6,9 @@ SET(CMAKE_BUILD_TYPE Release)
 include(cmake/TelinkSDK.cmake)
 
 # Main project settings
-PROJECT(z03mmc C)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.8)
+PROJECT(z03mmc C)
 ENABLE_LANGUAGE(ASM)
 
 ADD_SUBDIRECTORY(src)
