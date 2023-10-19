@@ -36,7 +36,25 @@
                            BAT 1.3
 */
 
-const u8 lcd_init_cmd[] = {0x80,0x3B,0x80,0x02,0x80,0x0F,0x80,0x95,0x80,0x88,0x80,0x88,0x80,0x88,0x80,0x88,0x80,0x19,0x80,0x28,0x80,0xE3,0x80,0x11};
+const u8 lcd_3C_init_cmd[] = {0x80,0x3B,0x80,0x02,0x80,0x0F,0x80,0x95,0x80,0x88,0x80,0x88,0x80,0x88,0x80,0x88,0x80,0x19,0x80,0x28,0x80,0xE3,0x80,0x11};
+const u8 lcd_3E_init_cmd[] = {
+		0xea, // Set IC Operation(ICSET): Software Reset, Internal oscillator circuit
+		0xa4, // Display control (DISCTL): Normal mode, FRAME flip, Power save mode 1
+//		0x9c, // Address set (ADSET): 0x1C ?
+		0xac, // Display control (DISCTL): Power save mode 1, FRAME flip, Power save mode 1
+		0xbc, // Display control (DISCTL): Power save mode 3, FRAME flip, Power save mode 1
+		0xf0, // Blink control (BLKCTL): Off
+		0xfc, // All pixel control (APCTL): Normal
+		0xc8, // Mode Set (MODE SET): Display ON, 1/3 Bias
+		0x00, // Set Address 0
+		// Clear 18 bytes RAM BU9792AFUV
+		0x00,0x00,0x00,0x00,
+		0x00,0x00,0x00,0x00,
+		0x00,0x00,0x00,0x00,
+		0x00,0x00,0x00,0x00,
+		0x00,0x00
+};
+
 _attribute_data_retention_ u8 display_buff[6];
 const u8 display_numbers[16] = {0xF5,0x05,0xD3,0x97,0x27,0xb6,0xf6,0x15,0xf7,0xb7,0x77,0xe6,0xf0,0xc7,0xf2,0x72};
 
@@ -66,16 +84,16 @@ void init_lcd(bool clear){
 		gpio_set_input_en(GPIO_PB6, 1);
 		gpio_setup_up_down_resistor(GPIO_PB6, PM_PIN_PULLUP_10K);
 		sleep_us(50000);
-		send_i2c(i2c_address_lcd, lcd_init_cmd, sizeof(lcd_init_cmd));
+		send_i2c(i2c_address_lcd, lcd_3C_init_cmd, sizeof(lcd_3C_init_cmd));
 
 	}else if(lcd_version == 1){// B1.6 Hardware
 
 		init_lcd_deepsleep();
 
 	}else if(lcd_version == 2){// B1.9 Hardware
-		u8 lcd_3E_init_segments[] =  {0xEA, 0xA4, 0xac, 0xbc, 0xf0,0xfc,0xc8,0x00,0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-		send_i2c(i2c_address_lcd,lcd_3E_init_segments, sizeof(lcd_3E_init_segments));
-		send_i2c(i2c_address_lcd,lcd_3E_init_segments, sizeof(lcd_3E_init_segments));
+		
+		send_i2c(i2c_address_lcd,lcd_3E_init_cmd, sizeof(lcd_3E_init_cmd));
+		send_i2c(i2c_address_lcd,lcd_3E_init_cmd, sizeof(lcd_3E_init_cmd));
 		return;
 	}
 	if (clear)
@@ -83,16 +101,22 @@ void init_lcd(bool clear){
 }
 
 void init_lcd_deepsleep(){
-	if(lcd_version != 1)
-		return;
+    if(lcd_version == 0){// B1.4 Hardware
+		gpio_set_func(GPIO_PB6, AS_GPIO);//LCD on low temp needs this, its an unknown pin going to the LCD controller chip
+		gpio_set_output_en(GPIO_PB6, 0);
+		gpio_set_input_en(GPIO_PB6, 1);
+		gpio_setup_up_down_resistor(GPIO_PB6, PM_PIN_PULLUP_10K);
+    }
+	else if(lcd_version == 1) {
+		drv_uart_pin_set(UART_TX_PD7, UART_RX_PB0);
+		uart_reset();
+		uart_init_baudrate(LCD_UART_BAUD, UART_CLOCK_SOURCE, PARITY_NONE, STOP_BIT_ONE);
+		uart_dma_enable(0, 0);
+		dma_chn_irq_enable(0, 0);
+		uart_irq_enable(0,0);
+		uart_ndma_irq_triglevel(0,0);
+	}
 
-	drv_uart_pin_set(UART_TX_PD7, UART_RX_PB0);
-	uart_reset();
-	uart_init_baudrate(LCD_UART_BAUD, UART_CLOCK_SOURCE, PARITY_NONE, STOP_BIT_ONE);
-	uart_dma_enable(0, 0);
-	dma_chn_irq_enable(0, 0);
-	uart_irq_enable(0,0);
-	uart_ndma_irq_triglevel(0,0);
 }
 
 void uart_send_lcd(u8 byte1, u8 byte2, u8 byte3, u8 byte4, u8 byte5, u8 byte6){
