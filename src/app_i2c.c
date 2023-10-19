@@ -5,8 +5,8 @@
 _attribute_data_retention_ bool i2c_sending;
 
 void init_i2c(){
-	i2c_gpio_set(I2C_GPIO_GROUP_C2C3);
-	i2c_master_init((u8)(CLOCK_SYS_CLOCK_HZ/(4*400000)) );
+	i2c_gpio_set(I2C_GPIO_GROUP);
+	drv_i2c_master_init(I2C_CLOCK);
 }
 
 void send_i2c(u8 device_id, const u8 *buffer, int dataLen){

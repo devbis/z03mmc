@@ -25,17 +25,8 @@ extern "C" {
 #define PA6_INPUT_ENABLE	  		1
 #define	PULL_WAKEUP_SRC_PA6	  		PM_PIN_PULLUP_1M
 
-// LED
-// #define LED1     					GPIO_PD3
-// #define LED1     					GPIO_PD3
-// #define PD3_FUNC					AS_GPIO
-// #define PD3_OUTPUT_ENABLE			1
-// #define PD3_INPUT_ENABLE			0
-
-// #define LED3     					GPIO_PD4
-// #define PD4_FUNC					AS_GPIO
-// #define PD4_OUTPUT_ENABLE			1
-// #define PD4_INPUT_ENABLE			0
+#define I2C_CLOCK					100000
+#define I2C_GPIO_GROUP				I2C_GPIO_GROUP_C2C3
 
 #define	PM_WAKEUP_LEVEL		  		PM_WAKEUP_LEVEL_LOW
 
