@@ -44,6 +44,8 @@ void init_sensor(){
 }
 
 void read_sensor(s16 *temp, u16 *humi) {
+    init_sensor();
+
     if(sensor_version == 0){
 
         send_i2c(i2c_address_sensor,sens_wakeup, sizeof(sens_wakeup));

@@ -344,11 +344,6 @@ void user_init(bool isRetention)
 #endif
 
 	init_i2c();
-	init_sensor();
-    init_lcd(!isRetention);
-    // initialize indicator (ble symbol)
-    ind_init();
-
 	if(!isRetention){
 	    /* Populate properties with compiled-in values */
 		populate_sw_build();
@@ -356,6 +351,8 @@ void user_init(bool isRetention)
 
 		/* Initialize Stack */
 		stack_init();
+
+        init_lcd(true);
 
 		/* Initialize user application */
 		user_app_init();
@@ -420,5 +417,6 @@ void user_init(bool isRetention)
 	}else{
 		/* Re-config phy when system recovery from deep sleep with retention */
 		mac_phyReconfig();
+		init_lcd_deepsleep();
 	}
 }
