@@ -379,7 +379,7 @@ void user_init(bool isRetention)
 			HA_PROFILE_ID,
 			ZCL_CLUSTER_GEN_POWER_CFG,
 			ZCL_ATTRID_BATTERY_VOLTAGE,
-			0x0000,
+			60,
 			3600,
 			(u8 *)&reportableChange
 		);
@@ -388,7 +388,7 @@ void user_init(bool isRetention)
 			HA_PROFILE_ID,
 			ZCL_CLUSTER_GEN_POWER_CFG,
 			ZCL_ATTRID_BATTERY_PERCENTAGE_REMAINING,
-			0x0000,
+			60,
 			3600,
 			(u8 *)&reportableChange
 		);
@@ -397,7 +397,7 @@ void user_init(bool isRetention)
 			HA_PROFILE_ID,
 			ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT,
 			ZCL_TEMPERATURE_MEASUREMENT_ATTRID_MEASUREDVALUE,
-			0x0000,
+			10,
 			0x003c,
 			(u8 *)&reportableChange
 		);
@@ -406,7 +406,7 @@ void user_init(bool isRetention)
 			HA_PROFILE_ID,
 			ZCL_CLUSTER_MS_RELATIVE_HUMIDITY,
 			ZCL_RELATIVE_HUMIDITY_ATTRID_MEASUREDVALUE,
-			0x0000,
+			10,
 			0x003c,
 			(u8 *)&reportableChange
 		);
