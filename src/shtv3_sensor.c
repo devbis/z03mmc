@@ -13,7 +13,7 @@ u8 measure_cmd[] = {0xfd};
 //Since we now got version B1.4 B1.6 and B1.9 of the Thermometer we need to detect the correct sensor it is using
 // B1.4 = SHTC3 = 0 = address 0x70/0xE0
 // B1.6 and B1.9 = SHV4 = 1 = address 0x44/0x88
-_attribute_data_retention_ u8 sensor_version;
+_attribute_data_retention_ u8 sensor_version = 2;  // unknown
 _attribute_data_retention_ u8 i2c_address_sensor = 0xE0;
 
 void init_sensor(){
@@ -57,8 +57,8 @@ void read_sensor(s16 *temp, u16 *humi) {
         reg_i2c_mode &= ~FLD_I2C_HOLD_MASTER;// Disable clock stretching for Sensor
         send_i2c(i2c_address_sensor,sens_sleep, sizeof(sens_sleep));
 
-        *temp = ((1750*(read_buff[0]<<8 | read_buff[1]))>>16)-450;
-        *humi =  (100 *(read_buff[3] << 8 | read_buff[4]))>>16;
+        *temp = (s16)(((17500 * ((u32)read_buff[0] << 8 | (u32)read_buff[1])) >> 16) - 4500);
+        *humi = (u16)(10000 * ((u32)read_buff[3] << 8 | (u32)read_buff[4])) >> 16;
 
     }else if(sensor_version == 1){
         send_i2c(i2c_address_sensor,measure_cmd, sizeof(measure_cmd));
@@ -67,8 +67,8 @@ void read_sensor(s16 *temp, u16 *humi) {
         i2c_set_id(i2c_address_sensor);
         i2c_read_series(0, 0, (u8*)read_buff,  5);
 
-        *temp = ((1750*(read_buff[0]<<8 | read_buff[1]))>>16)-450;
-        *humi =  (((1250 *(read_buff[3] << 8 | read_buff[4]))>>16)-60)/10;
+        *temp = (s16)(((17500 * ((u32)read_buff[0] << 8 | (u32)read_buff[1])) >> 16) - 4500);
+        *humi = (u16)(((12500 * ((u32)read_buff[3] << 8 | (u32)read_buff[4])) >> 16) - 600);
 
     }else if(sensor_version == 2){
 

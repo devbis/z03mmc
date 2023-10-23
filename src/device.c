@@ -184,8 +184,8 @@ void read_sensor_and_save() {
 
 	read_sensor(&temp,&humi);
     // printf("Temp: %d.%d, humid: %d\r\n", temp/10, temp % 10, humi);
-    g_zcl_temperatureAttrs.measuredValue = temp * 10;
-    g_zcl_relHumidityAttrs.measuredValue = humi * 100;
+    g_zcl_temperatureAttrs.measuredValue = temp;
+    g_zcl_relHumidityAttrs.measuredValue = humi;
 
     voltage = drv_get_adc_data();
     converted_voltage = (u8)(voltage / 100);
