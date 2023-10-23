@@ -63,10 +63,10 @@ it compatible with Zigbee networks.
 ## Flashing from a custom bluetooth firmware (easy way for new devices)
 1. Open an awesome tool from ATC_MiThermometer https://pvvx.github.io/ATC_MiThermometer/TelinkMiFlasher.html
 2. Click "Connect" button and find device LYWSD03MMC
-3. After successful connecting device (Connected in logs) click "Do Activation"
+3. After successful connecting device (Connected in logs) click "Do Activation" and wait some time
 4. Next "Select Firmware", choose file with custom bluetooth firmware [ATC_ota_400000](./assets/ATC_ota_40000.bin), click "Start Flashing"
 5. You will see in logs "Update done after NN seconds"
-6. Reboot device removing battery, refresh web-page with flashing tool and connect device again. Do not change any control on page
+6. Reboot device removing battery, refresh web-page with flashing tool and connect device again (with name ATC_802190). Do not change any control on page
 8. Flash latest [z03mmc.bin](https://github.com/devbis/z03mmc/releases) firmware over transitional firmware to convert it to zigbee. Use https://devbis.github.io/telink-zigbee/ page if previous flasher stops because of the firmware size.
 
 ## Flashing firmware with USB to UART
