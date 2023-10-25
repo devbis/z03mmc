@@ -108,7 +108,7 @@ void zbdemo_bdbInitCb(u8 status, u8 joinedNetwork){
 			zb_setPollRate(POLL_RATE);
 
 #ifdef ZCL_OTA
-			ota_queryStart(OTA_PERIODIC_QUERY_INTERVAL);
+			ota_queryStart(15 * 60);
 #endif
 
 #ifdef ZCL_POLL_CTRL

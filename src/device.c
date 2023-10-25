@@ -16,6 +16,7 @@
 #include "app_i2c.h"
 #include "shtv3_sensor.h"
 #include "lcd.h"
+#include "reporting.h"
 
 
 /**********************************************************************
@@ -239,15 +240,16 @@ void report_handler(void)
 {
 	if(zb_isDeviceJoinedNwk()){
 		if(zcl_reportingEntryActiveNumGet()){
-			u16 second = 1;//TODO: fix me
+			// u16 second = 1;//TODO: fix me
 
 			reportNoMinLimit();
 
 			//start report timer
-			reportAttrTimerStart(second);
+			app_reportAttrTimerStart();
+			// reportAttrTimerStart(second);
 		}else{
 			//stop report timer
-			reportAttrTimerStop();
+			// reportAttrTimerStop();
 		}
 	}
 }
