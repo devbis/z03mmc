@@ -164,6 +164,8 @@ extern "C" {
 #define ZCL_RELATIVE_HUMIDITY_MEASUREMENT
 #endif
 
+#define DEFAULT_POLL_RATE							(10 * (4 * POLL_RATE_QUARTERSECONDS))
+
 /**********************************************************************
  * Stack configuration
  */

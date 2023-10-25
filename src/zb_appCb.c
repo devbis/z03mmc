@@ -105,7 +105,7 @@ void zbdemo_bdbInitCb(u8 status, u8 joinedNetwork){
 		 *
 		 */
 		if(joinedNetwork){
-			zb_setPollRate(POLL_RATE);
+			zb_setPollRate(DEFAULT_POLL_RATE);
 
 #ifdef ZCL_OTA
 			ota_queryStart(15 * 60);
@@ -148,7 +148,7 @@ void zbdemo_bdbCommissioningCb(u8 status, void *arg){
 		case BDB_COMMISSION_STA_SUCCESS:
 			light_blink_start(2, 200, 200);
 
-			zb_setPollRate(POLL_RATE);
+			zb_setPollRate(DEFAULT_POLL_RATE);
 
 			if(steerTimerEvt){
 				TL_ZB_TIMER_CANCEL(&steerTimerEvt);
@@ -219,7 +219,7 @@ void sensorDevice_otaProcessMsgHandler(u8 evt, u8 status)
 
 		}
 	}else if(evt == OTA_EVT_COMPLETE){
-		zb_setPollRate(POLL_RATE);
+		zb_setPollRate(DEFAULT_POLL_RATE);
 
 		if(status == ZCL_STA_SUCCESS){
 			ota_mcuReboot();
@@ -227,7 +227,7 @@ void sensorDevice_otaProcessMsgHandler(u8 evt, u8 status)
 			ota_queryStart(OTA_PERIODIC_QUERY_INTERVAL);
 		}
 	}else if(evt == OTA_EVT_IMAGE_DONE){
-		zb_setPollRate(POLL_RATE);
+		zb_setPollRate(DEFAULT_POLL_RATE);
 	}
 }
 #endif
