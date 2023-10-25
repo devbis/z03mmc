@@ -32,7 +32,7 @@ extern void user_init(bool isRetention);
  * main:
  * */
 int main(void){
-    g_zb_txPowerSet = RF_POWER_INDEX_P3p01dBm;
+    g_zb_txPowerSet = RF_POWER_INDEX_P1p99dBm;
 	startup_state_e state = drv_platform_init();
 
 	u8 isRetention = (state == SYSTEM_DEEP_RETENTION) ? 1 : 0;
