@@ -35,13 +35,6 @@ jobs:
         cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target=z03mmc.zigbee
         echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: Build additional firmware with Heiman model
-      id: make2
-      run: |
-        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSDK_PREFIX=${{env.SDK_DIR}} -DMIMIC_HEIMAN=1 -DTOOLCHAIN_PREFIX=${{env.TOOLCHAIN_DIR}}
-        cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target=z03mmc_heiman.bin
-        echo "status=success" >> $GITHUB_OUTPUT
-
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3
       if: steps.make.outputs.status == 'success' && steps.make2.outputs.status == 'success' && !cancelled()
