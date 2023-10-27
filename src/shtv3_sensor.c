@@ -58,7 +58,7 @@ void read_sensor(s16 *temp, u16 *humi) {
         send_i2c(i2c_address_sensor,sens_sleep, sizeof(sens_sleep));
 
         *temp = (s16)(((17500 * ((u32)read_buff[0] << 8 | (u32)read_buff[1])) >> 16) - 4500);
-        *humi = (u16)(10000 * ((u32)read_buff[3] << 8 | (u32)read_buff[4])) >> 16;
+        *humi = (u16)((10000 * ((u32)read_buff[3] << 8 | (u32)read_buff[4])) >> 16);
 
     }else if(sensor_version == 1){
         send_i2c(i2c_address_sensor,measure_cmd, sizeof(measure_cmd));
