@@ -67,15 +67,12 @@ void init_lcd(bool clear){
 	if(test_i2c_device(0x3C)){// B1.4
 		lcd_version = 0;
 		i2c_address_lcd = 0x78;
-		g_zcl_basicAttrs.hwVersion = 14;
 	}else if(test_i2c_device(0x3E)){// B1.9
 		lcd_version = 2;
 		i2c_address_lcd = 0x7C;
-		g_zcl_basicAttrs.hwVersion = 19;
 	}else{// B1.6 uses UART and is not testable this way
     	// UART 38400 BAUD
 		lcd_version = 1;
-		g_zcl_basicAttrs.hwVersion = 16;
 	}
 
 	if(lcd_version == 0){// B1.4 Hardware
@@ -91,7 +88,7 @@ void init_lcd(bool clear){
 		init_lcd_deepsleep();
 
 	}else if(lcd_version == 2){// B1.9 Hardware
-		
+
 		send_i2c(i2c_address_lcd,lcd_3E_init_cmd, sizeof(lcd_3E_init_cmd));
 		send_i2c(i2c_address_lcd,lcd_3E_init_cmd, sizeof(lcd_3E_init_cmd));
 		return;

@@ -33,6 +33,8 @@
  * GLOBAL VARIABLES
  */
 app_ctx_t g_sensorAppCtx;
+extern u8 lcd_version;
+extern u8 sensor_version;
 
 
 #ifdef ZCL_OTA
@@ -322,6 +324,32 @@ void populate_date_code() {
 }
 
 
+void populate_hw_version() {
+	/*
+	HW   | LCD I2C   addr | SHTxxx   I2C addr | Note
+-----|----------------|-------------------|---------
+B1.4 | 0x3C           | 0x70   (SHTC3)    |
+B1.5 | UART!          | 0x70   (SHTC3)    |
+B1.6 | UART!          | 0x44   (SHT4x)    |
+B1.7 | 0x3C           | 0x44   (SHT4x)    | Test   original string HW
+B1.9 | 0x3E           | 0x44   (SHT4x)    |
+B2.0 | 0x3C           | 0x44   (SHT4x)    | Test   original string HW
+	*/
+    if (lcd_version == 0) {
+        if (sensor_version == 0)
+            g_zcl_basicAttrs.hwVersion = 14;
+        else if (sensor_version == 1)
+            g_zcl_basicAttrs.hwVersion = 20;
+    } else if (lcd_version == 1) {
+        if (sensor_version == 0)
+            g_zcl_basicAttrs.hwVersion = 15;
+        else if (sensor_version == 1)
+            g_zcl_basicAttrs.hwVersion = 16;
+    } else if (lcd_version == 2) {
+        g_zcl_basicAttrs.hwVersion = 19;
+    }
+}
+
 /*********************************************************************
  * @fn      user_init
  *
@@ -354,7 +382,10 @@ void user_init(bool isRetention)
 		/* Initialize Stack */
 		stack_init();
 
-        init_lcd(true);
+		init_lcd(true);
+		init_sensor();
+
+		populate_hw_version();
 
 		/* Initialize user application */
 		user_app_init();
