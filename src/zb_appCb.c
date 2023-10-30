@@ -246,7 +246,7 @@ void sensorDevice_otaProcessMsgHandler(u8 evt, u8 status)
 void sensorDevice_leaveCnfHandler(nlme_leave_cnf_t *pLeaveCnf)
 {
     if(pLeaveCnf->status == SUCCESS){
-    	//SYSTEM_RESET();
+    	//zb_resetDevice();
     }
 }
 

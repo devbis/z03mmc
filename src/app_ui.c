@@ -138,8 +138,8 @@ void light_blink_stop(void)
 void buttonKeepPressed(u8 btNum){
 	if(btNum == VK_SW1){
 		g_sensorAppCtx.state = APP_FACTORY_NEW_DOING;
-		zb_factoryReset();
-		SYSTEM_RESET();
+		tl_bdbReset2FN();
+		zb_resetDevice();
 	}else if(btNum == VK_SW2){
 
 	}

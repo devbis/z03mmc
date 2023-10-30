@@ -274,7 +274,7 @@ void app_task(void)
 static void sensorDeviceSysException(void)
 {
 #if 1
-	SYSTEM_RESET();
+	zb_resetDevice();
 #else
 	light_on();
 	while(1);
