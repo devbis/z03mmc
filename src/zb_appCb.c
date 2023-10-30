@@ -186,15 +186,17 @@ void zbdemo_bdbCommissioningCb(u8 status, void *arg){
 			break;
 		case BDB_COMMISSION_STA_BINDING_TABLE_FULL:
 			break;
-		case BDB_COMMISSION_STA_NO_SCAN_RESPONSE:
-			break;
 		case BDB_COMMISSION_STA_NOT_PERMITTED:
 			break;
+		case BDB_COMMISSION_STA_NO_SCAN_RESPONSE:
 		case BDB_COMMISSION_STA_PARENT_LOST:
 			//zb_rejoinSecModeSet(REJOIN_INSECURITY);
-			zb_rejoinReq(zb_apsChannelMaskGet(), g_bdbAttrs.scanDuration);
+			zb_rejoinReqWithBackOff(zb_apsChannelMaskGet(), g_bdbAttrs.scanDuration);
 			break;
 		case BDB_COMMISSION_STA_REJOIN_FAILURE:
+			if(!zb_isDeviceFactoryNew()){
+				zb_rejoinReqWithBackOff(zb_apsChannelMaskGet(), g_bdbAttrs.scanDuration);
+			}
 			break;
 		default:
 			break;
