@@ -4,6 +4,7 @@
 #include "tl_common.h"
 #include "zcl_include.h"
 #include "zcl_relative_humidity.h"
+#include "zcl_thermostat_ui_cfg.h"
 #include "device.h"
 
 /**********************************************************************
@@ -243,6 +244,22 @@ const zclAttrInfo_t relative_humdity_attrTbl[] =
 #define	ZCL_RELATIVE_HUMIDITY_ATTR_NUM		 sizeof(relative_humdity_attrTbl) / sizeof(zclAttrInfo_t)
 #endif
 
+#ifdef ZCL_THERMOSTAT_UI_CFG
+zcl_thermostatUICfgAttr_t g_zcl_thermostatUICfgAttrs =
+{
+	.displayMode	= 0x0000,
+};
+
+const zclAttrInfo_t thermostat_ui_cfg_attrTbl[] =
+{
+	{ ZCL_THERMOSTAT_UI_CFG_ATTRID_TEMPERATUREDISPLAYMODE,       ZCL_DATA_TYPE_ENUM8,    ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_thermostatUICfgAttrs.displayMode },
+
+	{ ZCL_ATTRID_GLOBAL_CLUSTER_REVISION, 	ZCL_DATA_TYPE_UINT16,  	ACCESS_CONTROL_READ,  						(u8*)&zcl_attr_global_clusterRevision},
+};
+
+#define	ZCL_THERMOSTAT_UI_CFG_ATTR_NUM		 sizeof(thermostat_ui_cfg_attrTbl) / sizeof(zclAttrInfo_t)
+#endif
+
 
 #ifdef ZCL_POLL_CTRL
 /* Poll Control */
@@ -288,7 +305,11 @@ const zcl_specClusterInfo_t g_sensorDeviceClusterList[] =
 	{ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT,	MANUFACTURER_CODE_NONE, ZCL_TEMPERATURE_MEASUREMENT_ATTR_NUM, temperature_measurement_attrTbl, 	zcl_temperature_measurement_register, 	NULL},
 #endif
 #ifdef ZCL_RELATIVE_HUMIDITY
-	{ZCL_CLUSTER_MS_RELATIVE_HUMIDITY,	MANUFACTURER_CODE_NONE, ZCL_RELATIVE_HUMIDITY_ATTR_NUM, 		relative_humdity_attrTbl,	zcl_relative_humidity_register, 	NULL},
+	{ZCL_CLUSTER_MS_RELATIVE_HUMIDITY,	MANUFACTURER_CODE_NONE,	 ZCL_RELATIVE_HUMIDITY_ATTR_NUM, 		relative_humdity_attrTbl,	zcl_relative_humidity_register, 	NULL},
+#endif
+#ifdef ZCL_THERMOSTAT_UI_CFG
+	// typo in SDK
+	{ZCL_CLUSTER_HAVC_USER_INTERFACE_CONFIG, MANUFACTURER_CODE_NONE, ZCL_THERMOSTAT_UI_CFG_ATTR_NUM, thermostat_ui_cfg_attrTbl,	zcl_thermostat_ui_cfg_register, 	NULL},
 #endif
 #ifdef ZCL_POLL_CTRL
 	{ZCL_CLUSTER_GEN_POLL_CONTROL,  MANUFACTURER_CODE_NONE, ZCL_POLLCTRL_ATTR_NUM, 	pollCtrl_attrTbl,   zcl_pollCtrl_register,	sensorDevice_pollCtrlCb},

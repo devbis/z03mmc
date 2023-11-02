@@ -90,6 +90,13 @@ typedef struct {
 	u16 tolerance;
 }zcl_relHumidityAttr_t;
 
+/**
+ *  @brief Defined for thermostat UI config cluster attributes
+ */
+typedef struct {
+	u8 displayMode;
+}zcl_thermostatUICfgAttr_t;
+
 
 /**
  *  @brief  Defined for poll control cluster attributes
@@ -126,6 +133,7 @@ extern const af_simple_descriptor_t sensorDevice_simpleDesc;
 extern zcl_basicAttr_t g_zcl_basicAttrs;
 extern zcl_identifyAttr_t g_zcl_identifyAttrs;
 extern zcl_powerAttr_t g_zcl_powerAttrs;
+extern zcl_thermostatUICfgAttr_t g_zcl_thermostatUICfgAttrs;
 extern zcl_temperatureAttr_t g_zcl_temperatureAttrs;
 extern zcl_relHumidityAttr_t g_zcl_relHumidityAttrs;
 // extern zcl_iasZoneAttr_t g_zcl_iasZoneAttrs;
