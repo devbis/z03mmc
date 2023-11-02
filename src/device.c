@@ -201,9 +201,19 @@ void read_sensor_and_save() {
     g_zcl_powerAttrs.batteryVoltage = converted_voltage;
     g_zcl_powerAttrs.batteryPercentage = percentage2;
 
+	s16 displayTemperature = g_zcl_temperatureAttrs.measuredValue / 10;
+	u8 tempSymbol = 1;
+
+#ifdef ZCL_THERMOSTAT_UI_CFG
+	if (g_zcl_thermostatUICfgAttrs.displayMode == 1) {
+		displayTemperature = (s16)(((s32)g_zcl_temperatureAttrs.measuredValue * 9) / (5*10) + 320);
+		tempSymbol = 2;
+	}
+#endif
+
     // update lcd
-    show_temp_symbol(1);
-    show_big_number(g_zcl_temperatureAttrs.measuredValue / 10, 1);
+    show_temp_symbol(tempSymbol);
+    show_big_number(displayTemperature, 1);
     show_small_number(g_zcl_relHumidityAttrs.measuredValue / 100, 1);
 #if defined(SHOW_SMILEY)
     show_smiley(
