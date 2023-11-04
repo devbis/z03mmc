@@ -247,7 +247,7 @@ const zclAttrInfo_t relative_humdity_attrTbl[] =
 #ifdef ZCL_THERMOSTAT_UI_CFG
 zcl_thermostatUICfgAttr_t g_zcl_thermostatUICfgAttrs =
 {
-	.displayMode	= 0x0000,
+	.displayMode	= 0x00,
 };
 
 const zclAttrInfo_t thermostat_ui_cfg_attrTbl[] =
@@ -321,3 +321,71 @@ u8 SENSOR_DEVICE_CB_CLUSTER_NUM = (sizeof(g_sensorDeviceClusterList)/sizeof(g_se
 /**********************************************************************
  * FUNCTIONS
  */
+
+/*********************************************************************
+ * @fn      zcl_thermostatDisplayMode_save
+ *
+ * @brief
+ *
+ * @param   None
+ *
+ * @return
+ */
+nv_sts_t zcl_thermostatDisplayMode_save(void)
+{
+	nv_sts_t st = NV_SUCC;
+
+#ifdef ZCL_THERMOSTAT_UI_CFG
+#if NV_ENABLE
+	zcl_nv_thermostatUiCfg_t zcl_nv_thermostatUiCfg;
+
+	st = nv_flashReadNew(1, NV_MODULE_ZCL,  NV_ITEM_ZCL_THERMOSTAT_UI_CFG, sizeof(zcl_nv_thermostatUiCfg), (u8*)&zcl_nv_thermostatUiCfg);
+
+	if(st == NV_SUCC){
+		if((zcl_nv_thermostatUiCfg.displayMode != g_zcl_thermostatUICfgAttrs.displayMode)){
+			zcl_nv_thermostatUiCfg.displayMode = g_zcl_thermostatUICfgAttrs.displayMode;
+
+			st = nv_flashWriteNew(1, NV_MODULE_ZCL, NV_ITEM_ZCL_THERMOSTAT_UI_CFG, sizeof(zcl_nv_thermostatUiCfg), (u8*)&zcl_nv_thermostatUiCfg);
+		}
+	}else if(st == NV_ITEM_NOT_FOUND){
+		zcl_nv_thermostatUiCfg.displayMode = g_zcl_thermostatUICfgAttrs.displayMode;
+
+		st = nv_flashWriteNew(1, NV_MODULE_ZCL, NV_ITEM_ZCL_THERMOSTAT_UI_CFG, sizeof(zcl_nv_thermostatUiCfg), (u8*)&zcl_nv_thermostatUiCfg);
+	}
+#else
+	st = NV_ENABLE_PROTECT_ERROR;
+#endif
+#endif
+
+	return st;
+}
+
+/*********************************************************************
+ * @fn      zcl_thermostatDisplayMode_restore
+ *
+ * @brief
+ *
+ * @param   None
+ *
+ * @return
+ */
+nv_sts_t zcl_thermostatDisplayMode_restore(void)
+{
+	nv_sts_t st = NV_SUCC;
+
+#ifdef ZCL_THERMOSTAT_UI_CFG
+#if NV_ENABLE
+	zcl_nv_thermostatUiCfg_t zcl_nv_thermostatUiCfg;
+
+	st = nv_flashReadNew(1, NV_MODULE_ZCL,  NV_ITEM_ZCL_THERMOSTAT_UI_CFG, sizeof(zcl_nv_thermostatUiCfg), (u8*)&zcl_nv_thermostatUiCfg);
+
+	if(st == NV_SUCC){
+		g_zcl_thermostatUICfgAttrs.displayMode = zcl_nv_thermostatUiCfg.displayMode;
+	}
+#else
+	st = NV_ENABLE_PROTECT_ERROR;
+#endif
+#endif
+
+	return st;
+}

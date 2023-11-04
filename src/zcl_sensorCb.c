@@ -4,6 +4,7 @@
 #include "tl_common.h"
 #include "zb_api.h"
 #include "zcl_include.h"
+#include "zcl_thermostat_ui_cfg.h"
 #include "device.h"
 #include "app_ui.h"
 
@@ -139,6 +140,19 @@ static void sensorDevice_zclWriteRspCmd(u16 clusterId, zclWriteRspCmd_t *pWriteR
  */
 static void sensorDevice_zclWriteReqCmd(u16 clusterId, zclWriteCmd_t *pWriteReqCmd)
 {
+#ifdef ZCL_THERMOSTAT_UI_CFG
+	u8 numAttr = pWriteReqCmd->numAttr;
+	zclWriteRec_t *attr = pWriteReqCmd->attrList;
+
+	if(clusterId == ZCL_CLUSTER_HAVC_USER_INTERFACE_CONFIG){
+		for(u8 i = 0; i < numAttr; i++){
+			if(attr[i].attrID == ZCL_THERMOSTAT_UI_CFG_ATTRID_TEMPERATUREDISPLAYMODE){
+				zcl_thermostatDisplayMode_save();
+			}
+		}
+	}
+#endif
+
 #ifdef ZCL_POLL_CTRL
 	u8 numAttr = pWriteReqCmd->numAttr;
 	zclWriteRec_t *attr = pWriteReqCmd->attrList;

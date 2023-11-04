@@ -156,6 +156,7 @@ void user_app_init(void)
 	/* Register endPoint */
 	af_endpointRegister(SENSOR_DEVICE_ENDPOINT, (af_simple_descriptor_t *)&sensorDevice_simpleDesc, zcl_rx_handler, NULL);
 
+	zcl_thermostatDisplayMode_restore();
 	zcl_reportingTabInit();
 
 	/* Register ZCL specific cluster information */
