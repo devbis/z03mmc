@@ -60,14 +60,15 @@ it compatible with Zigbee networks.
     The binary with OTA header is at the same folder, ending with `z03mmc.zigbee`
 
 
-## Flashing from a custom bluetooth firmware (easy way for new devices)
+## Flashing over the air (easy way)
 1. Open an awesome tool from ATC_MiThermometer https://pvvx.github.io/ATC_MiThermometer/TelinkMiFlasher.html
-2. Click "Connect" button and find device LYWSD03MMC, wait connection (Connected in logs)
-3. On new device with stock firmware click "Do Activation" and wait some time
-4. Next "Select Firmware", choose file with custom bluetooth firmware [ATC_ota_400000](./assets/ATC_ota_40000.bin), click "Start Flashing"
-5. You will see in logs "Update done after NN seconds"
-6. Reboot device removing battery, refresh web-page with flashing tool and connect device again (with name ATC_802190 or similar, based on mac-address). Do not change any control on page
-8. Flash latest [z03mmc.bin](https://github.com/devbis/z03mmc/releases) firmware over transitional firmware to convert it to zigbee. Use https://devbis.github.io/telink-zigbee/ page if previous flasher stops because of the firmware size.
+3. Click "Connect" button and find device LYWSD03MMC, wait for connection (Connected in logs)
+4. On a new device with stock firmware click "Do Activation" and wait some time.
+5. Next "Select Firmware", choose file with the transitional firmware [ATC_ota_400000](./assets/ATC_ota_40000.bin), click "Start Flashing". This step is required even if you already installed a custom bluetooth firmware. Not flashing this file will likely cause your device to get bricked and require flashing via USB/UART!
+6. You will see in logs "Update done after NN seconds"
+7. Connect to the device again (with name ATC_802190 or similar, based on mac-address). If it doesn't appear, remove and reinsert the battery and refresh the webpage with the flashing tool.
+8. Flash the latest [z03mmc.bin](https://github.com/devbis/z03mmc/releases) firmware over transitional firmware to convert it to zigbee. Use https://devbis.github.io/telink-zigbee/ page if previous flasher stops because of the firmware size.
+9. The device should now show up in your Zigbee bridge (If joining is enabled, of course). If it doesn't, reinsert the battery and/or short the RESET and GND contacts on the board for 3 seconds.
 
 ## Flashing firmware with USB to UART
 
