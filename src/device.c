@@ -203,17 +203,22 @@ void read_sensor_and_save() {
 
 	s16 displayTemperature = g_zcl_temperatureAttrs.measuredValue / 10;
 	u8 tempSymbol = 1;
+	u8 hasPoint = 1;
 
 #ifdef ZCL_THERMOSTAT_UI_CFG
 	if (g_zcl_thermostatUICfgAttrs.displayMode == 1) {
-		displayTemperature = (s16)(((s32)g_zcl_temperatureAttrs.measuredValue * 9) / (5*10) + 320);
 		tempSymbol = 2;
+		displayTemperature = (s16)(((s32)g_zcl_temperatureAttrs.measuredValue * 9) / (5*10) + 320);
+		if (displayTemperature > 999) {
+			hasPoint = 0;
+			displayTemperature = displayTemperature / 10;
+		}
 	}
 #endif
 
     // update lcd
     show_temp_symbol(tempSymbol);
-    show_big_number(displayTemperature, 1);
+    show_big_number(displayTemperature, hasPoint);
     show_small_number(g_zcl_relHumidityAttrs.measuredValue / 100, 1);
 #if defined(SHOW_SMILEY)
     show_smiley(
