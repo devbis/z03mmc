@@ -406,7 +406,10 @@ void user_init(bool isRetention)
 		}
 
 		/* Set default reporting configuration */
-		u8 reportableChange = 0x00;
+		u8 batteryVoltageReportableChange = 0;
+		u8 batteryPercentReportableChange = 0;
+		u16 temperatureReportableChange = 10;
+		u16 humidityReportableChange = 50;
         bdb_defaultReportingCfg(
 			SENSOR_DEVICE_ENDPOINT,
 			HA_PROFILE_ID,
@@ -414,7 +417,7 @@ void user_init(bool isRetention)
 			ZCL_ATTRID_BATTERY_VOLTAGE,
 			60,
 			3600,
-			(u8 *)&reportableChange
+			(u8 *)&batteryVoltageReportableChange
 		);
         bdb_defaultReportingCfg(
 			SENSOR_DEVICE_ENDPOINT,
@@ -423,7 +426,7 @@ void user_init(bool isRetention)
 			ZCL_ATTRID_BATTERY_PERCENTAGE_REMAINING,
 			60,
 			3600,
-			(u8 *)&reportableChange
+			(u8 *)&batteryPercentReportableChange
 		);
 		bdb_defaultReportingCfg(
 			SENSOR_DEVICE_ENDPOINT,
@@ -431,8 +434,8 @@ void user_init(bool isRetention)
 			ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT,
 			ZCL_TEMPERATURE_MEASUREMENT_ATTRID_MEASUREDVALUE,
 			10,
-			0x003c,
-			(u8 *)&reportableChange
+			300,
+			(u8 *)&temperatureReportableChange
 		);
 		bdb_defaultReportingCfg(
 			SENSOR_DEVICE_ENDPOINT,
@@ -440,8 +443,8 @@ void user_init(bool isRetention)
 			ZCL_CLUSTER_MS_RELATIVE_HUMIDITY,
 			ZCL_RELATIVE_HUMIDITY_ATTRID_MEASUREDVALUE,
 			10,
-			0x003c,
-			(u8 *)&reportableChange
+			300,
+			(u8 *)&humidityReportableChange
 		);
 
 		/* Initialize BDB */
