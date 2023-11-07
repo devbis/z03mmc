@@ -141,9 +141,15 @@ extern const af_simple_descriptor_t sensorDevice_simpleDesc;
 extern zcl_basicAttr_t g_zcl_basicAttrs;
 extern zcl_identifyAttr_t g_zcl_identifyAttrs;
 extern zcl_powerAttr_t g_zcl_powerAttrs;
+#ifdef ZCL_THERMOSTAT_UI_CFG
 extern zcl_thermostatUICfgAttr_t g_zcl_thermostatUICfgAttrs;
+#endif
+#ifdef ZCL_TEMPERATURE_MEASUREMENT
 extern zcl_temperatureAttr_t g_zcl_temperatureAttrs;
+#endif
+#ifdef ZCL_RELATIVE_HUMIDITY_MEASUREMENT
 extern zcl_relHumidityAttr_t g_zcl_relHumidityAttrs;
+#endif
 // extern zcl_iasZoneAttr_t g_zcl_iasZoneAttrs;
 extern zcl_pollCtrlAttr_t g_zcl_pollCtrlAttrs;
 
