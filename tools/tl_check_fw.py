@@ -12,7 +12,7 @@ if firmware[6:8] != b'\x5d\x02':
     if padding < 16:
         firmware += b'\xFF' * padding
     # Fix FW length
-    firmware[0x18:0x1c] = (len(firmware)+4).to_bytes(4, byteorder='little')
+    firmware[0x18:0x1c] = (len(firmware) + 4).to_bytes(4, byteorder='little')
     # Add magic constant
     firmware[6:8] = b'\x5d\x02'
     # Add CRC
