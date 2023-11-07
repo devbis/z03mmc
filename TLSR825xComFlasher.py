@@ -481,7 +481,7 @@ def main():
 	try:
 		serialPort = serial.Serial(args.port,args.baud)
 		serialPort.reset_input_buffer()
-		serialPort.timeout = 0.01
+		serialPort.timeout = 0.2
 	except:
 		print ('Error: Open %s, %d baud!' % (args.port, args.baud))
 		sys.exit(1)
