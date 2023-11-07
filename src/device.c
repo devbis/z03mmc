@@ -189,7 +189,9 @@ void read_sensor_and_save() {
 	read_sensor(&temp,&humi);
     // printf("Temp: %d.%d, humid: %d\r\n", temp/10, temp % 10, humi);
     g_zcl_temperatureAttrs.measuredValue = temp;
+#ifdef ZCL_RELATIVE_HUMIDITY
     g_zcl_relHumidityAttrs.measuredValue = humi;
+#endif
 
     voltage = drv_get_adc_data();
     converted_voltage = (u8)(voltage / 100);
@@ -220,11 +222,15 @@ void read_sensor_and_save() {
     // update lcd
     show_temp_symbol(tempSymbol);
     show_big_number(displayTemperature, hasPoint);
+#ifdef ZCL_RELATIVE_HUMIDITY_MEASUREMENT
+#ifdef ZCL_TEMPERATURE_MEASUREMENT
     show_small_number(g_zcl_relHumidityAttrs.measuredValue / 100, 1);
 #if defined(SHOW_SMILEY)
     show_smiley(
         is_comfort(g_zcl_temperatureAttrs.measuredValue, g_zcl_relHumidityAttrs.measuredValue) ? 1 : 2
     );
+#endif
+#endif
 #endif
     update_lcd();
 }
