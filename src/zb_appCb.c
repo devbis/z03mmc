@@ -86,9 +86,7 @@ s32 sensorDevice_bdbNetworkSteerStart(void *arg){
 
 s32 sensorDevice_rejoinBackoff(void *arg){
 	if(zb_isDeviceFactoryNew()){
-        if(deviceRejoinBackoffTimerEvt){
-            TL_ZB_TIMER_CANCEL(&deviceRejoinBackoffTimerEvt);
-        }
+		deviceRejoinBackoffTimerEvt = NULL;
 		return -1;
 	}
 
@@ -193,7 +191,7 @@ void zbdemo_bdbCommissioningCb(u8 status, void *arg){
 				if(steerTimerEvt){
 					TL_ZB_TIMER_CANCEL(&steerTimerEvt);
 				}
-				steerTimerEvt = TL_ZB_TIMER_SCHEDULE(sensorDevice_bdbNetworkSteerStart, NULL, jitter);
+				steerTimerEvt = TL_ZB_TIMER_SCHEDULE(sensorDevice_bdbNetworkSteerStart, NULL, jitter + 60 * 1000);
 			}
 			break;
 		case BDB_COMMISSION_STA_FORMATION_FAILURE:
