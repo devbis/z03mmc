@@ -6,6 +6,7 @@
 #include "zcl_include.h"
 #include "zcl_thermostat_ui_cfg.h"
 #include "device.h"
+#include "reporting.h"
 #include "app_ui.h"
 
 /**********************************************************************
@@ -29,7 +30,7 @@ static void sensorDevice_zclWriteRspCmd(u16 clusterId, zclWriteRspCmd_t *pWriteR
 static void sensorDevice_zclWriteReqCmd(u16 clusterId, zclWriteCmd_t *pWriteReqCmd);
 #endif
 #ifdef ZCL_REPORT
-static void sensorDevice_zclCfgReportCmd(u16 clusterId, zclCfgReportCmd_t *pCfgReportCmd);
+static void sensorDevice_zclCfgReportCmd(u8 endpoint, u16 clusterId, zclCfgReportCmd_t *pCfgReportCmd);
 static void sensorDevice_zclCfgReportRspCmd(u16 clusterId, zclCfgReportRspCmd_t *pCfgReportRspCmd);
 static void sensorDevice_zclReportCmd(u16 clusterId, zclReportCmd_t *pReportCmd);
 #endif
@@ -62,6 +63,7 @@ static ev_timer_event_t *identifyTimerEvt = NULL;
 void sensorDevice_zclProcessIncomingMsg(zclIncoming_t *pInHdlrMsg)
 {
 	u16 cluster = pInHdlrMsg->msg->indInfo.cluster_id;
+	u8 endPoint = pInHdlrMsg->msg->indInfo.dst_ep;
 	switch(pInHdlrMsg->hdr.cmd)
 	{
 #ifdef ZCL_READ
@@ -79,7 +81,7 @@ void sensorDevice_zclProcessIncomingMsg(zclIncoming_t *pInHdlrMsg)
 #endif
 #ifdef ZCL_REPORT
 		case ZCL_CMD_CONFIG_REPORT:
-			sensorDevice_zclCfgReportCmd(cluster, pInHdlrMsg->attrCmd);
+			sensorDevice_zclCfgReportCmd(endPoint, cluster, pInHdlrMsg->attrCmd);
 			break;
 		case ZCL_CMD_CONFIG_REPORT_RSP:
 			sensorDevice_zclCfgReportRspCmd(cluster, pInHdlrMsg->attrCmd);
@@ -195,10 +197,23 @@ static void sensorDevice_zclDfltRspCmd(u16 clusterId, zclDefaultRspCmd_t *pDftRs
  *
  * @return  None
  */
-static void sensorDevice_zclCfgReportCmd(u16 clusterId, zclCfgReportCmd_t *pCfgReportCmd)
+static void sensorDevice_zclCfgReportCmd(u8 endpoint, u16 clusterId, zclCfgReportCmd_t *pCfgReportCmd)
 {
-    //printf("sensorDevice_zclCfgReportCmd\n");
-
+    for(u8 i = 0; i < pCfgReportCmd->numAttr; i++) {
+        for (u8 ii = 0; ii < ZCL_REPORTING_TABLE_NUM; ii++) {
+            if (app_reporting[ii].pEntry->used) {
+                if (app_reporting[ii].pEntry->endPoint == endpoint && app_reporting[ii].pEntry->attrID == pCfgReportCmd->attrList[i].attrID) {
+                    if (app_reporting[ii].timerReportMinEvt) {
+                        TL_ZB_TIMER_CANCEL(&(app_reporting[ii].timerReportMinEvt));
+                    }
+                    if (app_reporting[ii].timerReportMaxEvt) {
+                        TL_ZB_TIMER_CANCEL(&(app_reporting[ii].timerReportMaxEvt));
+                    }
+                    return;
+                }
+            }
+        }
+    }
 }
 
 /*********************************************************************
