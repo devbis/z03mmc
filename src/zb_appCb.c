@@ -72,6 +72,7 @@ ota_callBack_t sensorDevice_otaCb =
 #endif
 
 ev_timer_event_t *steerTimerEvt = NULL;
+ev_timer_event_t *deviceRejoinBackoffTimerEvt = NULL;
 
 /**********************************************************************
  * FUNCTIONS
@@ -81,6 +82,18 @@ s32 sensorDevice_bdbNetworkSteerStart(void *arg){
 
 	steerTimerEvt = NULL;
 	return -1;
+}
+
+s32 sensorDevice_rejoinBackoff(void *arg){
+	if(zb_isDeviceFactoryNew()){
+        if(deviceRejoinBackoffTimerEvt){
+            TL_ZB_TIMER_CANCEL(&deviceRejoinBackoffTimerEvt);
+        }
+		return -1;
+	}
+
+    zb_rejoinReqWithBackOff(zb_apsChannelMaskGet(), g_bdbAttrs.scanDuration);
+    return 0;
 }
 
 /*********************************************************************
@@ -153,6 +166,9 @@ void zbdemo_bdbCommissioningCb(u8 status, void *arg){
 			if(steerTimerEvt){
 				TL_ZB_TIMER_CANCEL(&steerTimerEvt);
 			}
+			if(deviceRejoinBackoffTimerEvt){
+				TL_ZB_TIMER_CANCEL(&deviceRejoinBackoffTimerEvt);
+			}
 
 #ifdef ZCL_POLL_CTRL
 		    sensorDevice_zclCheckInStart();
@@ -191,12 +207,13 @@ void zbdemo_bdbCommissioningCb(u8 status, void *arg){
 		case BDB_COMMISSION_STA_NO_SCAN_RESPONSE:
 		case BDB_COMMISSION_STA_PARENT_LOST:
 			//zb_rejoinSecModeSet(REJOIN_INSECURITY);
-			zb_rejoinReqWithBackOff(zb_apsChannelMaskGet(), g_bdbAttrs.scanDuration);
+			sensorDevice_rejoinBackoff(NULL);
 			break;
 		case BDB_COMMISSION_STA_REJOIN_FAILURE:
-			if(!zb_isDeviceFactoryNew()){
-				zb_rejoinReqWithBackOff(zb_apsChannelMaskGet(), g_bdbAttrs.scanDuration);
-			}
+            if(!deviceRejoinBackoffTimerEvt){
+                // sleep for 3 minutes before reconnect if rejoin failed
+                deviceRejoinBackoffTimerEvt = TL_ZB_TIMER_SCHEDULE(sensorDevice_rejoinBackoff, NULL, 3 * 60 * 1000);
+            }
 			break;
 		default:
 			break;
@@ -246,6 +263,9 @@ void sensorDevice_otaProcessMsgHandler(u8 evt, u8 status)
 void sensorDevice_leaveCnfHandler(nlme_leave_cnf_t *pLeaveCnf)
 {
     if(pLeaveCnf->status == SUCCESS){
+		if(deviceRejoinBackoffTimerEvt){
+			TL_ZB_TIMER_CANCEL(&deviceRejoinBackoffTimerEvt);
+		}
     	//zb_resetDevice();
     }
 }
