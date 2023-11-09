@@ -62,13 +62,13 @@ it compatible with Zigbee networks.
 
 ## Flashing over the air (easy way)
 1. Open an awesome tool from ATC_MiThermometer https://pvvx.github.io/ATC_MiThermometer/TelinkMiFlasher.html
-3. Click "Connect" button and find device LYWSD03MMC, wait for connection (Connected in logs)
-4. On a new device with stock firmware click "Do Activation" and wait some time.
-5. Next "Select Firmware", choose file with the transitional firmware [ATC_ota_400000](./assets/ATC_ota_40000.bin), click "Start Flashing". This step is required even if you already installed a custom bluetooth firmware. Not flashing this file will likely cause your device to get bricked and require flashing via USB/UART!
-6. You will see in logs "Update done after NN seconds"
-7. Connect to the device again (with name ATC_802190 or similar, based on mac-address). If it doesn't appear, remove and reinsert the battery and refresh the webpage with the flashing tool.
-8. Flash the latest [z03mmc.bin](https://github.com/devbis/z03mmc/releases) firmware over transitional firmware to convert it to zigbee. Use https://devbis.github.io/telink-zigbee/ page if previous flasher stops because of the firmware size.
-9. The device should now show up in your Zigbee bridge (If joining is enabled, of course). If it doesn't, reinsert the battery and/or short the RESET and GND contacts on the board for 3 seconds.
+2. Click "Connect" button and find device LYWSD03MMC, wait for connection (Connected in logs)
+3. On a new device with stock firmware click "Do Activation" and wait some time.
+4. Next "Select Firmware", choose file with the transitional firmware [ATC_ota_400000](./assets/ATC_ota_40000.bin), click "Start Flashing". This step is required even if you already installed a custom bluetooth firmware. Not flashing this file will likely cause your device to get bricked and require flashing via USB/UART!
+5. You will see in logs "Update done after NN seconds"
+6. Connect to the device again (with name ATC_802190 or similar, based on mac-address). If it doesn't appear, remove and reinsert the battery and refresh the webpage with the flashing tool.
+7. Flash the latest [z03mmc.bin](https://github.com/devbis/z03mmc/releases) firmware over transitional firmware to convert it to zigbee. Use https://devbis.github.io/telink-zigbee/ page if previous flasher stops because of the firmware size.
+8. The device should now show up in your Zigbee bridge (If joining is enabled, of course). If it doesn't, reinsert the battery and/or short the RESET and GND contacts on the board for 3 seconds.
 
 ## Flashing firmware with USB to UART
 
@@ -89,10 +89,22 @@ In case if the SWS pin is used by the firmware, try this sequence:
 2. `python3 TLSR825xComFlasher.py -p <YOUR_COM_PORT> -t5000 wf 0 z03mmc.bin`
 3. Now you have 5 seconds to power on the sensor
 4. In case the chip has not started being flashed, run `python3 TLSR825xComFlasher.py -p <YOUR_COM_PORT> wf 0 z03mmc.bin` without the timeout again.
+   
+   If the flashing fails reduce baud rate down to 340000 or increase timeouts in the script.
 
-If the flashing fails try to increase timeouts in the script.
+5. If you flashed the module but the screen is remaining blank, try `python3 TLSR825xComFlasher.py -p <YOUR_COM_PORT> ea` to erase all flash and then write the firmware again.
 
 The UART flasher software uses the tool from https://github.com/pvvx/ATC_MiThermometer. Thanks to pvvx for the awesome work on this!
+
+## Return to Bluetooth firmware
+
+The only supported method to reverting firmware is flashing via USB-UART dongle. See previous chapter.
+
+## Zigbee OTA upgrades
+
+The already flashed firmware supports OTA zigbee upgrade via standard flow.
+See zigbee2mqtt, ZHA, and HOMEd documentation for details.
+
 
 ## Related Work
 z03mmc is based on the original work of @pvvx, and @atc1441, who developed the initial firmware versions for bluetooth-capable device.
