@@ -164,7 +164,7 @@ def sws_read_data(serial_port, addr, size=1):
             out += [x]
         else:
             if debug:
-                print('\n\nDebug: read swire byte:')
+                print('\r\nDebug: read swire byte:')
                 hex_dump(addr + i, blk)
             # send stop read
             rd_wr_usbcom_blk(serial_port, sws_code_end())
@@ -190,14 +190,14 @@ def set_sws_speed(serial_port, clk):
     if len(read) != byte_sent:
         if serial_port.baudrate > USBCOMPORT_BAD_BAUD_RATE and byte_sent > 64 and len(read) >= 64 and len(
                 read) < byte_sent:
-            print('\n\n!!!!!!!!!!!!!!!!!!!BAD USB-UART Chip!!!!!!!!!!!!!!!!!!!')
+            print('\n\r!!!!!!!!!!!!!!!!!!!BAD USB-UART Chip!!!!!!!!!!!!!!!!!!!')
             print('UART Output:')
             hex_dump(0, sws_wr_addr(0x00b2, [swsdiv]))
             print('UART Input:')
             hex_dump(0, read)
             print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
             return False
-        print('\n\nError: Wrong RX-TX connection!')
+        print('\n\rError: Wrong RX-TX connection!')
         return False
     # --------------------------------
     # Test read register[0x00b2]
@@ -313,11 +313,11 @@ def activate(serial_port, tact_ms):
             serial_port.reset_input_buffer()
     # --------------------------------
     # Duplication with syncronization
-    time.sleep(0.01)
+    time.sleep(0.05)
     serial_port.reset_input_buffer()
     rd_wr_usbcom_blk(serial_port, sws_code_end())
     rd_wr_usbcom_blk(serial_port, blk)
-    time.sleep(0.01)
+    time.sleep(0.05)
     serial_port.reset_input_buffer()
 
 
@@ -327,7 +327,7 @@ def flash_read_block(serial_port, stream, offset=0, size=0x80000):
     while size > 0:
         if rdsize > size:
             rdsize = size
-        print('\nRead from 0x%06x...' % offset, end='')
+        print('\rRead from 0x%06x...' % offset, end='')
         rd_sws_wr_addr_usbcom(serial_port, 0x0b3, bytearray([0x80]))  # [0xb3]=0x80 ext.SWS into fifo mode
         rd_sws_wr_addr_usbcom(serial_port, 0x0d, bytearray([0x00]))  # SPI set cns low
         # send all data to one register (not increment address - fifo mode), cmd flash rd, addr, + launch first read
@@ -339,12 +339,12 @@ def flash_read_block(serial_port, stream, offset=0, size=0x80000):
         rd_sws_wr_addr_usbcom(serial_port, 0x0d, bytearray([0x01]))  # SPI set cns high
         rd_sws_wr_addr_usbcom(serial_port, 0x0b3, bytearray([0x00]))  # [0xb3]=0x00 ext.SWS into normal(ram) mode
         if data is None or len(data) != rdsize:
-            print('\nError Read Flash data at 0x%06x! ' % offset)
+            print('\rError Read Flash data at 0x%06x! ' % offset)
             return False
         stream.write(bytearray(data))
         size -= rdsize
         offset += rdsize
-    print('\n                               \n', end='')
+    print('\r                               \r', end='')
     return True
 
 
@@ -356,11 +356,11 @@ def flash_ready(serial_port, count=33):
         data = sws_read_data(serial_port, 0x0c)
         rd_sws_wr_addr_usbcom(serial_port, 0x0d, bytearray([0x01]))  # SPI set cns high
         if data is None:
-            print('\nError Read Flash Status! (%d)  ' % i)
+            print('\rError Read Flash Status! (%d)  ' % i)
             return False
         if (data[0] & 0x01) == 0:
             return True
-    print('\nTimeout! Flash status 0x%02x!     ' % data.pop(0))
+    print('\rTimeout! Flash status 0x%02x!     ' % data.pop(0))
     return False
 
 
@@ -392,7 +392,7 @@ def flash_erase_sectors(serial_port, offset=0, size=1):
     offset &= ~(FLASH_SECTOR_SIZE - 1)
     size = (size + FLASH_SECTOR_SIZE - 1) & (~(FLASH_SECTOR_SIZE - 1))
     while size > 0:
-        print('\nErase Sector at 0x%06x...' % offset, end='')
+        print('\rErase Sector at 0x%06x...' % offset, end='')
         flash_write_enable(serial_port)
         rd_sws_wr_addr_usbcom(serial_port, 0x0d, bytearray([0x00]))  # cns low
         rd_sws_wr_addr_usbcom(serial_port, 0x0c, bytearray([0x20]))  # Flash cmd erase sector
@@ -404,7 +404,7 @@ def flash_erase_sectors(serial_port, offset=0, size=1):
         size -= FLASH_SECTOR_SIZE
         if not flash_ready(serial_port):
             return False
-    print('\n                               \n', end='')
+    print('\r                               \r', end='')
     return True
 
 
@@ -422,25 +422,25 @@ def flash_write_block(serial_port, stream, offset=0, size=0, erase=True):
             if erasec != wrsec:
                 # send sector erase command + faddr
                 if not flash_erase_sectors(serial_port, offset):
-                    print('\nError Erase sector at 0x%06x!' % offset)
+                    print('\rError Erase sector at 0x%06x!' % offset)
                     return False
                 erasec = wrsec
         data = stream.read(wrsize)
         wrsize = len(data)
         if not data or wrsize == 0:  # end of stream
-            print('\nError Read file at 0x%06x!          ' % (fa + wrsize))
+            print('\rError Read file at 0x%06x!          ' % (fa + wrsize))
             return False
         for e in data:
             if e != 0xff:
-                print('\nWrite to 0x%06x...' % offset, end='')
+                print('\rWrite to 0x%06x...' % offset, end='')
                 if not flash_write_addr(serial_port, offset, data):
-                    print('\nError write sector at 0x%06x!' % offset)
+                    print('\rError write sector at 0x%06x!' % offset)
                     return False
                 break
         offset += wrsize
         size -= wrsize
         # fa + wrsize
-    print('\n                               \n', end='')
+    print('\r                               \r', end='')
     return True
 
 
@@ -525,7 +525,7 @@ def main():
     try:
         serial_port = serial.Serial(args.port, args.baud)
         serial_port.reset_input_buffer()
-        serial_port.timeout = 0.2
+        serial_port.timeout = 0.05
     except serial.SerialException as e:
         print('Error: Open %s, %d baud!: %s' % (args.port, args.baud, e))
         sys.exit(1)
@@ -551,7 +551,7 @@ def main():
         offset = args.address & 0x00ffffff
         size = args.size & 0x00ffffff
         if size == 0:
-            print('\nError: Read size = %d!' % size)
+            print('\rError: Read size = %d!' % size)
             sys.exit(1)
         print('Outfile: %s' % args.filename)
         try:
@@ -581,7 +581,7 @@ def main():
         count = int((args.size + FLASH_SECTOR_SIZE - 1) / FLASH_SECTOR_SIZE)
         size = (count * FLASH_SECTOR_SIZE)
         offset = args.address & (0xffffff ^ (FLASH_SECTOR_SIZE - 1))
-        print('Erase Flash %d sectors,\n\ndata from 0x%06x to 0x%06x...' % (count, offset, offset + size))
+        print('Erase Flash %d sectors,\r\ndata from 0x%06x to 0x%06x...' % (count, offset, offset + size))
         if not flash_erase_sectors(serial_port, offset, size):
             sys.exit(1)
     elif args.operation == 'ea':
