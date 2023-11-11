@@ -51,6 +51,9 @@ it compatible with Zigbee networks.
     ```
    
 3. Configure and build:
+
+   Building requires at Python 3.9 or later.
+
     ```sh
     cmake -DSDK_PREFIX=$(pwd)/../tl_zigbee_sdk -DTOOLCHAIN_PREFIX=$(pwd)/../tc32 -B build .
     cmake --build build --target z03mmc.zigbee
