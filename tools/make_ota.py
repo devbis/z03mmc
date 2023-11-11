@@ -11,7 +11,7 @@ OTA_MAGIC = b'\x5d\x02'
 def main(args):
     assert args.input_file != args.output
 
-    with (open(args.input_file, 'rb') as bin_file):
+    with open(args.input_file, 'rb') as bin_file:
         bin_file.seek(0, 0)
         firmware = bytearray(bin_file.read(-1))
         if firmware[6:8] != OTA_MAGIC:
