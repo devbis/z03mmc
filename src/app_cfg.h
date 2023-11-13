@@ -1,26 +1,3 @@
-/********************************************************************************************************
- * @file    app_cfg.h
- *
- * @brief   This is the header file for app_cfg
- *
- * @author  Zigbee Group
- * @date    2021
- *
- * @par     Copyright (c) 2021, Telink Semiconductor (Shanghai) Co., Ltd. ("TELINK")
- *
- *          Licensed under the Apache License, Version 2.0 (the "License");
- *          you may not use this file except in compliance with the License.
- *          You may obtain a copy of the License at
- *
- *              http://www.apache.org/licenses/LICENSE-2.0
- *
- *          Unless required by applicable law or agreed to in writing, software
- *          distributed under the License is distributed on an "AS IS" BASIS,
- *          WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *          See the License for the specific language governing permissions and
- *          limitations under the License.
- *******************************************************************************************************/
-
 #pragma once
 
 /* Enable C linkage for C++ Compilers: */
@@ -63,6 +40,7 @@ extern "C" {
 #define BOARD_B91_EVK					8
 #define BOARD_B91_DONGLE				9
 #define BOARD_8258_03MMC				10
+#define BOARD_8258_05MMC				11
 
 /* Board define */
 #if defined(MCU_CORE_826x)
@@ -76,8 +54,19 @@ extern "C" {
 #if (CHIP_TYPE == TLSR_8258_1M)
 	#define FLASH_CAP_SIZE_1M			1
 #endif
-	#define BOARD						BOARD_8258_03MMC//BOARD_8258_DONGLE//BOARD_8258_EVK
-	#define CLOCK_SYS_CLOCK_HZ  		24000000 //48000000
+
+#define DEVICE_LYWSD03MMC               3
+#define DEVICE_MJWSD05MMC               4
+
+#if DEVICE == DEVICE_LYWSD03MMC
+    #define BOARD						BOARD_8258_03MMC
+#elif DEVICE == DEVICE_LYWSD05MMC
+    #define BOARD						BOARD_8258_05MMC
+#else
+    #error "Please, specify device type"
+#endif
+#define CLOCK_SYS_CLOCK_HZ  		24000000 //48000000
+
 #elif defined(MCU_CORE_8278)
 	#define FLASH_CAP_SIZE_1M			1
 	#define BOARD						BOARD_8278_DONGLE//BOARD_8278_EVK
@@ -98,7 +87,9 @@ extern "C" {
 #elif (BOARD == BOARD_826x_DONGLE_PA)
 	#include "board_826x_dongle_pa.h"
 #elif (BOARD == BOARD_8258_03MMC)
-	#include "board_8258_03mmc.h"
+	#include "board_lywsd03mmc.h"
+#elif (BOARD == BOARD_8258_05MMC)
+	#include "board_mjwsd05mmc.h"
 #elif (BOARD == BOARD_8258_DONGLE)
 	#include "board_8258_dongle.h"
 #elif (BOARD == BOARD_8258_EVK)

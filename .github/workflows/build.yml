@@ -26,18 +26,23 @@ jobs:
     - name: Get SDK
       run: git clone https://github.com/devbis/tl_zigbee_sdk.git -b 3.6.8.5 --depth 1 ${{ env.SDK_DIR }}
 
-    - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSDK_PREFIX=${{env.SDK_DIR}} -DTOOLCHAIN_PREFIX=${{env.TOOLCHAIN_DIR}}
-
-    - name: Build
-      id: make
+    - name: Build LYWSD03MMC
+      id: make_lywsd03mmc
       run: |
-        cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target=z03mmc.zigbee
+        cmake -B ${{github.workspace}}/build -DDEVICE=LYWSD03MMC -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSDK_PREFIX=${{env.SDK_DIR}} -DTOOLCHAIN_PREFIX=${{env.TOOLCHAIN_DIR}}
+        cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target=zlywsd03mmc.zigbee
+        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: Build MJWSD05MMC
+      id: make_mjwsd05mmc
+      run: |
+        cmake -B ${{github.workspace}}/build -DDEVICE=MJWSD05MMC -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSDK_PREFIX=${{env.SDK_DIR}} -DTOOLCHAIN_PREFIX=${{env.TOOLCHAIN_DIR}}
+        cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target=zmjwsd05mmc.zigbee
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3
-      if: steps.make.outputs.status == 'success' && !cancelled()
+      if: (steps.make_lywsd03mmc.outputs.status == 'success' || steps.make_mjwsd05mmc.outputs.status == 'success') && !cancelled()
       with:
         # Artifact name
         name: firmware

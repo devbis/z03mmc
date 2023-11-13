@@ -1,21 +1,22 @@
 ################################
 # Common settings
 
-SET(TARGET z03mmc)
-
-IF(NOT MIMIC_HEIMAN)
-    SET(MIMIC_HEIMAN 0)
+IF(DEVICE STREQUAL "LYWSD03MMC")
+    SET(DEVICE_TYPE 3)
+    SET(TARGET zlywsd03mmc)
+ELSEIF(DEVICE STREQUAL "MJWSD05MMC")
+    SET(DEVICE_TYPE 4)
+    SET(TARGET zmjwsd05mmc)
 ELSE()
-    SET(TARGET ${TARGET}_heiman)
+    message(FATAL_ERROR "No DEVICE specified (use one of LYWSD03MMC, MJWSD05MMC)")
 ENDIF()
-
 
 
 ADD_DEFINITIONS(
     -DEND_DEVICE=1
     -DMCU_CORE_${TELINK_PLATFORM}=1
     -DMCU_STARTUP_${TELINK_PLATFORM}=1
-    -DMIMIC_HEIMAN=${MIMIC_HEIMAN}
+    -DDEVICE_TYPE=${DEVICE_TYPE}
 )
 
 ################################

@@ -95,10 +95,12 @@ drv_pm_pinCfg_t g_sensorPmCfg[] = {
 		BUTTON1,
 		PM_WAKEUP_LEVEL
 	},
+#ifdef BUTTON2
 	{
 		BUTTON2,
 		PM_WAKEUP_LEVEL
 	}
+#endif
 };
 #endif
 /**********************************************************************
