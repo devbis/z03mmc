@@ -50,7 +50,14 @@
  * During OTA upgrade, the upgraded device will check the rules of the following three fields.
  * Refer to ZCL OTA specification for details.
  */
-#define MANUFACTURER_CODE_TELINK           	0x1141//Telink ID
+
+#if defined(MANUFACTURER_CODE) && MANUFACTURER_CODE > 0
+#define MANUFACTURER_CODE_TELINK           	(MANUFACTURER_CODE)
+#else
+// custom developer's code, name is used in cstartup_8258.S
+#define MANUFACTURER_CODE_TELINK           	0xdb15 // 'devbis'. Change code if you develop custom firmware
+#endif
+
 #define	IMAGE_TYPE							((CHIP_TYPE << 8) | IMAGE_TYPE_TEMP_HUMIDITY)
 #define	FILE_VERSION					  	((APP_RELEASE << 24) | (APP_BUILD << 16) | (STACK_RELEASE << 8) | STACK_BUILD)
 

@@ -10,16 +10,6 @@
 /**********************************************************************
  * LOCAL CONSTANTS
  */
-#if defined(MIMIC_HEIMAN) && (MIMIC_HEIMAN == 1)
-
-#ifndef ZCL_BASIC_MFG_NAME
-#define ZCL_BASIC_MFG_NAME     {6,'H','E','I','M','A','N'}
-#endif
-#ifndef ZCL_BASIC_MODEL_ID
-#define ZCL_BASIC_MODEL_ID	   {8,'S','T','H','M','-','I','1','H'}
-#endif
-
-#else // MIMIC_HEIMAN
 
 #ifndef ZCL_BASIC_MFG_NAME
 #define ZCL_BASIC_MFG_NAME     {6,'X','i','a','o','m','i'}
@@ -27,8 +17,6 @@
 #ifndef ZCL_BASIC_MODEL_ID
 #define ZCL_BASIC_MODEL_ID	   {10,'L','Y','W','S','D','0','3','M','M','C'}
 #endif
-
-#endif // MIMIC_HEIMAN
 
 #ifndef ZCL_BASIC_SW_BUILD_ID
 #define ZCL_BASIC_SW_BUILD_ID     	{9,'0','0','0','0','-','0','0','0','0'}
