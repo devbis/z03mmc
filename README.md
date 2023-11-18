@@ -52,7 +52,7 @@ it compatible with Zigbee networks.
    
 3. Configure and build:
     ```sh
-    cmake -DSDK_PREFIX=$(pwd)/../tl_zigbee_sdk -DTOOLCHAIN_PREFIX=$(pwd)/../tc32 -B build .
+    cmake -B build -DSDK_PREFIX=$(pwd)/../tl_zigbee_sdk -DTOOLCHAIN_PREFIX=$(pwd)/../tc32 -DMANUFACTURER_CODE=0x1141
     cmake --build build --target z03mmc.zigbee
     ```
 
