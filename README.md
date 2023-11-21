@@ -14,12 +14,11 @@ it compatible with Zigbee networks.
 - Full-featured firmware to convert Xiaomi LYWSD03MC device with default ZCL battery, temperature and relative humidity clusters
 - Display support for known revisions
 - OTA support in firmware and binaries in ZCL format for update 
-- Flashable over-the-air from custom ATC firmware https://pvvx.github.io/ATC_MiThermometer/TelinkMiFlasher.html
+- Flashable over-the-air from custom ATC firmware https://devbis.github.io/telink-zigbee/
 - Flashable over SWS-UART interface using one of:
 
   - https://pvvx.github.io/ATC_MiThermometer/USBCOMFlashTx.html
-  - https://github.com/pvvx/ATC_MiThermometer/blob/master/TLSR825xComFlasher.py 
-  - https://github.com/pvvx/TLSRPGM 
+  - https://github.com/devbis/z03mmc/blob/master/TLSR825xComFlasher.py 
 
 ## Getting Started
 
@@ -61,13 +60,13 @@ it compatible with Zigbee networks.
 
 
 ## Flashing over the air (easy way)
-1. Open an awesome tool from ATC_MiThermometer https://pvvx.github.io/ATC_MiThermometer/TelinkMiFlasher.html
+1. Open an awesome tool from ATC_MiThermometer https://devbis.github.io/telink-zigbee/
 2. Click "Connect" button and find device LYWSD03MMC, wait for connection (Connected in logs)
 3. On a new device with stock firmware click "Do Activation" and wait some time.
 4. Next "Select Firmware", choose file with the transitional firmware [ATC_ota_400000](./assets/ATC_ota_40000.bin), click "Start Flashing". This step is required even if you already installed a custom bluetooth firmware. Not flashing this file will likely cause your device to get bricked and require flashing via USB/UART!
 5. You will see in logs "Update done after NN seconds"
 6. Connect to the device again (with name ATC_802190 or similar, based on mac-address). If it doesn't appear, remove and reinsert the battery and refresh the webpage with the flashing tool.
-7. Flash the latest [z03mmc.bin](https://github.com/devbis/z03mmc/releases) firmware over transitional firmware to convert it to zigbee. Use https://devbis.github.io/telink-zigbee/ page if previous flasher stops because of the firmware size.
+7. Flash the latest [z03mmc.bin](https://github.com/devbis/z03mmc/releases) firmware over transitional firmware to convert it to zigbee.
 8. The device should now show up in your Zigbee bridge (If joining is enabled, of course). If it doesn't, reinsert the battery and/or short the RESET and GND contacts on the board for 3 seconds.
 
 ## Flashing firmware with USB to UART
@@ -98,7 +97,8 @@ The UART flasher software uses the tool from https://github.com/pvvx/ATC_MiTherm
 
 ## Return to Bluetooth firmware
 
-The only supported method to reverting firmware is flashing via USB-UART dongle. See previous chapter.
+1. You can use Zigbee OTA to flash [1141-0203-99993001-ATC_v46.zigbee](./assets/1141-0203-99993001-ATC_v46.zigbee). See [zigbee2mqtt local OTA index](https://www.zigbee2mqtt.io/guide/usage/ota_updates.html#local-ota-index-and-firmware-files) or [ZHA OTA folder](https://github.com/zigpy/zigpy/wiki/OTA-Device-Firmware-Updates)
+2. Using UART dongle, use .bin firmware you like, either original or custom from https://github.com/pvvx/ATC_MiThermometer
 
 ## Zigbee OTA upgrades
 
