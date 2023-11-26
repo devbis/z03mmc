@@ -7,6 +7,9 @@ if(NOT TOOLCHAIN_PREFIX)
     message(FATAL_ERROR "No TOOLCHAIN_PREFIX specified (it must point to the root of desired compiler bundle)")
 endif()
 
+file(TO_CMAKE_PATH "${SDK_PREFIX}" SDK_PREFIX)
+file(TO_CMAKE_PATH "${TOOLCHAIN_PREFIX}" TOOLCHAIN_PREFIX)
+
 SET(CMAKE_SYSTEM_NAME Generic)
 SET(TARGET_PREFIX "tc32-elf")
 
