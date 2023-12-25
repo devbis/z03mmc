@@ -115,6 +115,33 @@ The UART flasher software uses the tool from https://github.com/pvvx/ATC_MiTherm
 The already flashed firmware supports OTA zigbee upgrade via standard flow.
 See zigbee2mqtt, ZHA, and HOMEd documentation for details.
 
+# IKEA Vindriktning upgrade
+
+You can use LYWSD03MMC board to upgrade your IKEA Vindriktning Air Quality Sensor to make it smart and connect to 
+zigbee network. Hardware changes are required. 
+You need:
+1. Any DC-DC convertor from 5V to 3.3V
+2. USB-UART and 1kOhm resistor to flash firmware
+
+## Steps:
+
+1. Download firmware, write it to device. You may use transitional firmware from BLE, just write zvindriktning.bin
+2. Solder wires according to the schema
+
+   ```
+   VDRKN GND  --> DC-DC GND IN  --> 03MMC GND
+                  DC-DC GND OUT --> 03MMC GND
+   VDRKN 5V   --> DC-DC IN 
+                  DC-DC OUT     --> 03MMC Battery 3v+ 
+   VDRKN REST --> 03MMC B1 pin
+   ```
+   You may use any DC-DC convertor, like AMS1117-based, MP2307-based, or another. The output voltage should be 3-3.3V
+    
+   In case of revisions B1.5/B1.6 you need to detach 2 pins (or just the second right bottom) from the board.
+   There should be no contact with B1 and any pin on the UART display chip.
+
+3. If all is soldered correctly it will try to join a zigbee network. For factory reset repower the device 4 times in a row.
+
 
 ## Related Work
 z03mmc is based on the original work of @pvvx, and @atc1441, who developed the initial firmware versions for bluetooth-capable device.
