@@ -34,16 +34,23 @@ jobs:
 #        mv ${{ env.ARTIFACT_DIR }}/z03mmc.bin ${{ env.ARTIFACT_DIR }}/z03mmc_tl_code.bin
 #        echo "status=success" >> $GITHUB_OUTPUT
 #
-    - name: Build LYWSD03MMC
-      id: lywsd03mmc
+#    - name: Build LYWSD03MMC
+#      id: lywsd03mmc
+#      run: |
+#        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSDK_PREFIX=${{env.SDK_DIR}} -DTOOLCHAIN_PREFIX=${{env.TOOLCHAIN_DIR}} -DMANUFACTURER_CODE=0x1141
+#        cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target=z03mmc.zigbee
+#        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: Build LYWSD03MMC Vindriktning
+      id: lywsd03mmc_vindriktning
       run: |
-        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSDK_PREFIX=${{env.SDK_DIR}} -DTOOLCHAIN_PREFIX=${{env.TOOLCHAIN_DIR}} -DMANUFACTURER_CODE=0x1141
-        cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target=z03mmc.zigbee
+        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSDK_PREFIX=${{env.SDK_DIR}} -DTOOLCHAIN_PREFIX=${{env.TOOLCHAIN_DIR}}
+        cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target=zvindriktning.zigbee
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4
-      if: steps.lywsd03mmc.outputs.status == 'success' && !cancelled()
+      if: steps.lywsd03mmc_vindriktning.outputs.status == 'success' && !cancelled()
       with:
         # Artifact name
         name: firmware
