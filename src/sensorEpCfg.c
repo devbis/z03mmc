@@ -5,6 +5,7 @@
 #include "zcl_include.h"
 #include "zcl_relative_humidity.h"
 #include "zcl_thermostat_ui_cfg.h"
+#include "zcl_concentration.h"
 #include "device.h"
 
 /**********************************************************************
@@ -12,10 +13,10 @@
  */
 
 #ifndef ZCL_BASIC_MFG_NAME
-#define ZCL_BASIC_MFG_NAME     {6,'X','i','a','o','m','i'}
+#define ZCL_BASIC_MFG_NAME     {4,'I','K','E','A'}
 #endif
 #ifndef ZCL_BASIC_MODEL_ID
-#define ZCL_BASIC_MODEL_ID	   {10,'L','Y','W','S','D','0','3','M','M','C'}
+#define ZCL_BASIC_MODEL_ID	   {19,'V','i','n','d','r','i','k','t','n','i','n','g',' ','z','0','3','m','m','c'}
 #endif
 
 #ifndef ZCL_BASIC_SW_BUILD_ID
@@ -54,6 +55,15 @@ const u16 sensorDevice_inClusterList[] =
 #endif
 #ifdef ZCL_IAS_ZONE
 	ZCL_CLUSTER_SS_IAS_ZONE,
+#endif
+#ifdef ZCL_PM25
+	ZCL_CLUSTER_CM_PM25,
+#endif
+#ifdef ZCL_PM1
+	ZCL_CLUSTER_CM_PM1,
+#endif
+#ifdef ZCL_PM10
+	ZCL_CLUSTER_CM_PM10,
 #endif
 #ifdef ZCL_POLL_CTRL
 	ZCL_CLUSTER_GEN_POLL_CONTROL,
@@ -107,7 +117,7 @@ zcl_basicAttr_t g_zcl_basicAttrs =
 #ifdef ZCL_BASIC_DATE_CODE
 	.dateCode 		= ZCL_BASIC_DATE_CODE,
 #endif
-	.powerSource	= POWER_SOURCE_BATTERY,
+	.powerSource	= POWER_SOURCE_DC, //POWER_SOURCE_BATTERY,
 	.deviceEnable	= TRUE,
 };
 
@@ -251,6 +261,72 @@ const zclAttrInfo_t thermostat_ui_cfg_attrTbl[] =
 #define	ZCL_THERMOSTAT_UI_CFG_ATTR_NUM		 sizeof(thermostat_ui_cfg_attrTbl) / sizeof(zclAttrInfo_t)
 #endif
 
+#ifdef ZCL_PM25
+zcl_concentrationAttr_t g_zcl_pm25Attrs =
+{
+	.measuredValue	= 0.0,
+	.minValue 		= 0.0,
+	.maxValue		= 1000.0,
+	.tolerance		= 0.0,
+};
+
+const zclAttrInfo_t pm25_attrTbl[] =
+{
+	{ ZCL_CONCENTRATION_ATTRID_MEASUREDVALUE,		ZCL_DATA_TYPE_SINGLE_PREC,    ACCESS_CONTROL_READ | ACCESS_CONTROL_REPORTABLE, (u8*)&g_zcl_pm25Attrs.measuredValue },
+	{ ZCL_CONCENTRATION_ATTRID_MINMEASUREDVALUE,		ZCL_DATA_TYPE_SINGLE_PREC,    ACCESS_CONTROL_READ, (u8*)&g_zcl_pm25Attrs.minValue },
+	{ ZCL_CONCENTRATION_ATTRID_MAXMEASUREDVALUE,		ZCL_DATA_TYPE_SINGLE_PREC,    ACCESS_CONTROL_READ, (u8*)&g_zcl_pm25Attrs.maxValue },
+	{ ZCL_CONCENTRATION_ATTRID_TOLERANCE,      		ZCL_DATA_TYPE_SINGLE_PREC,    ACCESS_CONTROL_READ, (u8*)&g_zcl_pm25Attrs.tolerance },
+
+	{ ZCL_ATTRID_GLOBAL_CLUSTER_REVISION, 	ZCL_DATA_TYPE_UINT16,  	ACCESS_CONTROL_READ,  						(u8*)&zcl_attr_global_clusterRevision},
+};
+
+#define	ZCL_PM25_ATTR_NUM		 sizeof(pm25_attrTbl) / sizeof(zclAttrInfo_t)
+#endif
+
+
+#ifdef ZCL_PM1
+zcl_concentrationAttr_t g_zcl_pm1Attrs =
+{
+	.measuredValue	= 0.0,
+	.minValue 		= 0.0,
+	.maxValue		= 1000.0,
+	.tolerance		= 0.0,
+};
+
+const zclAttrInfo_t pm1_attrTbl[] =
+{
+	{ ZCL_CONCENTRATION_ATTRID_MEASUREDVALUE,		ZCL_DATA_TYPE_SINGLE_PREC,    ACCESS_CONTROL_READ | ACCESS_CONTROL_REPORTABLE, (u8*)&g_zcl_pm1Attrs.measuredValue },
+	{ ZCL_CONCENTRATION_ATTRID_MINMEASUREDVALUE,		ZCL_DATA_TYPE_SINGLE_PREC,    ACCESS_CONTROL_READ, (u8*)&g_zcl_pm1Attrs.minValue },
+	{ ZCL_CONCENTRATION_ATTRID_MAXMEASUREDVALUE,		ZCL_DATA_TYPE_SINGLE_PREC,    ACCESS_CONTROL_READ, (u8*)&g_zcl_pm1Attrs.maxValue },
+	{ ZCL_CONCENTRATION_ATTRID_TOLERANCE,      		ZCL_DATA_TYPE_SINGLE_PREC,    ACCESS_CONTROL_READ, (u8*)&g_zcl_pm1Attrs.tolerance },
+
+	{ ZCL_ATTRID_GLOBAL_CLUSTER_REVISION, 	ZCL_DATA_TYPE_UINT16,  	ACCESS_CONTROL_READ,  						(u8*)&zcl_attr_global_clusterRevision},
+};
+
+#define	ZCL_PM1_ATTR_NUM		 sizeof(pm1_attrTbl) / sizeof(zclAttrInfo_t)
+#endif
+
+#ifdef ZCL_PM10
+zcl_concentrationAttr_t g_zcl_pm10Attrs =
+{
+	.measuredValue	= 0.0,
+	.minValue 		= 0.0,
+	.maxValue		= 1000.0,
+	.tolerance		= 0.0,
+};
+
+const zclAttrInfo_t pm10_attrTbl[] =
+{
+	{ ZCL_CONCENTRATION_ATTRID_MEASUREDVALUE,		ZCL_DATA_TYPE_SINGLE_PREC,    ACCESS_CONTROL_READ | ACCESS_CONTROL_REPORTABLE, (u8*)&g_zcl_pm10Attrs.measuredValue },
+	{ ZCL_CONCENTRATION_ATTRID_MINMEASUREDVALUE,		ZCL_DATA_TYPE_SINGLE_PREC,    ACCESS_CONTROL_READ, (u8*)&g_zcl_pm10Attrs.minValue },
+	{ ZCL_CONCENTRATION_ATTRID_MAXMEASUREDVALUE,		ZCL_DATA_TYPE_SINGLE_PREC,    ACCESS_CONTROL_READ, (u8*)&g_zcl_pm10Attrs.maxValue },
+	{ ZCL_CONCENTRATION_ATTRID_TOLERANCE,      		ZCL_DATA_TYPE_SINGLE_PREC,    ACCESS_CONTROL_READ, (u8*)&g_zcl_pm10Attrs.tolerance },
+
+	{ ZCL_ATTRID_GLOBAL_CLUSTER_REVISION, 	ZCL_DATA_TYPE_UINT16,  	ACCESS_CONTROL_READ,  						(u8*)&zcl_attr_global_clusterRevision},
+};
+
+#define	ZCL_PM10_ATTR_NUM		 sizeof(pm10_attrTbl) / sizeof(zclAttrInfo_t)
+#endif
 
 #ifdef ZCL_POLL_CTRL
 /* Poll Control */
@@ -303,6 +379,15 @@ const zcl_specClusterInfo_t g_sensorDeviceClusterList[] =
 #ifdef ZCL_THERMOSTAT_UI_CFG
 	// typo in SDK
 	{ZCL_CLUSTER_HAVC_USER_INTERFACE_CONFIG, MANUFACTURER_CODE_NONE, ZCL_THERMOSTAT_UI_CFG_ATTR_NUM, thermostat_ui_cfg_attrTbl,	zcl_thermostat_ui_cfg_register, 	NULL},
+#endif
+#ifdef ZCL_PM25
+	{ZCL_CLUSTER_CM_PM25,	MANUFACTURER_CODE_NONE,	 ZCL_PM25_ATTR_NUM, 		pm25_attrTbl,	zcl_pm25_register, 	NULL},
+#endif
+#ifdef ZCL_PM1
+	{ZCL_CLUSTER_CM_PM1,	MANUFACTURER_CODE_NONE,	 ZCL_PM1_ATTR_NUM, 		pm1_attrTbl,	zcl_pm1_register, 	NULL},
+#endif
+#ifdef ZCL_PM10
+	{ZCL_CLUSTER_CM_PM10,	MANUFACTURER_CODE_NONE,	 ZCL_PM10_ATTR_NUM, 		pm10_attrTbl,	zcl_pm10_register, 	NULL},
 #endif
 #ifdef ZCL_POLL_CTRL
 	{ZCL_CLUSTER_GEN_POLL_CONTROL,  MANUFACTURER_CODE_NONE, ZCL_POLLCTRL_ATTR_NUM, 	pollCtrl_attrTbl,   zcl_pollCtrl_register,	sensorDevice_pollCtrlCb},

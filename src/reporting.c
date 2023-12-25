@@ -5,6 +5,37 @@ extern void reportAttr(reportCfgInfo_t *pEntry);
 
 app_reporting_t app_reporting[ZCL_REPORTING_TABLE_NUM];
 
+
+static u8 app_reportableChangeValueChk(u8 dataType, u8 *curValue, u8 *prevValue, u8 *reportableChange) {
+    u8 needReport = false;
+
+    switch(dataType) {
+		case ZCL_DATA_TYPE_SINGLE_PREC:
+			{
+				float P = *((float *)prevValue);
+				float C = *((float *)curValue);
+				float R = *((float *)reportableChange);
+                u32 p = (u32) P;
+                u32 c = (u32) C;
+                u32 r = (u32) R;
+
+                // printf(".... check need report %x, %d %d (%d)\r\n", dataType, p, c, r);
+
+				if(P >= C){
+					needReport = ((P - C) > R) ? TRUE : FALSE;
+				}else{
+					needReport = ((C - P) > R) ? TRUE : FALSE;
+				}
+			}
+			break;
+        default:
+            needReport = reportableChangeValueChk(dataType, curValue, prevValue, reportableChange);
+            break;
+    }
+
+    return needReport;
+}
+
 static s32 app_reportMinAttrTimerCb(void *arg) {
     app_reporting_t *app_reporting = (app_reporting_t*)arg;
     reportCfgInfo_t *pEntry = app_reporting->pEntry;
@@ -33,7 +64,7 @@ static s32 app_reportMinAttrTimerCb(void *arg) {
     len = (len>8) ? (8):(len);
 
     if( (!zcl_analogDataType(pAttrEntry->type) && (memcmp(pEntry->prevData, pAttrEntry->data, len) != SUCCESS)) ||
-            ((zcl_analogDataType(pAttrEntry->type) && reportableChangeValueChk(pAttrEntry->type,
+            ((zcl_analogDataType(pAttrEntry->type) && app_reportableChangeValueChk(pAttrEntry->type,
             pAttrEntry->data, pEntry->prevData, pEntry->reportableChange)))) {
 
         reportAttr(pEntry);

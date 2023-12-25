@@ -12,11 +12,14 @@
 #include "zbhci.h"
 #endif
 
+#include "factory_reset.h"
 #include "zcl_relative_humidity.h"
+#include "zcl_concentration.h"
 #include "app_i2c.h"
 #include "shtv3_sensor.h"
 #include "lcd.h"
 #include "reporting.h"
+#include "pm1006.h"
 
 
 /**********************************************************************
@@ -143,12 +146,14 @@ void stack_init(void)
  */
 void user_app_init(void)
 {
-	// factoryRst_init();
-#if ZCL_POLL_CTRL_SUPPORT
-	af_powerDescPowerModeUpdate(POWER_MODE_RECEIVER_COMES_PERIODICALLY);
-#else
-	af_powerDescPowerModeUpdate(POWER_MODE_RECEIVER_COMES_WHEN_STIMULATED);
-#endif
+	af_nodeDescManuCodeUpdate(MANUFACTURER_CODE_TELINK);
+
+	factoryRst_init();
+//#if ZCL_POLL_CTRL_SUPPORT
+//	af_powerDescPowerModeUpdate(POWER_MODE_RECEIVER_COMES_PERIODICALLY);
+//#else
+//	af_powerDescPowerModeUpdate(POWER_MODE_RECEIVER_COMES_WHEN_STIMULATED);
+//#endif
     /* Initialize ZCL layer */
 	/* Register Incoming ZCL Foundation command/response messages */
 	zcl_init(sensorDevice_zclProcessIncomingMsg);
@@ -156,7 +161,7 @@ void user_app_init(void)
 	/* Register endPoint */
 	af_endpointRegister(SENSOR_DEVICE_ENDPOINT, (af_simple_descriptor_t *)&sensorDevice_simpleDesc, zcl_rx_handler, NULL);
 
-	zcl_thermostatDisplayMode_restore();
+	// zcl_thermostatDisplayMode_restore();
 	zcl_reportingTabInit();
 
 	/* Register ZCL specific cluster information */
@@ -166,7 +171,8 @@ void user_app_init(void)
     ota_init(OTA_TYPE_CLIENT, (af_simple_descriptor_t *)&sensorDevice_simpleDesc, &sensorDevice_otaInfo, &sensorDevice_otaCb);
 #endif
 
-	show_zigbe();
+	pm1006_uart_init();
+	// show_zigbe();
 
     // read sensor every 10 seconds
     read_sensor_start(10000);
@@ -180,6 +186,8 @@ u8 is_comfort(s16 t, u16 h) {
 	return ret;
 }
 
+#if defined(ZCL_TEMPERATURE_MEASUREMENT) || defined(ZCL_RELATIVE_HUMIDITY)
+
 void read_sensor_and_save() {
 	s16 temp = 0;
 	u16 humi = 0;
@@ -188,7 +196,9 @@ void read_sensor_and_save() {
 
 	read_sensor(&temp,&humi);
     // printf("Temp: %d.%d, humid: %d\r\n", temp/10, temp % 10, humi);
+#ifdef ZCL_TEMPERATURE_MEASUREMENT
     g_zcl_temperatureAttrs.measuredValue = temp;
+#endif
 #ifdef ZCL_RELATIVE_HUMIDITY
     g_zcl_relHumidityAttrs.measuredValue = humi;
 #endif
@@ -233,8 +243,9 @@ void read_sensor_and_save() {
 #endif
 #endif
 #endif
-    update_lcd();
+    // update_lcd();
 }
+#endif
 
 s32 zclSensorTimerCb(void *arg)
 {
@@ -284,12 +295,8 @@ void app_task(void)
 	app_key_handler();
 
 	if(bdb_isIdle()){
-#if PM_ENABLE
-		if(!g_sensorAppCtx.keyPressed){
-			drv_pm_lowPowerEnter();
-		}
-#endif
-        // factoryRst_handler();
+//    	localPermitJoinState();
+		factoryRst_handler();
 		report_handler();
 	}
 }
@@ -405,7 +412,7 @@ void user_init(bool isRetention)
 		/* Initialize Stack */
 		stack_init();
 
-		init_lcd(true);
+		// init_lcd(true);
 		init_sensor();
 
 		populate_hw_version();
@@ -427,31 +434,35 @@ void user_init(bool isRetention)
 			g_bdbCommissionSetting.linkKey.tcLinkKey.keyType = g_sensorAppCtx.tcLinkKey.keyType;
 			g_bdbCommissionSetting.linkKey.tcLinkKey.key = g_sensorAppCtx.tcLinkKey.key;
 		}
+		status_t stat;
 
 		/* Set default reporting configuration */
-		u8 batteryVoltageReportableChange = 0;
-		u8 batteryPercentReportableChange = 0;
+//		u8 batteryVoltageReportableChange = 0;
+//		u8 batteryPercentReportableChange = 0;
 		u16 temperatureReportableChange = 10;
 		u16 humidityReportableChange = 50;
-        bdb_defaultReportingCfg(
-			SENSOR_DEVICE_ENDPOINT,
-			HA_PROFILE_ID,
-			ZCL_CLUSTER_GEN_POWER_CFG,
-			ZCL_ATTRID_BATTERY_VOLTAGE,
-			60,
-			3600,
-			(u8 *)&batteryVoltageReportableChange
-		);
-        bdb_defaultReportingCfg(
-			SENSOR_DEVICE_ENDPOINT,
-			HA_PROFILE_ID,
-			ZCL_CLUSTER_GEN_POWER_CFG,
-			ZCL_ATTRID_BATTERY_PERCENTAGE_REMAINING,
-			60,
-			3600,
-			(u8 *)&batteryPercentReportableChange
-		);
-		bdb_defaultReportingCfg(
+		float pm25ReportableChange = 2.0;
+		float pm1ReportableChange = 2.0;
+		float pm10ReportableChange = 2.0;
+//        bdb_defaultReportingCfg(
+//			SENSOR_DEVICE_ENDPOINT,
+//			HA_PROFILE_ID,
+//			ZCL_CLUSTER_GEN_POWER_CFG,
+//			ZCL_ATTRID_BATTERY_VOLTAGE,
+//			60,
+//			3600,
+//			(u8 *)&batteryVoltageReportableChange
+//		);
+//        bdb_defaultReportingCfg(
+//			SENSOR_DEVICE_ENDPOINT,
+//			HA_PROFILE_ID,
+//			ZCL_CLUSTER_GEN_POWER_CFG,
+//			ZCL_ATTRID_BATTERY_PERCENTAGE_REMAINING,
+//			60,
+//			3600,
+//			(u8 *)&batteryPercentReportableChange
+//		);
+		stat = bdb_defaultReportingCfg(
 			SENSOR_DEVICE_ENDPOINT,
 			HA_PROFILE_ID,
 			ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT,
@@ -460,7 +471,10 @@ void user_init(bool isRetention)
 			300,
 			(u8 *)&temperatureReportableChange
 		);
-		bdb_defaultReportingCfg(
+		if (stat != ZCL_STA_SUCCESS) {
+			// printf("Temp stat: %d\r\n", stat);
+		}
+		stat = bdb_defaultReportingCfg(
 			SENSOR_DEVICE_ENDPOINT,
 			HA_PROFILE_ID,
 			ZCL_CLUSTER_MS_RELATIVE_HUMIDITY,
@@ -469,13 +483,52 @@ void user_init(bool isRetention)
 			300,
 			(u8 *)&humidityReportableChange
 		);
+		if (stat != ZCL_STA_SUCCESS) {
+			// printf("Humid stat: %d\r\n", stat);
+		}
+		stat = bdb_defaultReportingCfg(
+			SENSOR_DEVICE_ENDPOINT,
+			HA_PROFILE_ID,
+			ZCL_CLUSTER_CM_PM25,
+			ZCL_CONCENTRATION_ATTRID_MEASUREDVALUE,
+			10,
+			120,
+			(u8 *)&pm25ReportableChange
+		);
+		if (stat != ZCL_STA_SUCCESS) {
+			// printf("pm25 stat: %d\r\n", stat);
+		}
+		stat = bdb_defaultReportingCfg(
+			SENSOR_DEVICE_ENDPOINT,
+			HA_PROFILE_ID,
+			ZCL_CLUSTER_CM_PM1,
+			ZCL_CONCENTRATION_ATTRID_MEASUREDVALUE,
+			10,
+			120,
+			(u8 *)&pm1ReportableChange
+		);
+		if (stat != ZCL_STA_SUCCESS) {
+			// printf("pm1 stat: %d\r\n", stat);
+		}
+		stat = bdb_defaultReportingCfg(
+			SENSOR_DEVICE_ENDPOINT,
+			HA_PROFILE_ID,
+			ZCL_CLUSTER_CM_PM10,
+			ZCL_CONCENTRATION_ATTRID_MEASUREDVALUE,
+			10,
+			120,
+			(u8 *)&pm10ReportableChange
+		);
+		if (stat != ZCL_STA_SUCCESS) {
+			// printf("pm10 stat: %d\r\n", stat);
+		}
 
 		/* Initialize BDB */
-		u8 repower = drv_pm_deepSleep_flag_get() ? 0 : 1;
+		u8 repower = 1; //drv_pm_deepSleep_flag_get() ? 0 : 1;
 		bdb_init((af_simple_descriptor_t *)&sensorDevice_simpleDesc, &g_bdbCommissionSetting, &g_zbDemoBdbCb, repower);
 	}else{
 		/* Re-config phy when system recovery from deep sleep with retention */
 		mac_phyReconfig();
-		init_lcd_deepsleep();
+		// init_lcd_deepsleep();
 	}
 }

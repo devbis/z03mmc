@@ -1,7 +1,7 @@
 ################################
 # Common settings
 
-SET(TARGET z03mmc)
+SET(TARGET zvindriktning)
 
 IF(NOT MANUFACTURER_CODE)
     SET(MANUFACTURER_CODE 0)
@@ -9,7 +9,7 @@ ENDIF()
 
 
 ADD_DEFINITIONS(
-    -DEND_DEVICE=1
+    -DROUTER=1
     -DMCU_CORE_${TELINK_PLATFORM}=1
     -DMCU_STARTUP_${TELINK_PLATFORM}=1
     -DMANUFACTURER_CODE=${MANUFACTURER_CODE}
@@ -107,6 +107,7 @@ SET(ZIGBEE_SRC
     ${SDK_PREFIX}/zigbee/wwah/wwahEpCfg.c
     ${SDK_PREFIX}/zigbee/gp/gp.c
     ${SDK_PREFIX}/zigbee/gp/gpEpCfg.c
+    ${SDK_PREFIX}/zigbee/gp/gp_proxy.c
     ${SDK_PREFIX}/zigbee/gp/gp_proxyTab.c
     ${SDK_PREFIX}/zigbee/ss/ss_nv.c
     ${SDK_PREFIX}/zigbee/ota/ota.c
@@ -164,16 +165,19 @@ INCLUDE_DIRECTORIES(
     ${SDK_PREFIX}/zigbee/zbapi
     ${SDK_PREFIX}/proj
     ${SDK_PREFIX}/proj/common
+    ${SDK_PREFIX}/proj/drivers
     ${SDK_PREFIX}/platform
 
     # Zigbee sources reference zcl_options.h
     ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_SOURCE_DIR}/src/common
     ${PROJECT_SOURCE_DIR}/src/custom_zcl
 )
 
 LINK_DIRECTORIES(
 	${SDK_PREFIX}/zigbee/lib/tc32
 	${SDK_PREFIX}/platform/lib
+	${SDK_PREFIX}/platform/tc32
 )
 
 SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -T${SDK_PREFIX}/platform/boot/${TELINK_PLATFORM}/boot_${TELINK_PLATFORM}.link")
@@ -188,7 +192,9 @@ TARGET_LINK_LIBRARIES(${TARGET}
 
 	#ZigBee
 
-	zb_ed
+	# zb_ed
+	zb_router
+	soft-fp
 	drivers_${TELINK_PLATFORM}
 
         -Wl,--end-group

@@ -42,7 +42,7 @@
 #endif
 
 #define APP_RELEASE							0x10//app release 1.0
-#define APP_BUILD							0x06//app build 06
+#define APP_BUILD							0x01//app build 06
 #define STACK_RELEASE						0x30//stack release 3.0
 #define STACK_BUILD							0x01//stack build 01
 
@@ -58,7 +58,7 @@
 #define MANUFACTURER_CODE_TELINK           	0xdb15 // 'devbis'. Change code if you develop custom firmware
 #endif
 
-#define	IMAGE_TYPE							((CHIP_TYPE << 8) | IMAGE_TYPE_TEMP_HUMIDITY)
+#define	IMAGE_TYPE							((CHIP_TYPE << 8) | IMAGE_TYPE_VINDRIKTNING)
 #define	FILE_VERSION					  	((APP_RELEASE << 24) | (APP_BUILD << 16) | (STACK_RELEASE << 8) | STACK_BUILD)
 
 /* Pre-compiled link configuration. */

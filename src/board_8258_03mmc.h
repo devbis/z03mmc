@@ -40,6 +40,8 @@ extern "C" {
 	#define	DEBUG_INFO_TX_PIN	    GPIO_SWS //print
 #endif
 
+#define UART_TX_PIN         	UART_TX_PD7 // P7
+#define UART_RX_PIN         	UART_RX_PB7 // B1
 
 enum{
 	VK_SW1 = 0x01,

@@ -97,6 +97,15 @@ typedef struct {
 	u8 displayMode;
 }zcl_thermostatUICfgAttr_t;
 
+/**
+ *  @brief Defined for concentration cluster set attributes
+ */
+typedef struct {
+	float measuredValue;
+	float minValue;
+	float maxValue;
+	float tolerance;
+}zcl_concentrationAttr_t;
 
 /**
  *  @brief  Defined for poll control cluster attributes

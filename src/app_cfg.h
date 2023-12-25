@@ -154,9 +154,12 @@ extern "C" {
 //#define ZCL_IAS_ZONE_SUPPORT						1
 #define ZCL_TEMPERATURE_MEASUREMENT_SUPPORT			1
 #define ZCL_RELATIVE_HUMIDITY_SUPPORT   			1
-#define ZCL_THERMOSTAT_UI_CFG_SUPPORT				1
+// #define ZCL_THERMOSTAT_UI_CFG_SUPPORT				1
 //#define ZCL_POLL_CTRL_SUPPORT						1
 #define ZCL_OTA_SUPPORT								1
+#define ZCL_PM25_SUPPORT							1
+#define ZCL_PM1_SUPPORT								1
+#define ZCL_PM10_SUPPORT							1
 
 
 // for consistency
@@ -166,6 +169,15 @@ extern "C" {
 #endif
 #if ZCL_THERMOSTAT_UI_CFG_SUPPORT
 #define ZCL_THERMOSTAT_UI_CFG
+#endif
+#if ZCL_PM25_SUPPORT
+#define ZCL_PM25
+#endif
+#if ZCL_PM1_SUPPORT
+#define ZCL_PM1
+#endif
+#if ZCL_PM10_SUPPORT
+#define ZCL_PM10
 #endif
 
 
