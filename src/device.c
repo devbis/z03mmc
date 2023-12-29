@@ -225,6 +225,7 @@ void read_sensor_and_save() {
 #ifdef ZCL_RELATIVE_HUMIDITY_MEASUREMENT
 #ifdef ZCL_TEMPERATURE_MEASUREMENT
     show_small_number(g_zcl_relHumidityAttrs.measuredValue / 100, 1);
+    show_battery_symbol(percentage <= 10);
 #if defined(SHOW_SMILEY)
     show_smiley(
         is_comfort(g_zcl_temperatureAttrs.measuredValue, g_zcl_relHumidityAttrs.measuredValue) ? 1 : 2
