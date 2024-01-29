@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Get toolchain
       run: git clone https://github.com/devbis/tc32.git -b linux --depth 1 ${{ env.TOOLCHAIN_DIR }}
@@ -42,7 +42,7 @@ jobs:
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: steps.lywsd03mmc.outputs.status == 'success' && !cancelled()
       with:
         # Artifact name
