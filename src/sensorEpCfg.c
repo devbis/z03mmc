@@ -197,6 +197,7 @@ zcl_temperatureAttr_t g_zcl_temperatureAttrs =
 	.minValue 		= 0xf6e6, // 0x954d,
 	.maxValue		= 0x7fff,
 	.tolerance		= 0x0000,
+	.calibration	= 0,
 };
 
 const zclAttrInfo_t temperature_measurement_attrTbl[] =
@@ -220,6 +221,7 @@ zcl_relHumidityAttr_t g_zcl_relHumidityAttrs =
 	.minValue 		= 0x0000,
 	.maxValue		= 0x2710,
 	.tolerance		= 0x0000,
+	.calibration	= 0,
 };
 
 const zclAttrInfo_t relative_humdity_attrTbl[] =
@@ -239,11 +241,23 @@ const zclAttrInfo_t relative_humdity_attrTbl[] =
 zcl_thermostatUICfgAttr_t g_zcl_thermostatUICfgAttrs =
 {
 	.displayMode	= 0x00,
+	.smileyOn       = 0x01,
+	.displayOn      = 0x01,
+	.tempComfMin    = 2100, // x0.01 C
+	.tempComfMax    = 2600, // x0.01 C
+	.humidComfMin   = 3000, // x0.01 %
+	.humidComfMax   = 6000, // x0.01 %
 };
 
 const zclAttrInfo_t thermostat_ui_cfg_attrTbl[] =
 {
-	{ ZCL_THERMOSTAT_UI_CFG_ATTRID_TEMPERATUREDISPLAYMODE,       ZCL_DATA_TYPE_ENUM8,    ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_thermostatUICfgAttrs.displayMode },
+	{ ZCL_THERMOSTAT_UI_CFG_ATTRID_TEMPERATUREDISPLAYMODE, ZCL_DATA_TYPE_ENUM8,    ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_thermostatUICfgAttrs.displayMode },
+	{ ZCL_THERMOSTAT_UI_CFG_ATTRID_SMILEY_ON,              ZCL_DATA_TYPE_BOOLEAN,  ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_thermostatUICfgAttrs.smileyOn },
+	{ ZCL_THERMOSTAT_UI_CFG_ATTRID_DISPLAY_ON,             ZCL_DATA_TYPE_BOOLEAN,  ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_thermostatUICfgAttrs.displayOn },
+	{ ZCL_THERMOSTAT_UI_CFG_ATTRID_TEMP_COMF_MIN,          ZCL_DATA_TYPE_INT16,    ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_thermostatUICfgAttrs.tempComfMin },
+	{ ZCL_THERMOSTAT_UI_CFG_ATTRID_TEMP_COMF_MAX,          ZCL_DATA_TYPE_INT16,    ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_thermostatUICfgAttrs.tempComfMax },
+	{ ZCL_THERMOSTAT_UI_CFG_ATTRID_HUMID_COMF_MIN,         ZCL_DATA_TYPE_UINT16,   ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_thermostatUICfgAttrs.humidComfMin },
+	{ ZCL_THERMOSTAT_UI_CFG_ATTRID_HUMID_COMF_MAX,         ZCL_DATA_TYPE_UINT16,   ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_thermostatUICfgAttrs.humidComfMax },
 
 	{ ZCL_ATTRID_GLOBAL_CLUSTER_REVISION, 	ZCL_DATA_TYPE_UINT16,  	ACCESS_CONTROL_READ,  						(u8*)&zcl_attr_global_clusterRevision},
 };
@@ -302,7 +316,7 @@ const zcl_specClusterInfo_t g_sensorDeviceClusterList[] =
 #endif
 #ifdef ZCL_THERMOSTAT_UI_CFG
 	// typo in SDK
-	{ZCL_CLUSTER_HAVC_USER_INTERFACE_CONFIG, MANUFACTURER_CODE_NONE, ZCL_THERMOSTAT_UI_CFG_ATTR_NUM, thermostat_ui_cfg_attrTbl,	zcl_thermostat_ui_cfg_register, 	NULL},
+	{ZCL_CLUSTER_HAVC_USER_INTERFACE_CONFIG, MANUFACTURER_CODE_TELINK, ZCL_THERMOSTAT_UI_CFG_ATTR_NUM, thermostat_ui_cfg_attrTbl,	zcl_thermostat_ui_cfg_register, 	NULL},
 #endif
 #ifdef ZCL_POLL_CTRL
 	{ZCL_CLUSTER_GEN_POLL_CONTROL,  MANUFACTURER_CODE_NONE, ZCL_POLLCTRL_ATTR_NUM, 	pollCtrl_attrTbl,   zcl_pollCtrl_register,	sensorDevice_pollCtrlCb},
@@ -335,19 +349,83 @@ nv_sts_t zcl_thermostatDisplayMode_save(void)
 	st = nv_flashReadNew(1, NV_MODULE_ZCL,  NV_ITEM_ZCL_THERMOSTAT_UI_CFG, sizeof(zcl_nv_thermostatUiCfg), (u8*)&zcl_nv_thermostatUiCfg);
 
 	if(st == NV_SUCC){
-		if((zcl_nv_thermostatUiCfg.displayMode != g_zcl_thermostatUICfgAttrs.displayMode)){
+		if(
+			zcl_nv_thermostatUiCfg.displayMode != g_zcl_thermostatUICfgAttrs.displayMode ||
+			zcl_nv_thermostatUiCfg.smileyOn != g_zcl_thermostatUICfgAttrs.smileyOn ||
+			zcl_nv_thermostatUiCfg.displayOn != g_zcl_thermostatUICfgAttrs.displayOn ||
+			zcl_nv_thermostatUiCfg.tempComfMin != g_zcl_thermostatUICfgAttrs.tempComfMin ||
+			zcl_nv_thermostatUiCfg.tempComfMax != g_zcl_thermostatUICfgAttrs.tempComfMax ||
+			zcl_nv_thermostatUiCfg.humidComfMin != g_zcl_thermostatUICfgAttrs.humidComfMin ||
+			zcl_nv_thermostatUiCfg.humidComfMax != g_zcl_thermostatUICfgAttrs.humidComfMax
+		){
 			zcl_nv_thermostatUiCfg.displayMode = g_zcl_thermostatUICfgAttrs.displayMode;
+			zcl_nv_thermostatUiCfg.smileyOn = g_zcl_thermostatUICfgAttrs.smileyOn;
+			zcl_nv_thermostatUiCfg.displayOn = g_zcl_thermostatUICfgAttrs.displayOn;
+			zcl_nv_thermostatUiCfg.tempComfMin = g_zcl_thermostatUICfgAttrs.tempComfMin;
+			zcl_nv_thermostatUiCfg.tempComfMax = g_zcl_thermostatUICfgAttrs.tempComfMax;
+			zcl_nv_thermostatUiCfg.humidComfMin = g_zcl_thermostatUICfgAttrs.humidComfMin;
+			zcl_nv_thermostatUiCfg.humidComfMax = g_zcl_thermostatUICfgAttrs.humidComfMax;
 
 			st = nv_flashWriteNew(1, NV_MODULE_ZCL, NV_ITEM_ZCL_THERMOSTAT_UI_CFG, sizeof(zcl_nv_thermostatUiCfg), (u8*)&zcl_nv_thermostatUiCfg);
 		}
 	}else if(st == NV_ITEM_NOT_FOUND){
 		zcl_nv_thermostatUiCfg.displayMode = g_zcl_thermostatUICfgAttrs.displayMode;
+		zcl_nv_thermostatUiCfg.smileyOn = g_zcl_thermostatUICfgAttrs.smileyOn;
+		zcl_nv_thermostatUiCfg.displayOn = g_zcl_thermostatUICfgAttrs.displayOn;
+		zcl_nv_thermostatUiCfg.tempComfMin = g_zcl_thermostatUICfgAttrs.tempComfMin;
+		zcl_nv_thermostatUiCfg.tempComfMax = g_zcl_thermostatUICfgAttrs.tempComfMax;
+		zcl_nv_thermostatUiCfg.humidComfMin = g_zcl_thermostatUICfgAttrs.humidComfMin;
+		zcl_nv_thermostatUiCfg.humidComfMax = g_zcl_thermostatUICfgAttrs.humidComfMax;
 
 		st = nv_flashWriteNew(1, NV_MODULE_ZCL, NV_ITEM_ZCL_THERMOSTAT_UI_CFG, sizeof(zcl_nv_thermostatUiCfg), (u8*)&zcl_nv_thermostatUiCfg);
 	}
+
 #else
 	st = NV_ENABLE_PROTECT_ERROR;
 #endif
+#endif
+
+	return st;
+}
+
+
+/*********************************************************************
+ * @fn      zcl_calibration_save
+ *
+ * @brief
+ *
+ * @param   None
+ *
+ * @return
+ */
+nv_sts_t zcl_calibration_save(void)
+{
+	nv_sts_t st = NV_SUCC;
+
+#if NV_ENABLE
+	zcl_nv_calibration_t zcl_nv_calibration;
+
+	st = nv_flashReadNew(1, NV_MODULE_ZCL,  NV_ITEM_CALIBRATION, sizeof(zcl_nv_calibration), (u8*)&zcl_nv_calibration);
+
+	if(st == NV_SUCC){
+		if(
+			zcl_nv_calibration.temperatureOffset != g_zcl_temperatureAttrs.calibration ||
+			zcl_nv_calibration.humidityOffset != g_zcl_relHumidityAttrs.calibration
+		){
+			zcl_nv_calibration.temperatureOffset = g_zcl_temperatureAttrs.calibration;
+			zcl_nv_calibration.humidityOffset = g_zcl_relHumidityAttrs.calibration;
+
+			st = nv_flashWriteNew(1, NV_MODULE_ZCL, NV_ITEM_CALIBRATION, sizeof(zcl_nv_calibration), (u8*)&zcl_nv_calibration);
+		}
+	}else if(st == NV_ITEM_NOT_FOUND){
+		zcl_nv_calibration.temperatureOffset = g_zcl_temperatureAttrs.calibration;
+		zcl_nv_calibration.humidityOffset = g_zcl_relHumidityAttrs.calibration;
+
+		st = nv_flashWriteNew(1, NV_MODULE_ZCL, NV_ITEM_CALIBRATION, sizeof(zcl_nv_calibration), (u8*)&zcl_nv_calibration);
+	}
+
+#else
+	st = NV_ENABLE_PROTECT_ERROR;
 #endif
 
 	return st;
@@ -374,10 +452,47 @@ nv_sts_t zcl_thermostatDisplayMode_restore(void)
 
 	if(st == NV_SUCC){
 		g_zcl_thermostatUICfgAttrs.displayMode = zcl_nv_thermostatUiCfg.displayMode;
+		g_zcl_thermostatUICfgAttrs.displayMode = zcl_nv_thermostatUiCfg.displayMode;
+		g_zcl_thermostatUICfgAttrs.smileyOn = zcl_nv_thermostatUiCfg.smileyOn;
+		g_zcl_thermostatUICfgAttrs.displayOn = zcl_nv_thermostatUiCfg.displayOn;
+		g_zcl_thermostatUICfgAttrs.tempComfMin = zcl_nv_thermostatUiCfg.tempComfMin;
+		g_zcl_thermostatUICfgAttrs.tempComfMax = zcl_nv_thermostatUiCfg.tempComfMax;
+		g_zcl_thermostatUICfgAttrs.humidComfMin = zcl_nv_thermostatUiCfg.humidComfMin;
+		g_zcl_thermostatUICfgAttrs.humidComfMax = zcl_nv_thermostatUiCfg.humidComfMax;
 	}
 #else
 	st = NV_ENABLE_PROTECT_ERROR;
 #endif
+#endif
+
+	return st;
+}
+
+
+/*********************************************************************
+ * @fn      zcl_calibration_restore
+ *
+ * @brief
+ *
+ * @param   None
+ *
+ * @return
+ */
+nv_sts_t zcl_calibration_restore(void)
+{
+	nv_sts_t st = NV_SUCC;
+
+#if NV_ENABLE
+	zcl_nv_calibration_t zcl_nv_calibration;
+
+	st = nv_flashReadNew(1, NV_MODULE_ZCL,  NV_ITEM_CALIBRATION, sizeof(zcl_nv_calibration), (u8*)&zcl_nv_calibration);
+
+	if(st == NV_SUCC){
+		g_zcl_temperatureAttrs.calibration = zcl_nv_calibration.temperatureOffset;
+		g_zcl_relHumidityAttrs.calibration = zcl_nv_calibration.humidityOffset;
+	}
+#else
+	st = NV_ENABLE_PROTECT_ERROR;
 #endif
 
 	return st;

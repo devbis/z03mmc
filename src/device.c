@@ -105,12 +105,6 @@ drv_pm_pinCfg_t g_sensorPmCfg[] = {
  * LOCAL VARIABLES
  */
 
-//const scomfort_t def_cmf = {
-_attribute_data_retention_ scomfort_t cmf = {
-    .t = {2100,2600}, // x0.01 C
-    .h = {3000,6000}  // x0.01 %
-};
-
 
 /**********************************************************************
  * FUNCTIONS
@@ -157,6 +151,7 @@ void user_app_init(void)
 	af_endpointRegister(SENSOR_DEVICE_ENDPOINT, (af_simple_descriptor_t *)&sensorDevice_simpleDesc, zcl_rx_handler, NULL);
 
 	zcl_thermostatDisplayMode_restore();
+	zcl_calibration_restore();
 	zcl_reportingTabInit();
 
 	/* Register ZCL specific cluster information */
@@ -175,7 +170,10 @@ void user_app_init(void)
 _attribute_ram_code_
 u8 is_comfort(s16 t, u16 h) {
 	u8 ret = 0;
-	if (t >= cmf.t[0] && t <= cmf.t[1] && h >= cmf.h[0] && h <= cmf.h[1])
+	if (
+		t >= g_zcl_thermostatUICfgAttrs.tempComfMin && t <= g_zcl_thermostatUICfgAttrs.tempComfMax &&
+		h >= g_zcl_thermostatUICfgAttrs.humidComfMin && h <= g_zcl_thermostatUICfgAttrs.humidComfMax
+	)
 		ret = 1;
 	return ret;
 }

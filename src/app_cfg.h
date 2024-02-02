@@ -171,7 +171,8 @@ extern "C" {
 
 #define DEFAULT_POLL_RATE							(10 * (4 * POLL_RATE_QUARTERSECONDS))
 
-#define NV_ITEM_ZCL_THERMOSTAT_UI_CFG       (NV_ITEM_APP_GP_TRANS_TABLE + 1)    // see sdk/proj/drivers/drv_nv.h
+#define NV_ITEM_ZCL_THERMOSTAT_UI_CFG  (NV_ITEM_APP_GP_TRANS_TABLE + 1)    // see sdk/proj/drivers/drv_nv.h
+#define NV_ITEM_CALIBRATION            (NV_ITEM_APP_GP_TRANS_TABLE + 2)    // see sdk/proj/drivers/drv_nv.h
 
 /**********************************************************************
  * Stack configuration

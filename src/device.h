@@ -78,6 +78,7 @@ typedef struct {
 	s16 minValue;
 	s16 maxValue;
 	u16 tolerance;
+	s16 calibration;
 }zcl_temperatureAttr_t;
 
 /**
@@ -88,6 +89,7 @@ typedef struct {
 	u16 minValue;
 	u16 maxValue;
 	u16 tolerance;
+	s16 calibration;
 }zcl_relHumidityAttr_t;
 
 /**
@@ -95,6 +97,14 @@ typedef struct {
  */
 typedef struct {
 	u8 displayMode;
+
+	// custom attributes
+	u8 smileyOn;
+	u8 displayOn;
+	s16 tempComfMin;
+	s16 tempComfMax;
+	u16 humidComfMin;
+	u16 humidComfMax;
 }zcl_thermostatUICfgAttr_t;
 
 
@@ -111,17 +121,28 @@ typedef struct{
 	u16	fastPollTimeoutMax;
 }zcl_pollCtrlAttr_t;
 
-typedef struct _comfort_t {
-	s16 t[2];
-	u16 h[2];
-} scomfort_t;
 
 /**
  *  @brief Defined for saving thermostat attributes
  */
 typedef struct {
-	u8	displayMode;
+	u8 displayMode;
+	u8 smileyOn;
+	u8 displayOn;
+	s16 tempComfMin;
+	s16 tempComfMax;
+	u16 humidComfMin;
+	u16 humidComfMax;
 } zcl_nv_thermostatUiCfg_t;
+
+
+/**
+ *  @brief Defined for saving calibration attributes
+ */
+typedef struct {
+	s16 temperatureOffset;
+	s16 humidityOffset;
+} zcl_nv_calibration_t;
 
 
 /**********************************************************************
@@ -156,8 +177,6 @@ extern zcl_pollCtrlAttr_t g_zcl_pollCtrlAttrs;
 #define zcl_iasZoneAttrGet()	&g_zcl_iasZoneAttrs
 #define zcl_pollCtrlAttrGet()	&g_zcl_pollCtrlAttrs
 
-extern scomfort_t cmf;
-
 /**********************************************************************
  * FUNCTIONS
  */
@@ -176,5 +195,7 @@ void sensorDevice_otaProcessMsgHandler(u8 evt, u8 status);
 
 nv_sts_t zcl_thermostatDisplayMode_save(void);
 nv_sts_t zcl_thermostatDisplayMode_restore(void);
+nv_sts_t zcl_calibration_save(void);
+nv_sts_t zcl_calibration_restore(void);
 
 #endif /* _DEVICE_H_ */
