@@ -186,9 +186,15 @@ void read_sensor_and_save() {
 
 	read_sensor(&temp,&humi);
     // printf("Temp: %d.%d, humid: %d\r\n", temp/10, temp % 10, humi);
-    g_zcl_temperatureAttrs.measuredValue = temp;
+    g_zcl_temperatureAttrs.measuredValue = temp + g_zcl_temperatureAttrs.calibration;
 #ifdef ZCL_RELATIVE_HUMIDITY
-    g_zcl_relHumidityAttrs.measuredValue = humi;
+	s16 humiWithOffset = humi + g_zcl_relHumidityAttrs.calibration;
+	if (humiWithOffset > 10000) {
+		humiWithOffset = 10000;
+	} else if (humiWithOffset < 0) {
+		humiWithOffset = 0;
+	}
+    g_zcl_relHumidityAttrs.measuredValue = (u16)humiWithOffset;
 #endif
 
     voltage = drv_get_adc_data();
