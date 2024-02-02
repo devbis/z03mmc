@@ -5,6 +5,7 @@
 #include "zb_api.h"
 #include "zcl_include.h"
 #include "zcl_thermostat_ui_cfg.h"
+#include "zcl_relative_humidity.h"
 #include "device.h"
 #include "reporting.h"
 #include "app_ui.h"
@@ -142,23 +143,47 @@ static void sensorDevice_zclWriteRspCmd(u16 clusterId, zclWriteRspCmd_t *pWriteR
  */
 static void sensorDevice_zclWriteReqCmd(u16 clusterId, zclWriteCmd_t *pWriteReqCmd)
 {
-#ifdef ZCL_THERMOSTAT_UI_CFG
 	u8 numAttr = pWriteReqCmd->numAttr;
 	zclWriteRec_t *attr = pWriteReqCmd->attrList;
-
+#ifdef ZCL_THERMOSTAT_UI_CFG
 	if(clusterId == ZCL_CLUSTER_HAVC_USER_INTERFACE_CONFIG){
 		for(u8 i = 0; i < numAttr; i++){
-			if(attr[i].attrID == ZCL_THERMOSTAT_UI_CFG_ATTRID_TEMPERATUREDISPLAYMODE){
+			if(
+				attr[i].attrID == ZCL_THERMOSTAT_UI_CFG_ATTRID_TEMPERATUREDISPLAYMODE ||
+				attr[i].attrID == ZCL_THERMOSTAT_UI_CFG_ATTRID_SMILEY_ON ||
+				attr[i].attrID == ZCL_THERMOSTAT_UI_CFG_ATTRID_DISPLAY_ON ||
+				attr[i].attrID == ZCL_THERMOSTAT_UI_CFG_ATTRID_TEMP_COMF_MIN ||
+				attr[i].attrID == ZCL_THERMOSTAT_UI_CFG_ATTRID_TEMP_COMF_MAX ||
+				attr[i].attrID == ZCL_THERMOSTAT_UI_CFG_ATTRID_HUMID_COMF_MIN ||
+				attr[i].attrID == ZCL_THERMOSTAT_UI_CFG_ATTRID_HUMID_COMF_MAX
+			){
 				zcl_thermostatDisplayMode_save();
 			}
 		}
 	}
 #endif
+	u8 needWriteCalibration = 0;
+	if(clusterId == ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT){
+		for(u8 i = 0; i < numAttr; i++){
+			if(attr[i].attrID == ZCL_TEMPERATURE_MEASUREMENT_ATTRID_CALIBRATION){
+				needWriteCalibration += 1;
+				break;
+			}
+		}
+	}
+	if(clusterId == ZCL_CLUSTER_MS_RELATIVE_HUMIDITY){
+		for(u8 i = 0; i < numAttr; i++){
+			if(attr[i].attrID == ZCL_RELATIVE_HUMIDITY_ATTRID_CALIBRATION){
+				needWriteCalibration += 1;
+				break;
+			}
+		}
+	}
+	if (needWriteCalibration) {
+		zcl_calibration_save();
+	}
 
 #ifdef ZCL_POLL_CTRL
-	u8 numAttr = pWriteReqCmd->numAttr;
-	zclWriteRec_t *attr = pWriteReqCmd->attrList;
-
 	if(clusterId == ZCL_CLUSTER_GEN_POLL_CONTROL){
 		for(s32 i = 0; i < numAttr; i++){
 			if(attr[i].attrID == ZCL_ATTRID_CHK_IN_INTERVAL){

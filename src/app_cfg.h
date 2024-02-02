@@ -168,6 +168,8 @@ extern "C" {
 #define ZCL_THERMOSTAT_UI_CFG
 #endif
 
+// additional temperature cluster attribute
+#define ZCL_TEMPERATURE_MEASUREMENT_ATTRID_CALIBRATION	0x0010
 
 #define DEFAULT_POLL_RATE							(10 * (4 * POLL_RATE_QUARTERSECONDS))
 

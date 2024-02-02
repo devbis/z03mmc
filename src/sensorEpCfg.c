@@ -6,6 +6,7 @@
 #include "zcl_relative_humidity.h"
 #include "zcl_thermostat_ui_cfg.h"
 #include "device.h"
+#include "lcd.h"
 
 /**********************************************************************
  * LOCAL CONSTANTS
@@ -206,6 +207,7 @@ const zclAttrInfo_t temperature_measurement_attrTbl[] =
 	{ ZCL_TEMPERATURE_MEASUREMENT_ATTRID_MINMEASUREDVALUE,      ZCL_DATA_TYPE_INT16,    ACCESS_CONTROL_READ, (u8*)&g_zcl_temperatureAttrs.minValue },
 	{ ZCL_TEMPERATURE_MEASUREMENT_ATTRID_MAXMEASUREDVALUE,      ZCL_DATA_TYPE_INT16,    ACCESS_CONTROL_READ, (u8*)&g_zcl_temperatureAttrs.maxValue },
 	{ ZCL_TEMPERATURE_MEASUREMENT_ATTRID_TOLERANCE,       		ZCL_DATA_TYPE_UINT16,   ACCESS_CONTROL_READ, (u8*)&g_zcl_temperatureAttrs.tolerance },
+	{ ZCL_TEMPERATURE_MEASUREMENT_ATTRID_CALIBRATION,      		ZCL_DATA_TYPE_INT16,    ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_temperatureAttrs.calibration },
 
 	{ ZCL_ATTRID_GLOBAL_CLUSTER_REVISION, 	ZCL_DATA_TYPE_UINT16,  	ACCESS_CONTROL_READ,  						(u8*)&zcl_attr_global_clusterRevision},
 };
@@ -230,6 +232,7 @@ const zclAttrInfo_t relative_humdity_attrTbl[] =
 	{ ZCL_RELATIVE_HUMIDITY_ATTRID_MINMEASUREDVALUE,    ZCL_DATA_TYPE_UINT16,    ACCESS_CONTROL_READ, (u8*)&g_zcl_relHumidityAttrs.minValue },
 	{ ZCL_RELATIVE_HUMIDITY_ATTRID_MAXMEASUREDVALUE,    ZCL_DATA_TYPE_UINT16,    ACCESS_CONTROL_READ, (u8*)&g_zcl_relHumidityAttrs.maxValue },
 	{ ZCL_RELATIVE_HUMIDITY_ATTRID_TOLERANCE,      		ZCL_DATA_TYPE_UINT16,    ACCESS_CONTROL_READ, (u8*)&g_zcl_relHumidityAttrs.tolerance },
+	{ ZCL_RELATIVE_HUMIDITY_ATTRID_CALIBRATION,      	ZCL_DATA_TYPE_INT16,     ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_relHumidityAttrs.calibration },
 
 	{ ZCL_ATTRID_GLOBAL_CLUSTER_REVISION, 	ZCL_DATA_TYPE_UINT16,  	ACCESS_CONTROL_READ,  						(u8*)&zcl_attr_global_clusterRevision},
 };
@@ -309,10 +312,10 @@ const zcl_specClusterInfo_t g_sensorDeviceClusterList[] =
 	{ZCL_CLUSTER_SS_IAS_ZONE,		MANUFACTURER_CODE_NONE, ZCL_IASZONE_ATTR_NUM,	iasZone_attrTbl,	zcl_iasZone_register,	sensorDevice_iasZoneCb},
 #endif
 #ifdef ZCL_TEMPERATURE_MEASUREMENT
-	{ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT,	MANUFACTURER_CODE_NONE, ZCL_TEMPERATURE_MEASUREMENT_ATTR_NUM, temperature_measurement_attrTbl, 	zcl_temperature_measurement_register, 	NULL},
+	{ZCL_CLUSTER_MS_TEMPERATURE_MEASUREMENT,	MANUFACTURER_CODE_TELINK, ZCL_TEMPERATURE_MEASUREMENT_ATTR_NUM, temperature_measurement_attrTbl, 	zcl_temperature_measurement_register, 	NULL},
 #endif
 #ifdef ZCL_RELATIVE_HUMIDITY
-	{ZCL_CLUSTER_MS_RELATIVE_HUMIDITY,	MANUFACTURER_CODE_NONE,	 ZCL_RELATIVE_HUMIDITY_ATTR_NUM, 		relative_humdity_attrTbl,	zcl_relative_humidity_register, 	NULL},
+	{ZCL_CLUSTER_MS_RELATIVE_HUMIDITY,	MANUFACTURER_CODE_TELINK,	 ZCL_RELATIVE_HUMIDITY_ATTR_NUM, 		relative_humdity_attrTbl,	zcl_relative_humidity_register, 	NULL},
 #endif
 #ifdef ZCL_THERMOSTAT_UI_CFG
 	// typo in SDK
@@ -358,6 +361,9 @@ nv_sts_t zcl_thermostatDisplayMode_save(void)
 			zcl_nv_thermostatUiCfg.humidComfMin != g_zcl_thermostatUICfgAttrs.humidComfMin ||
 			zcl_nv_thermostatUiCfg.humidComfMax != g_zcl_thermostatUICfgAttrs.humidComfMax
 		){
+			if (!g_zcl_thermostatUICfgAttrs.displayOn && zcl_nv_thermostatUiCfg.displayOn) {
+				send_to_lcd_long(0x00,0x00,0x00,0x00,0x00,0x00);
+			}
 			zcl_nv_thermostatUiCfg.displayMode = g_zcl_thermostatUICfgAttrs.displayMode;
 			zcl_nv_thermostatUiCfg.smileyOn = g_zcl_thermostatUICfgAttrs.smileyOn;
 			zcl_nv_thermostatUiCfg.displayOn = g_zcl_thermostatUICfgAttrs.displayOn;
