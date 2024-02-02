@@ -164,7 +164,11 @@ void user_app_init(void)
 	show_zigbe();
 
     // read sensor every 10 seconds
-    read_sensor_start(10000);
+	u16 sensorReadPeriod = 10000;
+	if (!g_zcl_thermostatUICfgAttrs.displayOn) {
+		sensorReadPeriod = 30000;
+	}
+    read_sensor_start(sensorReadPeriod);
 }
 
 _attribute_ram_code_
@@ -212,32 +216,37 @@ void read_sensor_and_save() {
 	u8 tempSymbol = 1;
 	u8 hasPoint = 1;
 
+	if (g_zcl_thermostatUICfgAttrs.displayOn) {
+
 #ifdef ZCL_THERMOSTAT_UI_CFG
-	if (g_zcl_thermostatUICfgAttrs.displayMode == 1) {
-		tempSymbol = 2;
-		displayTemperature = (s16)(((s32)g_zcl_temperatureAttrs.measuredValue * 9) / (5*10) + 320);
-		if (displayTemperature > 999) {
-			hasPoint = 0;
-			displayTemperature = displayTemperature / 10;
+		if (g_zcl_thermostatUICfgAttrs.displayMode == 1) {
+			tempSymbol = 2;
+			displayTemperature = (s16)(((s32)g_zcl_temperatureAttrs.measuredValue * 9) / (5*10) + 320);
+			if (displayTemperature > 999) {
+				hasPoint = 0;
+				displayTemperature = displayTemperature / 10;
+			}
 		}
-	}
 #endif
 
-    // update lcd
-    show_temp_symbol(tempSymbol);
-    show_big_number(displayTemperature, hasPoint);
+		// update lcd
+		show_temp_symbol(tempSymbol);
+		show_big_number(displayTemperature, hasPoint);
 #ifdef ZCL_RELATIVE_HUMIDITY_MEASUREMENT
 #ifdef ZCL_TEMPERATURE_MEASUREMENT
-    show_small_number(g_zcl_relHumidityAttrs.measuredValue / 100, 1);
-    show_battery_symbol(percentage <= 10);
-#if defined(SHOW_SMILEY)
-    show_smiley(
-        is_comfort(g_zcl_temperatureAttrs.measuredValue, g_zcl_relHumidityAttrs.measuredValue) ? 1 : 2
-    );
+		show_small_number(g_zcl_relHumidityAttrs.measuredValue / 100, 1);
+		show_battery_symbol(percentage <= 10);
+		if (!g_zcl_thermostatUICfgAttrs.smileyOn) {
+			show_smiley(0);
+		} else {
+			show_smiley(
+				is_comfort(g_zcl_temperatureAttrs.measuredValue, g_zcl_relHumidityAttrs.measuredValue) ? 1 : 2
+			);
+		}
 #endif
 #endif
-#endif
-    update_lcd();
+    	update_lcd();
+	}
 }
 
 s32 zclSensorTimerCb(void *arg)

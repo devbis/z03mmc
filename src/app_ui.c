@@ -51,18 +51,21 @@
 
 void light_on(void)
 {
+ 	if (!g_zcl_thermostatUICfgAttrs.displayOn) return;
     show_ble_symbol(true);
     update_lcd();
 }
 
 void light_off(void)
 {
+	if (!g_zcl_thermostatUICfgAttrs.displayOn) return;
     show_ble_symbol(false);
     update_lcd();
 }
 
 void light_init(void)
 {
+	if (!g_zcl_thermostatUICfgAttrs.displayOn) return;
     show_ble_symbol(false);
     update_lcd();
 }
@@ -93,6 +96,7 @@ s32 zclLightTimerCb(void *arg)
 
 void light_blink_start(u8 times, u16 ledOnTime, u16 ledOffTime)
 {
+	if (!g_zcl_thermostatUICfgAttrs.displayOn) return;
 	u32 interval = 0;
 	g_sensorAppCtx.times = times;
 

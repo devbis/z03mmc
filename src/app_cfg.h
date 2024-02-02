@@ -194,8 +194,6 @@ typedef enum{
  * Sensor configuration
  */
 
-#define SHOW_SMILEY
-
 /* Disable C linkage for C++ Compilers: */
 #if defined(__cplusplus)
 }
