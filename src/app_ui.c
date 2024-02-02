@@ -139,13 +139,20 @@ void light_blink_stop(void)
  * 			SW2. short press button2   === send level step with OnOff command (Down)
  *
  */
-void buttonKeepPressed(u8 btNum){
+void buttonKeepPressed5sec(u8 btNum){
 	if(btNum == VK_SW1){
 		g_sensorAppCtx.state = APP_FACTORY_NEW_DOING;
 		tl_bdbReset2FN();
 		zb_resetDevice();
 	}else if(btNum == VK_SW2){
 
+	}
+}
+
+void buttonKeepPressed1sec(u8 btNum){
+	if(btNum == VK_SW1){
+	    g_zcl_thermostatUICfgAttrs.displayMode = g_zcl_thermostatUICfgAttrs.displayMode ? 0 : 1;
+        zcl_thermostatDisplayMode_save();
 	}
 }
 
@@ -198,8 +205,11 @@ void keyScan_keyReleasedCB(u8 keyCode){
 void app_key_handler(void){
 	static u8 valid_keyCode = 0xff;
 	if(g_sensorAppCtx.state == APP_FACTORY_NEW_SET_CHECK){
-		if(clock_time_exceed(g_sensorAppCtx.keyPressedTime, 3*1000*1000)){
-			buttonKeepPressed(VK_SW1);
+		if(clock_time_exceed(g_sensorAppCtx.keyPressedTime, 5*1000*1000)){
+			buttonKeepPressed5sec(VK_SW1);
+		}
+		else if(clock_time_exceed(g_sensorAppCtx.keyPressedTime, 800*1000)){
+			buttonKeepPressed1sec(VK_SW1);
 		}
 	}
 	if(kb_scan_key(0 , 1)){
