@@ -125,7 +125,7 @@ typedef struct{
 /**
  *  @brief Defined for saving thermostat attributes
  */
-typedef struct {
+typedef struct __attribute__((packed)) _zcl_nv_thermostatUiCfg_t {
 	u8 displayMode;
 	u8 smileyOn;
 	u8 displayOn;
@@ -133,6 +133,7 @@ typedef struct {
 	s16 tempComfMax;
 	u16 humidComfMin;
 	u16 humidComfMax;
+	u16 crc;
 } zcl_nv_thermostatUiCfg_t;
 
 

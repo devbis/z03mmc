@@ -332,6 +332,24 @@ u8 SENSOR_DEVICE_CB_CLUSTER_NUM = (sizeof(g_sensorDeviceClusterList)/sizeof(g_se
  * FUNCTIONS
  */
 
+ static u16 checksum(const u8 *src_buffer, size_t len) {
+    // len should be without crc field
+    const u16 generator = 0xa001;
+    u16 crc = 0xffff;
+
+    for (const u8 *ptr = src_buffer; ptr < src_buffer + len; ptr++) {
+        crc ^= *ptr;
+        for (u8 bit = 8; bit > 0; bit--) {
+            if (crc & 1)
+                crc = (crc >> 1) ^ generator;
+            else
+                crc >>= 1;
+        }
+    }
+
+    return crc;
+}
+
 /*********************************************************************
  * @fn      zcl_thermostatDisplayMode_save
  *
@@ -371,6 +389,7 @@ nv_sts_t zcl_thermostatDisplayMode_save(void)
 			zcl_nv_thermostatUiCfg.tempComfMax = g_zcl_thermostatUICfgAttrs.tempComfMax;
 			zcl_nv_thermostatUiCfg.humidComfMin = g_zcl_thermostatUICfgAttrs.humidComfMin;
 			zcl_nv_thermostatUiCfg.humidComfMax = g_zcl_thermostatUICfgAttrs.humidComfMax;
+			zcl_nv_thermostatUiCfg.crc = checksum((u8 *)&zcl_nv_thermostatUiCfg, sizeof(zcl_nv_thermostatUiCfg) - 2);
 
 			st = nv_flashWriteNew(1, NV_MODULE_ZCL, NV_ITEM_ZCL_THERMOSTAT_UI_CFG, sizeof(zcl_nv_thermostatUiCfg), (u8*)&zcl_nv_thermostatUiCfg);
 		}
@@ -382,6 +401,7 @@ nv_sts_t zcl_thermostatDisplayMode_save(void)
 		zcl_nv_thermostatUiCfg.tempComfMax = g_zcl_thermostatUICfgAttrs.tempComfMax;
 		zcl_nv_thermostatUiCfg.humidComfMin = g_zcl_thermostatUICfgAttrs.humidComfMin;
 		zcl_nv_thermostatUiCfg.humidComfMax = g_zcl_thermostatUICfgAttrs.humidComfMax;
+		zcl_nv_thermostatUiCfg.crc = checksum((u8 *)&zcl_nv_thermostatUiCfg, sizeof(zcl_nv_thermostatUiCfg) - 2);
 
 		st = nv_flashWriteNew(1, NV_MODULE_ZCL, NV_ITEM_ZCL_THERMOSTAT_UI_CFG, sizeof(zcl_nv_thermostatUiCfg), (u8*)&zcl_nv_thermostatUiCfg);
 	}
@@ -457,14 +477,16 @@ nv_sts_t zcl_thermostatDisplayMode_restore(void)
 	st = nv_flashReadNew(1, NV_MODULE_ZCL,  NV_ITEM_ZCL_THERMOSTAT_UI_CFG, sizeof(zcl_nv_thermostatUiCfg), (u8*)&zcl_nv_thermostatUiCfg);
 
 	if(st == NV_SUCC){
-		g_zcl_thermostatUICfgAttrs.displayMode = zcl_nv_thermostatUiCfg.displayMode;
-		g_zcl_thermostatUICfgAttrs.displayMode = zcl_nv_thermostatUiCfg.displayMode;
-		g_zcl_thermostatUICfgAttrs.smileyOn = zcl_nv_thermostatUiCfg.smileyOn;
-		g_zcl_thermostatUICfgAttrs.displayOn = zcl_nv_thermostatUiCfg.displayOn;
-		g_zcl_thermostatUICfgAttrs.tempComfMin = zcl_nv_thermostatUiCfg.tempComfMin;
-		g_zcl_thermostatUICfgAttrs.tempComfMax = zcl_nv_thermostatUiCfg.tempComfMax;
-		g_zcl_thermostatUICfgAttrs.humidComfMin = zcl_nv_thermostatUiCfg.humidComfMin;
-		g_zcl_thermostatUICfgAttrs.humidComfMax = zcl_nv_thermostatUiCfg.humidComfMax;
+		u16 crc = checksum((u8 *)&zcl_nv_thermostatUiCfg, sizeof(zcl_nv_thermostatUiCfg) - 2);
+		if (crc == zcl_nv_thermostatUiCfg.crc) {
+			g_zcl_thermostatUICfgAttrs.displayMode = zcl_nv_thermostatUiCfg.displayMode;
+			g_zcl_thermostatUICfgAttrs.smileyOn = zcl_nv_thermostatUiCfg.smileyOn;
+			g_zcl_thermostatUICfgAttrs.displayOn = zcl_nv_thermostatUiCfg.displayOn;
+			g_zcl_thermostatUICfgAttrs.tempComfMin = zcl_nv_thermostatUiCfg.tempComfMin;
+			g_zcl_thermostatUICfgAttrs.tempComfMax = zcl_nv_thermostatUiCfg.tempComfMax;
+			g_zcl_thermostatUICfgAttrs.humidComfMin = zcl_nv_thermostatUiCfg.humidComfMin;
+			g_zcl_thermostatUICfgAttrs.humidComfMax = zcl_nv_thermostatUiCfg.humidComfMax;
+		}
 	}
 #else
 	st = NV_ENABLE_PROTECT_ERROR;
