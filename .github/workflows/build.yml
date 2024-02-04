@@ -26,18 +26,10 @@ jobs:
     - name: Get SDK
       run: git clone https://github.com/devbis/tl_zigbee_sdk.git -b 3.6.8.6 --depth 1 ${{ env.SDK_DIR }}
 
-#    - name: Build LYWSD03MMC Telink Code
-#      id: lywsd03mmc_tl
-#      run: |
-#        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSDK_PREFIX=${{env.SDK_DIR}} -DTOOLCHAIN_PREFIX=${{env.TOOLCHAIN_DIR}} -DMANUFACTURER_CODE=0x1141
-#        cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target=z03mmc.zigbee
-#        mv ${{ env.ARTIFACT_DIR }}/z03mmc.bin ${{ env.ARTIFACT_DIR }}/z03mmc_tl_code.bin
-#        echo "status=success" >> $GITHUB_OUTPUT
-#
     - name: Build LYWSD03MMC
       id: lywsd03mmc
       run: |
-        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSDK_PREFIX=${{env.SDK_DIR}} -DTOOLCHAIN_PREFIX=${{env.TOOLCHAIN_DIR}} -DMANUFACTURER_CODE=0x1141
+        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSDK_PREFIX=${{env.SDK_DIR}} -DTOOLCHAIN_PREFIX=${{env.TOOLCHAIN_DIR}}
         cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target=z03mmc.zigbee
         echo "status=success" >> $GITHUB_OUTPUT
 
