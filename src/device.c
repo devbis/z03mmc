@@ -105,6 +105,7 @@ drv_pm_pinCfg_t g_sensorPmCfg[] = {
  * LOCAL VARIABLES
  */
 
+static u8 sensor_read_counter = 0;
 
 /**********************************************************************
  * FUNCTIONS
@@ -185,8 +186,8 @@ u8 is_comfort(s16 t, u16 h) {
 void read_sensor_and_save() {
 	s16 temp = 0;
 	u16 humi = 0;
-    u16 voltage, percentage;
-	u8 converted_voltage, percentage2;
+
+	sensor_read_counter ++;
 
 	read_sensor(&temp,&humi);
     // printf("Temp: %d.%d, humid: %d\r\n", temp/10, temp % 10, humi);
@@ -201,16 +202,22 @@ void read_sensor_and_save() {
     g_zcl_relHumidityAttrs.measuredValue = (u16)humiWithOffset;
 #endif
 
-    voltage = drv_get_adc_data();
-    converted_voltage = (u8)(voltage / 100);
-	percentage = ((voltage - BATTERY_SAFETY_THRESHOLD) / 4);
-	if (percentage > 0xc8) percentage = 0xc8;
-	percentage2 = (u8)percentage;
+	if (sensor_read_counter >= 100) {
+		u16 voltage, percentage;
+		u8 converted_voltage, percentage2;
 
-	// printf("converted voltage %d diff %d", converted_voltage, (voltage - BATTERY_SAFETY_THRESHOLD));
-	//printf(" , percentage2 %d\r\n", percentage2);
-    g_zcl_powerAttrs.batteryVoltage = converted_voltage;
-    g_zcl_powerAttrs.batteryPercentage = percentage2;
+		sensor_read_counter = 0;
+		voltage = drv_get_adc_data();
+		converted_voltage = (u8)(voltage / 100);
+		percentage = ((voltage - BATTERY_SAFETY_THRESHOLD) / 4);
+		if (percentage > 0xc8) percentage = 0xc8;
+		percentage2 = (u8)percentage;
+
+		// printf("converted voltage %d diff %d", converted_voltage, (voltage - BATTERY_SAFETY_THRESHOLD));
+		//printf(" , percentage2 %d\r\n", percentage2);
+		g_zcl_powerAttrs.batteryVoltage = converted_voltage;
+		g_zcl_powerAttrs.batteryPercentage = percentage2;
+	}
 
 	s16 displayTemperature = g_zcl_temperatureAttrs.measuredValue / 10;
 	u8 tempSymbol = 1;
@@ -235,7 +242,7 @@ void read_sensor_and_save() {
 #ifdef ZCL_RELATIVE_HUMIDITY_MEASUREMENT
 #ifdef ZCL_TEMPERATURE_MEASUREMENT
 		show_small_number(g_zcl_relHumidityAttrs.measuredValue / 100, 1);
-		show_battery_symbol(percentage <= 10);
+		show_battery_symbol(g_zcl_powerAttrs.batteryPercentage <= 20); // in 0.5%
 		if (!g_zcl_thermostatUICfgAttrs.smileyOn) {
 			show_smiley(0);
 		} else {
