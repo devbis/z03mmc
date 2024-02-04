@@ -244,6 +244,7 @@ const zclAttrInfo_t relative_humdity_attrTbl[] =
 zcl_thermostatUICfgAttr_t g_zcl_thermostatUICfgAttrs =
 {
 	.displayMode	= 0x00,
+	.keypadLockout	= 0x00,
 	.smileyOn       = 0x01,
 	.displayOn      = 0x01,
 	.tempComfMin    = 2100, // x0.01 C
@@ -255,6 +256,7 @@ zcl_thermostatUICfgAttr_t g_zcl_thermostatUICfgAttrs =
 const zclAttrInfo_t thermostat_ui_cfg_attrTbl[] =
 {
 	{ ZCL_THERMOSTAT_UI_CFG_ATTRID_TEMPERATUREDISPLAYMODE, ZCL_DATA_TYPE_ENUM8,    ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_thermostatUICfgAttrs.displayMode },
+	{ ZCL_THERMOSTAT_UI_CFG_ATTRID_KEYPADLOCKOUT,          ZCL_DATA_TYPE_ENUM8,    ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_thermostatUICfgAttrs.keypadLockout },
 	{ ZCL_THERMOSTAT_UI_CFG_ATTRID_SMILEY_ON,              ZCL_DATA_TYPE_BOOLEAN,  ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_thermostatUICfgAttrs.smileyOn },
 	{ ZCL_THERMOSTAT_UI_CFG_ATTRID_DISPLAY_ON,             ZCL_DATA_TYPE_BOOLEAN,  ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_thermostatUICfgAttrs.displayOn },
 	{ ZCL_THERMOSTAT_UI_CFG_ATTRID_TEMP_COMF_MIN,          ZCL_DATA_TYPE_INT16,    ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_thermostatUICfgAttrs.tempComfMin },

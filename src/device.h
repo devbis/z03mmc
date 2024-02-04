@@ -97,6 +97,7 @@ typedef struct {
  */
 typedef struct {
 	u8 displayMode;
+	u8 keypadLockout;
 
 	// custom attributes
 	u8 smileyOn;
