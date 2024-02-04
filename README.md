@@ -18,7 +18,7 @@ it compatible with Zigbee networks.
 - Flashable over SWS-UART interface using one of:
 
   - https://pvvx.github.io/ATC_MiThermometer/USBCOMFlashTx.html
-  - https://github.com/devbis/z03mmc/blob/master/TLSR825xComFlasher.py 
+  - https://github.com/devbis/z03mmc/blob/master/TLSR825xComFlasher.py
 
 ## Getting Started
 
@@ -27,37 +27,11 @@ it compatible with Zigbee networks.
 - Zigbee compatible hardware (e.g., Zigbee coordinator or gateway).
 - Necessary tools for flashing firmware to the sensor.
 
-### Building firmware
+### Prebuild firmware
 
-1. Clone TC32 toolchain according to your host OS:
-    ```sh
-    git clone https://github.com/devbis/tc32.git -b linux
-    ```
-    ```sh
-    git clone https://github.com/devbis/tc32.git -b macos
-    ```
-    ```sh
-    git clone https://github.com/devbis/tc32.git -b windows
-    ```
+You can download binaries from releases: https://github.com/devbis/z03mmc/releases
 
-2. Clone this repository and SDK:
-
-    ```sh
-    git clone https://github.com/devbis/z03mmc.git
-    git clone https://github.com/devbis/tl_zigbee_sdk.git -b 3.6.8.6 --depth 1
-   
-    cd z03mmc
-    ```
-   
-3. Configure and build:
-    ```sh
-    cmake -B build -DSDK_PREFIX=$(pwd)/../tl_zigbee_sdk -DTOOLCHAIN_PREFIX=$(pwd)/../tc32 -DMANUFACTURER_CODE=0x1141
-    cmake --build build --target z03mmc.zigbee
-    ```
-
-    Firmware binary is located at `build/src/z03mmc.bin`
-    The binary with OTA header is at the same folder, ending with `z03mmc.zigbee`
-
+You may also want to compile it yourself, the instruction is below.
 
 ## Flashing over the air (easy way)
 1. Open an awesome tool from ATC_MiThermometer https://devbis.github.io/telink-zigbee/
@@ -114,6 +88,62 @@ The UART flasher software uses the tool from https://github.com/pvvx/ATC_MiTherm
 
 The already flashed firmware supports OTA zigbee upgrade via standard flow.
 See zigbee2mqtt, ZHA, and HOMEd documentation for details.
+
+
+## Configuring the device
+
+Migrated device is fully compatible with ZCL standards for zigbee devices. It reuses standard clusters where possible for Zigbee 3.0.
+
+And to fine tune display and values, additional attributes are implemented:
+
+* 0x0402 (Temperature)
+    * Attribute: 0x0010: (signed) int16: temperature calibration. A value in 0.01ºC offset to fix up incorrect values from sensor.
+* 0x0405 (Relative humidity)
+    * Attribute: 0x0010: (signed) int16: humidity calibration. A value in 0.01% offset to fix up incorrect values from sensor.
+* 0x0204 (Thermostat User Interface Configuration)
+    * Attribute: 0x0010: boolean: smiley. 0 - smiley is off, 1 - smiley is on (according to comfort values below).
+    * Attribute: 0x0011: boolean: display. 0 - display is off, 1 - display is on.
+    * Attribute: 0x0102: (signed) int16: comfort temperature min: A value in 0.01ºC to set minimum comfort temperature for happy face. The default value is 2100.
+    * Attribute: 0x0103: (signed) int16: comfort temperature max: A value in 0.01ºC to set maximum comfort temperature for happy face. The default value is 2600.
+    * Attribute: 0x0104: uint16: comfort temperature min: A value in 0.01% to set minimum comfort humidity for happy face. The default value is 3000.
+    * Attribute: 0x0105: uint16: comfort temperature max: A value in 0.01% to set maximum comfort humidity for happy face. The default value is 6000.
+
+### Using ºF
+
+You can switch to displaying temperature in degrees Fahrenheit by "pressing" reset-gnd for 1 second.
+Or write 1 to 0x0204/0x0000 (Thermostat User Interface Configuration/TemperatureDisplayMode)
+
+### Building firmware
+
+1. Clone TC32 toolchain according to your host OS:
+    ```sh
+    git clone https://github.com/devbis/tc32.git -b linux
+    ```
+    ```sh
+    git clone https://github.com/devbis/tc32.git -b macos
+    ```
+    ```sh
+    git clone https://github.com/devbis/tc32.git -b windows
+    ```
+
+2. Clone this repository and SDK:
+
+    ```sh
+    git clone https://github.com/devbis/z03mmc.git
+    git clone https://github.com/devbis/tl_zigbee_sdk.git -b 3.6.8.6 --depth 1
+   
+    cd z03mmc
+    ```
+   
+3. Configure and build:
+    ```sh
+    cmake -B build -DSDK_PREFIX=$(pwd)/../tl_zigbee_sdk -DTOOLCHAIN_PREFIX=$(pwd)/../tc32 -DMANUFACTURER_CODE=0x1141
+    cmake --build build --target z03mmc.zigbee
+    ```
+
+    Firmware binary is located at `build/src/z03mmc.bin`
+    The binary with OTA header is at the same folder, ending with `z03mmc.zigbee`
+
 
 
 ## Related Work
