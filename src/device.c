@@ -164,9 +164,9 @@ void user_app_init(void)
 	show_zigbe();
 
     // read sensor every 10 seconds
-	u16 sensorReadPeriod = 10000;
+	u16 sensorReadPeriod = DISPLAY_ON_SENSOR_READ_PERIOD;
 	if (!g_zcl_thermostatUICfgAttrs.displayOn) {
-		sensorReadPeriod = 30000;
+		sensorReadPeriod = DISPLAY_OFF_SENSOR_READ_PERIOD;
 	}
     read_sensor_start(sensorReadPeriod);
 }

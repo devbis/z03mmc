@@ -383,6 +383,9 @@ nv_sts_t zcl_thermostatDisplayMode_save(void)
 		){
 			if (!g_zcl_thermostatUICfgAttrs.displayOn && zcl_nv_thermostatUiCfg.displayOn) {
 				send_to_lcd_long(0x00,0x00,0x00,0x00,0x00,0x00);
+				g_sensorAppCtx.readSensorTime = DISPLAY_OFF_SENSOR_READ_PERIOD;
+			} else if (g_zcl_thermostatUICfgAttrs.displayOn && !zcl_nv_thermostatUiCfg.displayOn) {
+				g_sensorAppCtx.readSensorTime = DISPLAY_ON_SENSOR_READ_PERIOD;
 			}
 			zcl_nv_thermostatUiCfg.displayMode = g_zcl_thermostatUICfgAttrs.displayMode;
 			zcl_nv_thermostatUiCfg.smileyOn = g_zcl_thermostatUICfgAttrs.smileyOn;

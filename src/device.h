@@ -7,6 +7,8 @@
  * CONSTANT
  */
 #define SENSOR_DEVICE_ENDPOINT  0x01
+#define DISPLAY_ON_SENSOR_READ_PERIOD   10000
+#define DISPLAY_OFF_SENSOR_READ_PERIOD   30000
 
 /**********************************************************************
  * TYPEDEFS
