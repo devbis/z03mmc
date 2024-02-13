@@ -34,6 +34,13 @@ You can download binaries from releases: https://github.com/devbis/z03mmc/releas
 You may also want to compile it yourself, the instruction is below.
 
 ## Flashing over the air (easy way)
+
+### NB: Version: 2.1.1_0159 is temporarily not supported
+
+If OTA flasher displays this error, the only possible way to write a custom firmware (Zigbee or custom BLE) is to use USB-UART method.
+To get more info, please visit https://github.com/atc1441/ATC_MiThermometer/issues/298
+
+
 1. Open an awesome tool from ATC_MiThermometer https://devbis.github.io/telink-zigbee/
 2. Click "Connect" button and find device LYWSD03MMC, wait for connection (Connected in logs)
 3. On a new device with stock firmware click "Do Activation" and wait some time.
