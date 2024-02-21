@@ -87,8 +87,7 @@ The UART flasher software uses the tool from https://github.com/pvvx/ATC_MiTherm
 - deCONZ/Phoscon App: not supported (need to add the device to its database?)
 
 ## Return to Bluetooth firmware
-
-1. You can use Zigbee OTA to flash [1141-0203-99993001-ATC_v46.zigbee](./assets/1141-0203-99993001-ATC_v46.zigbee). See [zigbee2mqtt local OTA index](https://www.zigbee2mqtt.io/guide/usage/ota_updates.html#local-ota-index-and-firmware-files) or [ZHA OTA folder](https://github.com/zigpy/zigpy/wiki/OTA-Device-Firmware-Updates)
+1. You can use Zigbee OTA to flash [db15-0203-99993001-ATC_v46.zigbee](./assets/db15-0203-99993001-ATC_v46.zigbee). See [zigbee2mqtt local OTA index](https://www.zigbee2mqtt.io/guide/usage/ota_updates.html#local-ota-index-and-firmware-files) or [ZHA OTA folder](https://github.com/zigpy/zigpy/wiki/OTA-Device-Firmware-Updates)
 2. Using UART dongle, use .bin firmware you like, either original or custom from https://github.com/pvvx/ATC_MiThermometer
 
 ## Zigbee OTA upgrades
