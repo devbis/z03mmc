@@ -11,6 +11,8 @@ const {
 } = require('zigbee-herdsman-converters/lib/modernExtend');
 const reporting = require('zigbee-herdsman-converters/lib/reporting');
 const ota = require('zigbee-herdsman-converters/lib/ota');
+const exposes = require('zigbee-herdsman-converters/lib/exposes');
+const e = exposes.presets;
 
 const dataType = {
     boolean: 0x10,
@@ -142,6 +144,11 @@ const definition = {
             /* backward compatibility */
         }
     },
+    exposes: [
+        e.temperature(), e.humidity(), e.battery(),
+        exposes.enum('temperature_display_mode', exposes.access.ALL, ['celsius', 'fahrenheit'])
+        .withDescription('The temperature format displayed on the screen'),
+    ],
 };
 
 module.exports = definition;
