@@ -38,8 +38,8 @@ const definition = {
             ],
         }),
         batteryPercentage(),
-        temperature({reporting: {min: 10, max: 300, change: 10}}),
-        humidity({reporting: {min: 10, max: 300, change: 50}}),
+        temperature({reporting: {min: 10, max: 300, change: 10}, access: 'STATE'}),
+        humidity({reporting: {min: 10, max: 300, change: 50}, access: 'STATE'}),
         enumLookup({
             name: 'temperature_display_mode',
             lookup: {'celsius': 0, 'fahrenheit': 1},
