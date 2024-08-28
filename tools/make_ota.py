@@ -31,8 +31,8 @@ def main(args):
         header_size = 56
         firmware_len = len(firmware)
         total_image_size = firmware_len + header_size + 6
-        manufacturer_code = int.from_bytes(firmware[18:20], byteorder='little')
-        image_type = int.from_bytes(firmware[20:22], byteorder='little')
+        manufacturer_code = args.set_manufacturer or int.from_bytes(firmware[18:20], byteorder='little')
+        image_type = args.set_image_type or int.from_bytes(firmware[20:22], byteorder='little')
         file_version = args.set_version or int.from_bytes(firmware[2:6], byteorder='little')
         ota_hdr = ota_hdr_s.pack(
             0xbeef11e,
@@ -76,6 +76,8 @@ if __name__ == '__main__':
     parser.add_argument("-o", '--output', help="path to output file")
     # sync with g_zcl_basicAttrs.stackVersion
     parser.add_argument("-s", '--ota-version', type=int, help="OTA stack version", default=2)
-    parser.add_argument("-v", '--set-version', type=lambda x: int(x, 0), help="Override version from BIN")
+    parser.add_argument("-v", '--set-version', type=lambda x: int(x, 0), help="Override version")
+    parser.add_argument("-m", '--set-manufacturer', type=lambda x: int(x, 0), help="Override manufacturer code")
+    parser.add_argument("-t", '--set-image-type', type=lambda x: int(x, 0), help="Override image type")
     _args = parser.parse_args()
     main(_args)
