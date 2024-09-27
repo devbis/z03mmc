@@ -7,8 +7,8 @@
  */
 
 #define ZCL_CLUSTER_CM_PM25				  0x042a
-#define ZCL_CLUSTER_CM_PM1				  0x0430
-#define ZCL_CLUSTER_CM_PM10				  0x0431
+#define ZCL_CLUSTER_CM_PM1				  0x042c
+#define ZCL_CLUSTER_CM_PM10				  0x042d
 
 
 /**
