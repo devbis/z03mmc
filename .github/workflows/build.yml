@@ -1,6 +1,8 @@
 name: Build z03mmc firmware
 
 on:
+  repository_dispatch:
+  workflow_dispatch:
   push:
 #    branches: [ "master" ]
   pull_request:
@@ -10,7 +12,8 @@ env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
   TOOLCHAIN_DIR: ${{github.workspace}}/tc32
-  SDK_DIR: ${{github.workspace}}/tl_zigbee_sdk
+  SDK_DIR: ${{github.workspace}}/telink_zigbee_sdk
+  SDK_PREFIX: ${{github.workspace}}/telink_zigbee_sdk/tl_zigbee_sdk
   ARTIFACT_DIR: ${{github.workspace}}/build/src/
 
 jobs:
@@ -24,12 +27,12 @@ jobs:
       run: git clone https://github.com/devbis/tc32.git -b linux --depth 1 ${{ env.TOOLCHAIN_DIR }}
 
     - name: Get SDK
-      run: git clone https://github.com/devbis/tl_zigbee_sdk.git -b 3.6.8.7 --depth 1 ${{ env.SDK_DIR }}
+      run: git clone https://github.com/telink-semi/telink_zigbee_sdk.git -b V3.7.1.0 --depth 1 ${{ env.SDK_DIR }}
 
     - name: Build LYWSD03MMC
       id: lywsd03mmc
       run: |
-        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSDK_PREFIX=${{env.SDK_DIR}} -DTOOLCHAIN_PREFIX=${{env.TOOLCHAIN_DIR}}
+        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSDK_PREFIX=${{env.SDK_PREFIX}} -DTOOLCHAIN_PREFIX=${{env.TOOLCHAIN_DIR}}
         cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} --target=z03mmc.zigbee
         echo "status=success" >> $GITHUB_OUTPUT
 

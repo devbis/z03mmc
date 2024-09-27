@@ -136,14 +136,14 @@ Or write 1 to 0x0204/0x0000 (Thermostat User Interface Configuration/Temperature
 
     ```sh
     git clone https://github.com/devbis/z03mmc.git
-    git clone https://github.com/devbis/tl_zigbee_sdk.git -b 3.6.8.6 --depth 1
+    git clone https://github.com/telink-semi/telink_zigbee_sdk.git -b V3.7.1.0 --depth 1
    
     cd z03mmc
     ```
    
 3. Configure and build:
     ```sh
-    cmake -B build -DSDK_PREFIX=$(pwd)/../tl_zigbee_sdk -DTOOLCHAIN_PREFIX=$(pwd)/../tc32 -DMANUFACTURER_CODE=0x1141
+    cmake -B build -DSDK_PREFIX=$(pwd)/../telink_zigbee_sdk/tl_zigbee_sdk -DTOOLCHAIN_PREFIX=$(pwd)/../tc32 -DMANUFACTURER_CODE=0x1141
     cmake --build build --target z03mmc.zigbee
     ```
 
