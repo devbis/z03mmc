@@ -121,6 +121,24 @@ Or write 1 to 0x0204/0x0000 (Thermostat User Interface Configuration/Temperature
 
 ### Building firmware
 
+#### Docker
+
+```sh
+docker buildx build --target export --output type=local,dest=build .
+```
+
+Firmware binaries will be in `build/Release/` directory:
+- `z03mmc.bin` - firmware binary
+- `db15-0203-*.zigbee` - firmware with OTA header
+
+If `docker buildx` is unavailable, use standard Docker with volume mount:
+```sh
+docker build -t z03mmc .
+docker run --rm -v $(pwd)/build:/output/Release z03mmc
+```
+
+#### Native build
+
 1. Clone TC32 toolchain according to your host OS:
     ```sh
     git clone https://github.com/devbis/tc32.git -b linux
@@ -137,10 +155,10 @@ Or write 1 to 0x0204/0x0000 (Thermostat User Interface Configuration/Temperature
     ```sh
     git clone https://github.com/devbis/z03mmc.git
     git clone https://github.com/telink-semi/telink_zigbee_sdk.git -b V3.7.1.0 --depth 1
-   
+
     cd z03mmc
     ```
-   
+
 3. Configure and build:
     ```sh
     cmake -B build -DSDK_PREFIX=$(pwd)/../telink_zigbee_sdk/tl_zigbee_sdk -DTOOLCHAIN_PREFIX=$(pwd)/../tc32 -DMANUFACTURER_CODE=0x1141
