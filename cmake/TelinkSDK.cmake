@@ -18,6 +18,10 @@ IF(NOT CMAKE_C_COMPILER)
         SET(CMAKE_C_COMPILER ${TOOLCHAIN_BIN_DIR}/${TARGET_PREFIX}-gcc${TOOL_EXECUTABLE_SUFFIX})
 ENDIF()
 
+# Set cross-compiler tools
+SET(CMAKE_OBJCOPY ${TOOLCHAIN_BIN_DIR}/${TARGET_PREFIX}-objcopy CACHE FILEPATH "objcopy tool")
+SET(CMAKE_SIZE ${TOOLCHAIN_BIN_DIR}/${TARGET_PREFIX}-size CACHE FILEPATH "size tool")
+
 set(TELINK_PLATFORM "8258")
 
 SET(CMAKE_C_FLAGS "-O2 -ffunction-sections -fdata-sections -Wall -fpack-struct -fshort-enums -finline-small-functions -std=gnu99 -fshort-wchar -fms-extensions -nostdlib" CACHE INTERNAL "c compiler flags")
