@@ -7,7 +7,7 @@ include(cmake/TelinkSDK.cmake)
 
 # Main project settings
 
-CMAKE_MINIMUM_REQUIRED(VERSION 3.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
 PROJECT(z03mmc C)
 ENABLE_LANGUAGE(ASM)
 

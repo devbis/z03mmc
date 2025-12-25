@@ -7,7 +7,6 @@
 #include "zcl_thermostat_ui_cfg.h"
 #include "zcl_relative_humidity.h"
 #include "device.h"
-#include "reporting.h"
 #include "app_ui.h"
 
 /**********************************************************************
@@ -224,21 +223,13 @@ static void sensorDevice_zclDfltRspCmd(u16 clusterId, zclDefaultRspCmd_t *pDftRs
  */
 static void sensorDevice_zclCfgReportCmd(u8 endpoint, u16 clusterId, zclCfgReportCmd_t *pCfgReportCmd)
 {
-    for(u8 i = 0; i < pCfgReportCmd->numAttr; i++) {
-        for (u8 ii = 0; ii < ZCL_REPORTING_TABLE_NUM; ii++) {
-            if (app_reporting[ii].pEntry->used) {
-                if (app_reporting[ii].pEntry->endPoint == endpoint && app_reporting[ii].pEntry->attrID == pCfgReportCmd->attrList[i].attrID) {
-                    if (app_reporting[ii].timerReportMinEvt) {
-                        TL_ZB_TIMER_CANCEL(&(app_reporting[ii].timerReportMinEvt));
-                    }
-                    if (app_reporting[ii].timerReportMaxEvt) {
-                        TL_ZB_TIMER_CANCEL(&(app_reporting[ii].timerReportMaxEvt));
-                    }
-                    return;
-                }
-            }
-        }
-    }
+//    for (u8 i = 0; i < ZCL_REPORTING_TABLE_NUM; i++) {
+//        zcl_reportTimerEvt_t *pTimerEvt = &reportTimer[i];
+//        if (pTimerEvt->pEntry == pEntry) {
+//            reportAttrTimerStop(pTimerEvt);
+//            break;
+//        }
+//    }
 }
 
 /*********************************************************************

@@ -29,7 +29,7 @@ WORKDIR /workspace
 RUN git clone https://github.com/devbis/tc32.git -b linux --depth 1 ${TOOLCHAIN_DIR}
 
 # Clone the Telink Zigbee SDK
-RUN git clone https://github.com/telink-semi/telink_zigbee_sdk.git -b V3.7.1.0 --depth 1 ${SDK_DIR}
+RUN git clone https://github.com/telink-semi/telink_zigbee_sdk.git -b V3.7.2.0 --depth 1 ${SDK_DIR}
 
 # Copy project source
 COPY . /workspace/project/
