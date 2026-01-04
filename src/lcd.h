@@ -3,6 +3,16 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+enum {
+    LCD_I2C_3C = 0x01, // B1.4
+    LCD_I2C_3E = 0x02, // B1.9
+    LCD_UART = 0x03, // B1.6 old
+    LCD_SPI = 0x04, // B1.6 new
+};
+
+#define CLK_DELAY_US	32 // =24 -> 20 kHz, =48 -> 10 kHz
+
+
 void init_lcd(bool clear);
 void init_lcd_deepsleep();
 void send_to_lcd(u8 byte1, u8 byte2, u8 byte3, u8 byte4, u8 byte5, u8 byte6);

@@ -62,20 +62,40 @@ _attribute_data_retention_ u8 lcd_version;
 _attribute_data_retention_ u8 i2c_address_lcd = 0x78; // B1.4 uses Address 0x78 and B1.9 uses 0x7c
 
 
+static u8 check_is_uart() {
+	u8 ret = 0;
+
+	for (int i = 0; i < 3; i++) {
+		uart_send_lcd(0x00,0x00,0x00,0x00,0x00,0x00);
+		u32 cur_time = clock_time();
+		do
+		{
+			if(reg_uart_buf_cnt & FLD_UART_RX_BUF_CNT) {
+				ret = reg_uart_data_buf0;
+				return (ret == 0xAA);
+			}
+		} while(!clock_time_exceed(cur_time, 512));
+	}
+	return 0;
+}
+
 void init_lcd(bool clear){
 
+	u8 lcd_is_uart = 0;
+
 	if(test_i2c_device(0x3C)){// B1.4
-		lcd_version = 0;
+		lcd_version = LCD_I2C_3C;
 		i2c_address_lcd = 0x78;
 	}else if(test_i2c_device(0x3E)){// B1.9
-		lcd_version = 2;
+		lcd_version = LCD_I2C_3E;
 		i2c_address_lcd = 0x7C;
 	}else{// B1.6 uses UART and is not testable this way
-    	// UART 38400 BAUD
-		lcd_version = 1;
+		// B1.6 has two revisions: just TX and SPI connected
+		// UART 38400 BAUD
+		lcd_version = LCD_UART; // or LCD_SPI, check later
 	}
 
-	if(lcd_version == 0){// B1.4 Hardware
+	if(lcd_version == LCD_I2C_3C){// B1.4 Hardware
 		gpio_set_func(GPIO_PB6, AS_GPIO);//LCD on low temp needs this, its an unknown pin going to the LCD controller chip
 		gpio_set_output_en(GPIO_PB6, 0);
 		gpio_set_input_en(GPIO_PB6, 1);
@@ -83,11 +103,19 @@ void init_lcd(bool clear){
 		sleep_us(50000);
 		send_i2c(i2c_address_lcd, lcd_3C_init_cmd, sizeof(lcd_3C_init_cmd));
 
-	}else if(lcd_version == 1){// B1.6 Hardware
+	}else if(lcd_version == LCD_UART){// B1.6 Hardware
 
 		init_lcd_deepsleep();
+		lcd_is_uart = check_is_uart();
+		if (!lcd_is_uart){
+			lcd_version = LCD_SPI;
+			// enable SPI, it is not enabled before SPI detected
+			gpio_set_func(LCD_SPI_SCK_PIN, AS_GPIO);
+			gpio_set_func(LCD_SPI_SDO_PIN, AS_GPIO);
+			sleep_us(512);
+		}
 
-	}else if(lcd_version == 2){// B1.9 Hardware
+	}else if(lcd_version == LCD_I2C_3E){// B1.9 Hardware
 
 		send_i2c(i2c_address_lcd,lcd_3E_init_cmd, sizeof(lcd_3E_init_cmd));
 		send_i2c(i2c_address_lcd,lcd_3E_init_cmd, sizeof(lcd_3E_init_cmd));
@@ -98,20 +126,24 @@ void init_lcd(bool clear){
 }
 
 void init_lcd_deepsleep(){
-    if(lcd_version == 0){// B1.4 Hardware
+	if(lcd_version == LCD_I2C_3C){// B1.4 Hardware
 		gpio_set_func(GPIO_PB6, AS_GPIO);//LCD on low temp needs this, its an unknown pin going to the LCD controller chip
 		gpio_set_output_en(GPIO_PB6, 0);
 		gpio_set_input_en(GPIO_PB6, 1);
 		gpio_setup_up_down_resistor(GPIO_PB6, PM_PIN_PULLUP_10K);
-    }
-	else if(lcd_version == 1) {
-		drv_uart_pin_set(UART_TX_PD7, UART_RX_PB0);
+	}
+	else if(lcd_version == LCD_UART) {
+		drv_uart_pin_set(LCD_UART_TX_PIN, LCD_UART_RX_PIN);
 		uart_reset();
 		uart_init_baudrate(LCD_UART_BAUD, UART_CLOCK_SOURCE, PARITY_NONE, STOP_BIT_ONE);
 		uart_dma_enable(0, 0);
 		dma_chn_irq_enable(0, 0);
 		uart_irq_enable(0,0);
 		uart_ndma_irq_triglevel(0,0);
+	}
+	else if (lcd_version == LCD_SPI) {
+		gpio_set_func(LCD_SPI_SCK_PIN, AS_GPIO);
+		gpio_set_func(LCD_SPI_SDO_PIN, AS_GPIO);
 	}
 
 }
@@ -127,6 +159,37 @@ void uart_send_lcd(u8 byte1, u8 byte2, u8 byte3, u8 byte4, u8 byte5, u8 byte6){
 	};
 }
 
+
+static void lcd_send_spi_byte(u8 b) {
+	u32 x = b;
+	for(int i = 0; i < 8; i++) {
+		drv_gpio_write(LCD_SPI_SCK_PIN, 0);
+		drv_gpio_write(LCD_SPI_SDO_PIN, x & 1); // MOSI
+		sleep_us(CLK_DELAY_US);
+
+		drv_gpio_write(LCD_SPI_SCK_PIN, 1);
+		sleep_us(CLK_DELAY_US);
+		x >>= 1;
+	}
+	sleep_us(CLK_DELAY_US);
+}
+
+
+_attribute_ram_code_
+static void spi_send_lcd(u8 byte1, u8 byte2, u8 byte3, u8 byte4, u8 byte5, u8 byte6) {
+	gpio_set_output_en(LCD_SPI_SCK_PIN, 1); // CLK output enable
+	gpio_set_output_en(LCD_SPI_SDO_PIN, 1); // SDI output enable
+
+	unsigned char r = irq_disable();
+	u8 trans_buff[9] = {0xAA,byte6,byte5,byte4,byte3,byte2,byte1,(byte1 ^byte2 ^byte3 ^byte4 ^byte5 ^byte6),0x55};
+
+	for (int i = 0; i < sizeof(trans_buff); i++) {
+		lcd_send_spi_byte(trans_buff[i]);
+	}
+	irq_restore(r);
+}
+
+
 u8 reverse(u8 revByte) {
    revByte = (revByte & 0xF0) >> 4 | (revByte & 0x0F) << 4;
    revByte = (revByte & 0xCC) >> 2 | (revByte & 0x33) << 2;
@@ -135,27 +198,31 @@ u8 reverse(u8 revByte) {
 }
 
 void send_to_lcd_long(u8 byte1, u8 byte2, u8 byte3, u8 byte4, u8 byte5, u8 byte6){
-    if(lcd_version == 0){// B1.4 Hardware
-        u8 lcd_set_segments[] =    {0x80,0x40,0xC0,byte1,0xC0,byte2,0xC0,byte3,0xC0,byte4,0xC0,byte5,0xC0,byte6,0xC0,0x00,0xC0,0x00};
-        send_i2c(i2c_address_lcd,lcd_set_segments, sizeof(lcd_set_segments));
-    }else if(lcd_version == 1){// B1.6 Hardware
-        uart_send_lcd(byte1,byte2,byte3,byte4,byte5,byte6);
-    }else if(lcd_version == 2){// B1.9 Hardware
-        u8 lcd_set_segments[] =    {0x04,reverse(byte1),reverse(byte2),0x00,0x00,reverse(byte3),reverse(byte4),0x00,0x00,reverse(byte5),reverse(byte6), 0xc8};
-        send_i2c(i2c_address_lcd,lcd_set_segments, sizeof(lcd_set_segments));
-    }
+	if(lcd_version == LCD_UART){// B1.6 Hardware
+		uart_send_lcd(byte1,byte2,byte3,byte4,byte5,byte6);
+	} else if (lcd_version == LCD_SPI){// B1.6 Hardware
+		spi_send_lcd(byte1,byte2,byte3,byte4,byte5,byte6);
+	} else if(lcd_version == LCD_I2C_3C){// B1.4 Hardware
+		u8 lcd_set_segments[] =	{0x80,0x40,0xC0,byte1,0xC0,byte2,0xC0,byte3,0xC0,byte4,0xC0,byte5,0xC0,byte6,0xC0,0x00,0xC0,0x00};
+		send_i2c(i2c_address_lcd,lcd_set_segments, sizeof(lcd_set_segments));
+	} else if(lcd_version == LCD_I2C_3E){// B1.9 Hardware
+		u8 lcd_set_segments[] =	{0x04,reverse(byte1),reverse(byte2),0x00,0x00,reverse(byte3),reverse(byte4),0x00,0x00,reverse(byte5),reverse(byte6), 0xc8};
+		send_i2c(i2c_address_lcd,lcd_set_segments, sizeof(lcd_set_segments));
+	}
 }
 
 void send_to_lcd(u8 byte1, u8 byte2, u8 byte3, u8 byte4, u8 byte5, u8 byte6){
-    if(lcd_version == 0){// B1.4 Hardware
-        u8 lcd_set_segments[] =    {0x80,0x40,0xC0,byte1,0xC0,byte2,0xC0,byte3,0xC0,byte4,0xC0,byte5,0xC0,byte6};
-        send_i2c(i2c_address_lcd,lcd_set_segments, sizeof(lcd_set_segments));
-    }else if(lcd_version == 1){// B1.6 Hardware
-        uart_send_lcd(byte1,byte2,byte3,byte4,byte5,byte6);
-    }else if(lcd_version == 2){// B1.9 Hardware
-        u8 lcd_set_segments[] =    {0x04,reverse(byte1),reverse(byte2),0x00,0x00,reverse(byte3),reverse(byte4),0x00,0x00,reverse(byte5),reverse(byte6), 0xc8};
-        send_i2c(i2c_address_lcd,lcd_set_segments, sizeof(lcd_set_segments));
-    }
+	if(lcd_version == LCD_UART){// B1.6 Hardware
+		uart_send_lcd(byte1,byte2,byte3,byte4,byte5,byte6);
+	}else if(lcd_version == LCD_SPI){// B1.6 Hardware
+		spi_send_lcd(byte1,byte2,byte3,byte4,byte5,byte6);
+	} else if(lcd_version == LCD_I2C_3C){// B1.4 Hardware
+		u8 lcd_set_segments[] =	{0x80,0x40,0xC0,byte1,0xC0,byte2,0xC0,byte3,0xC0,byte4,0xC0,byte5,0xC0,byte6};
+		send_i2c(i2c_address_lcd,lcd_set_segments, sizeof(lcd_set_segments));
+	}else if(lcd_version == LCD_I2C_3E){// B1.9 Hardware
+		u8 lcd_set_segments[] =	{0x04,reverse(byte1),reverse(byte2),0x00,0x00,reverse(byte3),reverse(byte4),0x00,0x00,reverse(byte5),reverse(byte6), 0xc8};
+		send_i2c(i2c_address_lcd,lcd_set_segments, sizeof(lcd_set_segments));
+	}
 }
 
 void update_lcd(){
@@ -164,7 +231,7 @@ void update_lcd(){
 
 void show_number(u8 position,u8 number){
 	if(position>5 || position == 2 || number >9)return;
-    display_buff[position] = display_numbers[number] & 0xF7;
+	display_buff[position] = display_numbers[number] & 0xF7;
 }
 
 void show_temp_symbol(u8 symbol){/*1 = C, 2 = F*/
@@ -232,7 +299,7 @@ void show_big_number(int16_t number, bool point){
 	if(number > 99)display_buff[5] |= display_numbers[number / 100 % 10] & 0xF7;
 	if(number > 9)display_buff[4] |= display_numbers[number / 10 % 10] & 0xF7;
 	if(number < 9)display_buff[4] |= display_numbers[0] & 0xF7;
-    display_buff[3] = display_numbers[number %10] & 0xF7;
+	display_buff[3] = display_numbers[number %10] & 0xF7;
 }
 
 void show_small_number(u16 number, bool percent){
@@ -240,5 +307,5 @@ void show_small_number(u16 number, bool percent){
 	display_buff[0] = percent?0x08:0x00;
 	display_buff[1] = display_buff[1] & 0x08;
 	if(number > 9)display_buff[1] |= display_numbers[number / 10 % 10] & 0xF7;
-    display_buff[0] |= display_numbers[number %10] & 0xF7;
+	display_buff[0] |= display_numbers[number %10] & 0xF7;
 }

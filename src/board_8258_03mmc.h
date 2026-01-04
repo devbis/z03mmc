@@ -40,6 +40,11 @@ extern "C" {
 	#define	DEBUG_INFO_TX_PIN	    GPIO_SWS //print
 #endif
 
+/* Possible pins for different LCD options */
+#define LCD_UART_TX_PIN				UART_TX_PD7
+#define LCD_UART_RX_PIN				UART_RX_PD6
+#define LCD_SPI_SCK_PIN				UART_TX_PD7
+#define LCD_SPI_SDO_PIN				UART_RX_PD6
 
 enum{
 	VK_SW1 = 0x01,
