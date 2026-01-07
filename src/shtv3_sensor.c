@@ -13,30 +13,30 @@ u8 measure_cmd[] = {0xfd};
 //Since we now got version B1.4 B1.6 and B1.9 of the Thermometer we need to detect the correct sensor it is using
 // B1.4 = SHTC3 = 0 = address 0x70/0xE0
 // B1.6 and B1.9 = SHV4 = 1 = address 0x44/0x88
-_attribute_data_retention_ u8 sensor_version = 2;  // unknown
+_attribute_data_retention_ u8 sensor_version = SENSOR_UNSET;  // unknown
 _attribute_data_retention_ u8 i2c_address_sensor = 0xE0;
 
 void init_sensor(){
 
 	if(test_i2c_device(0x70)){
-		sensor_version = 0;
+		sensor_version = SENSOR_SHTC3;
 		i2c_address_sensor = 0xE0;
 	}else if(test_i2c_device(0x44)){
-		sensor_version = 1;
+		sensor_version = SENSOR_SHV4;
 		i2c_address_sensor = 0x88;
 	}
 
 
-	if(sensor_version == 0){
+	if(sensor_version == SENSOR_SHTC3){
 		send_i2c(i2c_address_sensor,sens_wakeup, sizeof(sens_wakeup));
 		sleep_us(240);
 		send_i2c(i2c_address_sensor,sens_reset, sizeof(sens_reset));
 		sleep_us(240);
 		send_i2c(i2c_address_sensor,sens_sleep, sizeof(sens_sleep));
-	}else if(sensor_version == 1){
+	}else if(sensor_version == SENSOR_SHV4){
 		send_i2c(i2c_address_sensor,(u8 *)0x94, 1);
 		sleep_us(1000);
-	}else if(sensor_version == 2){
+	}else if(sensor_version == SENSOR_UNSET){
 
 	}else{
 		//UNKNOWN SENSOR, how did we got here ???
@@ -46,7 +46,7 @@ void init_sensor(){
 void read_sensor(s16 *temp, u16 *humi) {
     init_sensor();
 
-    if(sensor_version == 0){
+    if(sensor_version == SENSOR_SHTC3){
 
         send_i2c(i2c_address_sensor,sens_wakeup, sizeof(sens_wakeup));
         sleep_us(240);
@@ -60,7 +60,7 @@ void read_sensor(s16 *temp, u16 *humi) {
         *temp = (s16)(((17500 * ((u32)read_buff[0] << 8 | (u32)read_buff[1])) >> 16) - 4500);
         *humi = (u16)((10000 * ((u32)read_buff[3] << 8 | (u32)read_buff[4])) >> 16);
 
-    }else if(sensor_version == 1){
+    }else if(sensor_version == SENSOR_SHV4){
         send_i2c(i2c_address_sensor,measure_cmd, sizeof(measure_cmd));
         sleep_us(1000*10);
         u8 read_buff[5];
@@ -70,7 +70,7 @@ void read_sensor(s16 *temp, u16 *humi) {
         *temp = (s16)(((17500 * ((u32)read_buff[0] << 8 | (u32)read_buff[1])) >> 16) - 4500);
         *humi = (u16)(((12500 * ((u32)read_buff[3] << 8 | (u32)read_buff[4])) >> 16) - 600);
 
-    }else if(sensor_version == 2){
+    }else if(sensor_version == SENSOR_UNSET){
 
     }else{
         //UNKNOWN SENSOR, how did we got here ???

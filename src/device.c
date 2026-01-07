@@ -359,18 +359,23 @@ B1.7 | 0x3C           | 0x44   (SHT4x)    | Test   original string HW
 B1.9 | 0x3E           | 0x44   (SHT4x)    |
 B2.0 | 0x3C           | 0x44   (SHT4x)    | Test   original string HW
 	*/
-    if (lcd_version == LCD_I2C_3C) {
-        if (sensor_version == 0)
-            g_zcl_basicAttrs.hwVersion = 14;
-        else if (sensor_version == 1)
-            g_zcl_basicAttrs.hwVersion = 20;
-    } else if (lcd_version == LCD_UART) {
-        if (sensor_version == 0)
-            g_zcl_basicAttrs.hwVersion = 15;
-        else if (sensor_version == 1)
-            g_zcl_basicAttrs.hwVersion = 16;
-    } else if (lcd_version == LCD_I2C_3E) {
-        g_zcl_basicAttrs.hwVersion = 19;
+	if (lcd_version == LCD_I2C_3C) {
+		if (sensor_version == SENSOR_SHTC3)
+			g_zcl_basicAttrs.hwVersion = 14;
+		else if (sensor_version == SENSOR_SHV4)
+			g_zcl_basicAttrs.hwVersion = 20;
+	} else if (lcd_version == LCD_I2C_3E) {
+		g_zcl_basicAttrs.hwVersion = 19;
+	} else if (lcd_version == LCD_UART) {
+		if (sensor_version == SENSOR_SHTC3)
+			g_zcl_basicAttrs.hwVersion = 15;
+		else if (sensor_version == SENSOR_SHV4)
+			g_zcl_basicAttrs.hwVersion = 16;
+	} else if (lcd_version == LCD_SPI) {
+		if (sensor_version == SENSOR_SHTC3)
+			g_zcl_basicAttrs.hwVersion = 26;
+		else if (sensor_version == SENSOR_SHV4)
+			g_zcl_basicAttrs.hwVersion = 25;
     }
 }
 
