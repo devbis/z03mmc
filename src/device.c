@@ -234,13 +234,18 @@ void read_sensor_and_save() {
 			}
 		}
 #endif
+		// the big number only fits -9.9..199.9 with a point; show whole degrees below that
+		if (displayTemperature < -99) {
+			hasPoint = 0;
+			displayTemperature = displayTemperature / 10;
+		}
 
 		// update lcd
 		show_temp_symbol(tempSymbol);
 		show_big_number(displayTemperature, hasPoint);
 #ifdef ZCL_RELATIVE_HUMIDITY_MEASUREMENT
 #ifdef ZCL_TEMPERATURE_MEASUREMENT
-		show_small_number(g_zcl_relHumidityAttrs.measuredValue / 100, 1);
+		show_small_number(g_zcl_relHumidityAttrs.measuredValue >= 9900 ? 99 : g_zcl_relHumidityAttrs.measuredValue / 100, 1);
 		show_battery_symbol(g_zcl_powerAttrs.batteryPercentage <= 20); // in 0.5%
 		if (!g_zcl_thermostatUICfgAttrs.smileyOn) {
 			show_smiley(0);
