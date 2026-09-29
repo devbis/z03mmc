@@ -113,6 +113,12 @@ And to fine tune display and values, additional attributes are implemented:
     * Attribute: 0x0103: (signed) int16: comfort temperature max: A value in 0.01ºC to set maximum comfort temperature for happy face. The default value is 2600.
     * Attribute: 0x0104: uint16: comfort temperature min: A value in 0.01% to set minimum comfort humidity for happy face. The default value is 3000.
     * Attribute: 0x0105: uint16: comfort temperature max: A value in 0.01% to set maximum comfort humidity for happy face. The default value is 6000.
+    * Attribute: 0x0200: (signed) int16: external temperature. A value in 0.01ºC shown on the display instead of the sensor reading, e.g. pushed from a weather station. Not stored in flash.
+    * Attribute: 0x0201: uint16: external humidity. A value in 0.01% shown on the display instead of the sensor reading. Not stored in flash.
+
+### Showing external values on the display
+
+Writing 0x0200 and/or 0x0201 makes the display show the written values instead of the local sensor; the device keeps reporting its own measurements as usual. The display updates right after the write. When nothing is written for 30 minutes (or after a battery change), the display shows the local sensor again, so the values should be pushed periodically, e.g. every 10 minutes by a Home Assistant automation. The device polls its parent every 10 seconds, so a write reaches it within about 10 seconds. Comfort smiley and ºF mode apply to the shown values.
 
 ### Using ºF
 

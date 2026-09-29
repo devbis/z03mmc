@@ -20,6 +20,9 @@
 #define ZCL_THERMOSTAT_UI_CFG_ATTRID_TEMP_COMF_MAX  0x0103
 #define ZCL_THERMOSTAT_UI_CFG_ATTRID_HUMID_COMF_MIN 0x0104
 #define ZCL_THERMOSTAT_UI_CFG_ATTRID_HUMID_COMF_MAX 0x0105
+// values pushed from outside (e.g. a weather station) and shown instead of the local sensor
+#define ZCL_THERMOSTAT_UI_CFG_ATTRID_EXT_TEMP       0x0200
+#define ZCL_THERMOSTAT_UI_CFG_ATTRID_EXT_HUMID      0x0201
 
 status_t zcl_thermostat_ui_cfg_register(u8 endpoint, u16 manuCode, u8 attrNum, const zclAttrInfo_t attrTbl[], cluster_forAppCb_t cb);
 

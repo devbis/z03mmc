@@ -251,6 +251,8 @@ zcl_thermostatUICfgAttr_t g_zcl_thermostatUICfgAttrs =
 	.tempComfMax    = 2600, // x0.01 C
 	.humidComfMin   = 3000, // x0.01 %
 	.humidComfMax   = 6000, // x0.01 %
+	.extTemp        = 0,    // x0.01 C
+	.extHumid       = 0,    // x0.01 %
 };
 
 const zclAttrInfo_t thermostat_ui_cfg_attrTbl[] =
@@ -263,6 +265,8 @@ const zclAttrInfo_t thermostat_ui_cfg_attrTbl[] =
 	{ ZCL_THERMOSTAT_UI_CFG_ATTRID_TEMP_COMF_MAX,          ZCL_DATA_TYPE_INT16,    ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_thermostatUICfgAttrs.tempComfMax },
 	{ ZCL_THERMOSTAT_UI_CFG_ATTRID_HUMID_COMF_MIN,         ZCL_DATA_TYPE_UINT16,   ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_thermostatUICfgAttrs.humidComfMin },
 	{ ZCL_THERMOSTAT_UI_CFG_ATTRID_HUMID_COMF_MAX,         ZCL_DATA_TYPE_UINT16,   ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_thermostatUICfgAttrs.humidComfMax },
+	{ ZCL_THERMOSTAT_UI_CFG_ATTRID_EXT_TEMP,               ZCL_DATA_TYPE_INT16,    ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_thermostatUICfgAttrs.extTemp },
+	{ ZCL_THERMOSTAT_UI_CFG_ATTRID_EXT_HUMID,              ZCL_DATA_TYPE_UINT16,   ACCESS_CONTROL_READ | ACCESS_CONTROL_WRITE, (u8*)&g_zcl_thermostatUICfgAttrs.extHumid },
 
 	{ ZCL_ATTRID_GLOBAL_CLUSTER_REVISION, 	ZCL_DATA_TYPE_UINT16,  	ACCESS_CONTROL_READ,  						(u8*)&zcl_attr_global_clusterRevision},
 };

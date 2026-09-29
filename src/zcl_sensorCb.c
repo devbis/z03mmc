@@ -159,6 +159,18 @@ static void sensorDevice_zclWriteReqCmd(u16 clusterId, zclWriteCmd_t *pWriteReqC
 				zcl_thermostatDisplayMode_save();
 			}
 		}
+		u8 extWritten = 0;
+		for(u8 i = 0; i < numAttr; i++){
+			if(
+				attr[i].attrID == ZCL_THERMOSTAT_UI_CFG_ATTRID_EXT_TEMP ||
+				attr[i].attrID == ZCL_THERMOSTAT_UI_CFG_ATTRID_EXT_HUMID
+			){
+				extWritten = 1;
+			}
+		}
+		if(extWritten){
+			external_values_updated();
+		}
 	}
 #endif
 	u8 needWriteCalibration = 0;

@@ -9,6 +9,8 @@
 #define SENSOR_DEVICE_ENDPOINT  0x01
 #define DISPLAY_ON_SENSOR_READ_PERIOD   10000
 #define DISPLAY_OFF_SENSOR_READ_PERIOD   30000
+// external values are shown until this long without a new write, then local readings again
+#define EXTERNAL_VALUES_TIMEOUT_MS      (30 * 60 * 1000)
 
 /**********************************************************************
  * TYPEDEFS
@@ -108,6 +110,9 @@ typedef struct {
 	s16 tempComfMax;
 	u16 humidComfMin;
 	u16 humidComfMax;
+	// external display values, RAM only (not part of zcl_nv_thermostatUiCfg_t)
+	s16 extTemp;
+	u16 extHumid;
 }zcl_thermostatUICfgAttr_t;
 
 
@@ -196,6 +201,7 @@ void sensorDevice_zclCheckInStart(void);
 void sensorDevice_leaveCnfHandler(nlme_leave_cnf_t *pLeaveCnf);
 void sensorDevice_leaveIndHandler(nlme_leave_ind_t *pLeaveInd);
 void sensorDevice_otaProcessMsgHandler(u8 evt, u8 status);
+void external_values_updated(void);
 
 nv_sts_t zcl_thermostatDisplayMode_save(void);
 nv_sts_t zcl_thermostatDisplayMode_restore(void);

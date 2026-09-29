@@ -32,6 +32,10 @@
  * GLOBAL VARIABLES
  */
 app_ctx_t g_sensorAppCtx;
+// ms since the last external value write; timed by the sensor timer because clock_time()
+// wraps every ~268 s. Starts expired so the local sensor is shown until something is pushed.
+static u32 extValuesAgeMs = EXTERNAL_VALUES_TIMEOUT_MS;
+static void update_display(void);
 extern u8 lcd_version;
 extern u8 sensor_version;
 
@@ -218,7 +222,18 @@ void read_sensor_and_save() {
 		g_zcl_powerAttrs.batteryPercentage = percentage2;
 	}
 
-	s16 displayTemperature = g_zcl_temperatureAttrs.measuredValue / 10;
+	update_display();
+}
+
+static void update_display(void) {
+	s16 shownTemp = g_zcl_temperatureAttrs.measuredValue;
+	u16 shownHumid = g_zcl_relHumidityAttrs.measuredValue;
+	if (extValuesAgeMs < EXTERNAL_VALUES_TIMEOUT_MS) {
+		shownTemp = g_zcl_thermostatUICfgAttrs.extTemp;
+		shownHumid = g_zcl_thermostatUICfgAttrs.extHumid;
+	}
+
+	s16 displayTemperature = shownTemp / 10;
 	u8 tempSymbol = 1;
 	u8 hasPoint = 1;
 
@@ -227,26 +242,31 @@ void read_sensor_and_save() {
 #ifdef ZCL_THERMOSTAT_UI_CFG
 		if (g_zcl_thermostatUICfgAttrs.displayMode == 1) {
 			tempSymbol = 2;
-			displayTemperature = (s16)(((s32)g_zcl_temperatureAttrs.measuredValue * 9) / (5*10) + 320);
+			displayTemperature = (s16)(((s32)shownTemp * 9) / (5*10) + 320);
 			if (displayTemperature > 999) {
 				hasPoint = 0;
 				displayTemperature = displayTemperature / 10;
 			}
 		}
 #endif
+		// the big number only fits -9.9..199.9 with a point; show whole degrees below that
+		if (displayTemperature < -99) {
+			hasPoint = 0;
+			displayTemperature = displayTemperature / 10;
+		}
 
 		// update lcd
 		show_temp_symbol(tempSymbol);
 		show_big_number(displayTemperature, hasPoint);
 #ifdef ZCL_RELATIVE_HUMIDITY_MEASUREMENT
 #ifdef ZCL_TEMPERATURE_MEASUREMENT
-		show_small_number(g_zcl_relHumidityAttrs.measuredValue / 100, 1);
+		show_small_number(shownHumid >= 9900 ? 99 : shownHumid / 100, 1);
 		show_battery_symbol(g_zcl_powerAttrs.batteryPercentage <= 20); // in 0.5%
 		if (!g_zcl_thermostatUICfgAttrs.smileyOn) {
 			show_smiley(0);
 		} else {
 			show_smiley(
-				is_comfort(g_zcl_temperatureAttrs.measuredValue, g_zcl_relHumidityAttrs.measuredValue) ? 1 : 2
+				is_comfort(shownTemp, shownHumid) ? 1 : 2
 			);
 		}
 #endif
@@ -258,8 +278,20 @@ void read_sensor_and_save() {
 s32 zclSensorTimerCb(void *arg)
 {
 	u32 interval = g_sensorAppCtx.readSensorTime;
+	if (extValuesAgeMs < EXTERNAL_VALUES_TIMEOUT_MS) {
+		extValuesAgeMs += interval;
+	}
 	read_sensor_and_save();
 	return interval;
+}
+
+void external_values_updated(void)
+{
+	if (g_zcl_thermostatUICfgAttrs.extHumid > 10000) {
+		g_zcl_thermostatUICfgAttrs.extHumid = 10000;
+	}
+	extValuesAgeMs = 0;
+	update_display();
 }
 
 void read_sensor_start(u16 delayTime)
