@@ -107,6 +107,11 @@ void init_lcd_deepsleep(){
 	else if(lcd_version == 1) {
 		drv_uart_pin_set(UART_TX_PD7, UART_RX_PB0);
 		uart_reset();
+		// uart_reset() rewinds the hardware TX register cycle to 0x90, but the SDK's software
+		// index uart_TxIndex lives in retained RAM and keeps counting. Each 13-byte frame moves
+		// it by one, so after a wake the bytes land in the wrong registers and the LCD gets a
+		// shuffled frame (the XOR checksum is order-blind), showing partly drawn digits.
+		uart_ndma_clear_tx_index();
 		uart_init_baudrate(LCD_UART_BAUD, UART_CLOCK_SOURCE, PARITY_NONE, STOP_BIT_ONE);
 		uart_dma_enable(0, 0);
 		dma_chn_irq_enable(0, 0);
